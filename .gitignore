@@ -3,6 +3,7 @@ env/
 venv/
 .venv
 .venv/
+.env
 
 sent_emails/
 .sent_emails/
