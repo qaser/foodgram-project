@@ -7,8 +7,8 @@ from django.urls import include, path
 
 urlpatterns = [
     path('master-chief/', admin.site.urls),
-#     path('auth/', include('users.urls')),
-#     path('auth/', include('django.contrib.auth.urls')),
+    path('auth/', include('users.urls')),
+    path('auth/', include('django.contrib.auth.urls')),
 #     path('', include('recipes.urls')),
 ]
 
@@ -19,8 +19,8 @@ urlpatterns = [
 #     path('about-author/', views.flatpage, {'url': '/about-author/'}, name='author'),
 # ]
 
-# if settings.DEBUG:
-# #    import debug_toolbar
-# #    urlpatterns += (path("__debug__/", include(debug_toolbar.urls)),)
-#     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+#    import debug_toolbar
+#    urlpatterns += (path("__debug__/", include(debug_toolbar.urls)),)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
