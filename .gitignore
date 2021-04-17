@@ -36,9 +36,9 @@ migrations/
 .migrations
 .migrations/
 
-assets/
-.assets
-.assets/
+# assets/
+# .assets
+# .assets/
 
 coverage/
 .coverage
