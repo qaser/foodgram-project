@@ -31,4 +31,4 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
 admin.site.register(models.Recipe, RecipesAdmin)
 admin.site.register(models.Ingredient, IngredientAdmin)
 admin.site.register(models.Tag, TagAdmin)
-# admin.site.register(models.RecipeIngredient, RecipeIngredientAdmin)
+admin.site.register(models.RecipeIngredient, RecipeIngredientAdmin)

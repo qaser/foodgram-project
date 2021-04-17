@@ -7,9 +7,7 @@ colorama==0.4.3
 dj-static==0.0.6
 Django==3.2
 django-bootstrap4==2.2.0
-# django-crispy-forms==1.9.2
 docopt==0.6.2
-# html-linter==0.4.0
 iniconfig==1.0.1
 isort==5.4.2
 lazy-object-proxy==1.6.0
@@ -27,6 +25,7 @@ pytest==6.0.1
 pytest-django==3.8.0
 pytz==2020.1
 six==1.15.0
+sorl-thumbnail==12.7.0
 soupsieve==2.0.1
 sqlparse==0.3.1
 static3==0.7.0

@@ -1,0 +1,15 @@
+{% extends "foodgram/base.html" %}
+{% load static %}
+
+{% block title %}Вы вышли из системы{% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/index.css'%}">
+{% endblock %}
+
+{% block content %}
+    <main class="main container">
+        <p class="tags__label">Вы вышли из своей учётной записи. Ждём вас снова!</p>
+        <p class="card__text"><a href="{% url 'index' %}">Вернуться на главную</a></p>
+    </main>
+{% endblock %}

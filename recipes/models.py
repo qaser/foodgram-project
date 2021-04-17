@@ -93,20 +93,41 @@ class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=CASCADE,
-        verbose_name='рецепт'
+        verbose_name='рецепт',
+        related_name='ingredient_in_recipe'
     )
     ingredient = models.ForeignKey(
         Ingredient, 
         verbose_name='ингредиент',
-        on_delete=CASCADE
+        on_delete=CASCADE,
+        related_name='ingredient_in_recipe'
     )
-    quantity = models.DecimalField(
-        max_digits=6,
-        decimal_places=1,
+    quantity = models.IntegerField(
         verbose_name='количество',
         validators=[MinValueValidator(1)]
     )
 
     class Meta:
-        verbose_name = 'ингредиент рецепта'
+        verbose_name = 'ингредиент в рецепте'
         verbose_name_plural = 'ингредиенты в рецепте'
+
+    def __str__(self):
+        return f'{self.ingredient.name} - {self.quantity} {self.ingredient.measure}'
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='follower',
+        verbose_name='подписчик',
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following',
+        verbose_name='автор',
+    )
+
+    class Meta:
+        unique_together = ['user', 'author']

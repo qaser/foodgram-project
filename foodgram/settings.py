@@ -14,14 +14,17 @@ ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
+    'recipes',
+    'users',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users',
-    'recipes',
+    'sorl.thumbnail',
 ]
 
 MIDDLEWARE = [
@@ -32,6 +35,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware'
 ]
 
 ROOT_URLCONF = 'foodgram.urls'
@@ -92,7 +96,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
@@ -103,6 +107,9 @@ USE_L10N = True
 USE_TZ = True
 
 
+SITE_ID = 2
+
+
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'assets'),)
@@ -110,7 +117,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
-
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

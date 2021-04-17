@@ -1,9 +1,11 @@
 <footer class="footer">
     <div class="footer__container container">
-        {% comment %} <a href="{% url 'index' %}" class="footer__brand link">Продуктовый помощник</a> {% endcomment %}
+        <a href="{% url 'index' %}" class="footer__brand link">
+            FoodyDoody © {% now "Y" %}, все права защищены.
+        </a>
         <ul class="footer__items">
-            {% comment %} <li class="footer__item"><a href="{% url 'author' %}" class="footer__link link">Об авторе </a></li>
-            <li class="footer__item"><a href="{% url 'spec' %}" class="footer__link link">Технологии</a></li> {% endcomment %}
+            <li class="footer__item"><a href="{% url 'author' %}" class="footer__link link">Об авторе </a></li>
+            <li class="footer__item"><a href="{% url 'spec' %}" class="footer__link link">Технологии</a></li>
         </ul>
     </div>
 </footer>
