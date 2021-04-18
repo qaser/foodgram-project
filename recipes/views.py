@@ -3,12 +3,12 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 
-from .models import Ingredient, RecipeIngredient, Recipe
+from .models import Ingredient, RecipeIngredient, Recipe, User, Follow
 
 
-# function for split many posts on pages
-def split_on_page(request, post_page):
-    paginator = Paginator(post_page, 10)
+# function for split many recipes on pages
+def split_on_page(request, objects_on_page):
+    paginator = Paginator(objects_on_page, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return {'page': page, 'paginator': paginator}
@@ -29,6 +29,46 @@ def recipe_view(request, recipe_id):
         'recipes/single_recipe.html',
         {'recipe': recipe, 'ingredients': ingredients},
     )
+
+
+def profile(request, username):
+    user = get_object_or_404(User, username=username)
+    recipe_author = user.recipes.all()
+    selection = split_on_page(request, recipe_author)
+    follow = None
+    if request.user.is_authenticated:
+        follow = Follow.objects.filter(
+            user=request.user,
+            author=user).exists()
+    return render(
+        request,
+        'recipes/authorRecipe.html',
+        {**{'username': user, 'follow': follow}, **selection},
+    )
+
+
+@login_required
+def follow_index(request):
+    users_list = User.objects.filter(following__user=request.user)
+    selection = split_on_page(request, users_list)
+    # paginator = Paginator(recipes_list, 3)
+    return render(request, 'recipes/myFollow.html', selection)
+
+
+@login_required
+def profile_follow(request, username):
+    author = get_object_or_404(User, username=username)
+    if request.user != author:
+        Follow.objects.get_or_create(user=request.user, author=author)
+    return redirect('profile', username=username)
+
+
+@login_required
+def profile_unfollow(request, username):
+    author = get_object_or_404(User, username=username)
+    unfollow = Follow.objects.get(user=request.user, author=author)
+    unfollow.delete()
+    return redirect('profile', username=username)
 
 
 def page_not_found(request, exception):

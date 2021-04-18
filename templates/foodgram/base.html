@@ -10,11 +10,11 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>{% block title %}{% endblock %} | FoodyDoody</title>
         <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}">
-        {% comment %} <link rel="stylesheet" href="{% static 'css/pages/index.css'%}"> {% endcomment %}
+        <!-- <link rel="stylesheet" href="{% static 'css/pages/index.css'%}"> -->
         {% block style %}{% endblock %}
     </head>
 
-    <body>
+    <body class="body">
         {% include 'foodgram/base_ext/nav.html' %}
         {% block content %} {% endblock %}
         {% include 'foodgram/base_ext/footer.html' %}

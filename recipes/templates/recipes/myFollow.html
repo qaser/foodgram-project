@@ -4,26 +4,27 @@
 {% block title %}Мои подписки{% endblock %}
 
 {% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/myFollow.css'%}">
+    <link rel="stylesheet" href="{% static 'css/pages/myFollow.css' %}">
 {% endblock %}
 
 {% block content %}
+    <body class="body">
+        <main class="main container">
+            <div class="main__header">
+                <h1 class="main__title">Мои подписки</h1>
+            </div>
+            <div class="card-list">
+                {% for user in page %}
+                    {% include "recipes/extend/follow_item.html" with user=user %}
+                {% endfor %}
+            </div>
 
-    <main class="main container">
-        <div class="main__header">
-            <h1 class="main__title">Мои подписки</h1>
-        </div>
-        <div class="card-list">
-            {% for recipe in page %}
-                {% include "recipes/extend/follow_item.html" with recipe=recipe %}
-            {% endfor %}
-        </div>
+            {% if page.has_other_pages %}
+                {% include "foodgram/base_ext/paginator.html" with items=page paginator=paginator %}
+            {% endif %}
 
-        {% if page.has_other_pages %}
-            {% include "foodgram/base_ext/paginator.html" with items=page paginator=paginator %}
-        {% endif %}
-
-    </main>
+        </main>
+    </body>
 {% endblock %}
 
 {% block script %}
