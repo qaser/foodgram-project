@@ -8,38 +8,36 @@
 {% endblock %}
 
 {% block content %}
-    <body class="body">
-        <main class="main container">
-            <div class="main__header">
-                <h1 class="main__title">Рецепты</h1>
-                <ul class="tags">
-                    <li class="tags__item">
-                        <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="#"></a>
-                        <span class="tags__label">Завтрак</span>
-                    </li>
-                    <li class="tags__item">
-                        <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="#"></a>
-                        <span for="lunch" class="tags__label">Обед</span>
-                    </li>
-                    <li class="tags__item">
-                        <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="#"></a>
-                        <label for="dinner" class="tags__label">Ужин</label>
-                    </li>
-                </ul>
-            </div>
+    <main class="main container">
+        <div class="main__header">
+            <h1 class="main__title">Рецепты</h1>
+            <ul class="tags">
+                <li class="tags__item">
+                    <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="#"></a>
+                    <span class="tags__label">Завтрак</span>
+                </li>
+                <li class="tags__item">
+                    <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="#"></a>
+                    <span for="lunch" class="tags__label">Обед</span>
+                </li>
+                <li class="tags__item">
+                    <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="#"></a>
+                    <label for="dinner" class="tags__label">Ужин</label>
+                </li>
+            </ul>
+        </div>
 
-            <div class="card-list">
-                {% for recipe in page %}
-                    {% include "recipes/extend/recipe_item.html" with recipe=recipe %}
-                {% endfor %}
-            </div>
+        <div class="card-list">
+            {% for recipe in page %}
+                {% include "recipes/extend/recipe_item.html" with recipe=recipe %}
+            {% endfor %}
+        </div>
 
-            {% if page.has_other_pages %}
-                {% include "foodgram/base_ext/paginator.html" with items=page paginator=paginator %}
-            {% endif %}
+        {% if page.has_other_pages %}
+            {% include "foodgram/base_ext/paginator.html" with items=page paginator=paginator %}
+        {% endif %}
 
-        </main>
-    </body>
+    </main>
 {% endblock %}
 
 {% block script %}

@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 
 from .models import Ingredient, RecipeIngredient, Recipe, User, Follow
+from .forms import RecipeForm
 
 
 # function for split many recipes on pages
@@ -69,6 +70,16 @@ def profile_unfollow(request, username):
     unfollow = Follow.objects.get(user=request.user, author=author)
     unfollow.delete()
     return redirect('profile', username=username)
+
+
+@login_required
+def new_recipe(request):
+    form = RecipeForm(request.POST or None, files=request.FILES or None)
+    if form.is_valid():
+        form.instance.author = request.user
+        form.save()
+        return redirect('index')
+    return render(request, 'recipes/formRecipe.html', {'form': form})
 
 
 def page_not_found(request, exception):

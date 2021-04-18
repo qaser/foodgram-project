@@ -24,10 +24,15 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
 
 
+class FollowAdmin(admin.ModelAdmin):
+    list_display = ('user', 'author')
+
+
 class RecipeIngredientAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'ingredient', 'quantity')
 
 
+admin.site.register(models.Follow, FollowAdmin)
 admin.site.register(models.Recipe, RecipesAdmin)
 admin.site.register(models.Ingredient, IngredientAdmin)
 admin.site.register(models.Tag, TagAdmin)
