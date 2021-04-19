@@ -1,4 +1,4 @@
-{% extends "foodgram/base.html" %}
+{% comment %} {% extends "foodgram/base.html" %}
 {% load static %}
 
 {% block title %}Pецепты{% endblock %}
@@ -49,4 +49,65 @@
     <script src="{% static 'js/components/Header.js' %}"></script>
     <script src="{% static 'js/api/Api.js' %}"></script>
     <script src="{% static 'js/misc/indexAuth.js' %}"></script>
+{% endblock %} {% endcomment %}
+
+{% extends "foodgram/base.html" %}
+{% load static %}
+
+{% block title %}Pецепты{% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/index.css'%}">
 {% endblock %}
+{% block index %} <li class="nav__item nav__item_active"> {% endblock %}
+{% load user_filter %}
+
+{% block content %}
+    <main class="main container">
+        <div class="main__header">
+            <h1 class="main__title">Рецепты</h1>
+            <ul class="tags">
+                {% for tag in all_tags %}
+                    <li class="tags__item">
+                        <a
+                            id="{{ tag.pk }}"
+                            class="tags__checkbox tags__checkbox_style_{{ tag.color }}
+                            {% if tag.value in request.GET|get_filter_values %} tags__checkbox_active {% endif %}"
+                            href="{% url 'index' %}?{{ request|get_filter_link:tag }}"></a>
+                        <span class="tags__label">{{ tag.name }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="card-list">
+            {% for recipe in page %}
+            {% include 'recipe_item.html' %}
+            {% endfor %}
+        </div>
+        {% if page.has_other_pages %}
+        {% include 'paginator.html' %}
+        {% endif %} 
+    </main>
+    <script src="{% static 'js/config/config.js' %}"></script>
+    {% if user.is_authenticated %}
+    <script src="{% static 'js/components/MainCards.js' %}"></script>
+
+    <script src="{% static 'js/components/Purchases.js' %}"></script>
+    <script src="{% static 'js/components/Favorites.js' %}"></script>
+
+    <script src="{% static 'js/components/CardList.js' %}"></script>
+    <script src="{% static 'js/components/Header.js' %}"></script>
+
+    <script src="{% static 'js/api/Api.js' %}"></script>
+    <script src="{% static 'js/indexAuth.js' %}"></script>
+    {% else %}
+    <script src="{% static 'js/components/MainCards.js' %}"></script>
+    <script src="{% static 'js/components/Purchases.js' %}"></script>
+
+    <script src="{% static 'js/components/CardList.js' %}"></script>
+    <script src="{% static 'js/components/Header.js' %}"></script>
+    
+    <script src="{% static 'js/api/Api.js' %}"></script>
+    <script src="{% static 'js/indexNotAuth.js' %}"></script>
+    {% endif %}
+    {% endblock %}

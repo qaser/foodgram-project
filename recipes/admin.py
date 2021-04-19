@@ -3,37 +3,83 @@ from django.contrib import admin
 from . import models
 
 
-class RecipesAdmin(admin.ModelAdmin):
-    list_display = (
-        'title', 'author',
-        'image', 'time',
-        'slug', 'pub_date'
-    )
-    search_fields = ('tag', 'author')
-    list_filter = ('pub_date', 'tag', 'author')
-    empty_value_display = '-пусто-'
-
-
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'measure')
+    list_display = ('name', 'units')
     search_fields = ('name',)
-    empty_value_display = '-пусто-'
+    list_filter = ('name', )
 
 
-class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug')
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('title', 'get_author')
+    search_fields = ('title', 'get_author')
+    list_filter = ('author__username', 'title', 'tag')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('author')
+
+    def get_author(self, obj):
+        return obj.author.username
 
 
-class FollowAdmin(admin.ModelAdmin):
-    list_display = ('user', 'author')
+class VolumeIngredientAdmin(admin.ModelAdmin):
+    list_display = ('get_ingredient', 'quantity')
+    search_fields = ('get_ingredient',)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('ingredient')
+
+    def get_units(self, obj):
+        return obj.ingredient.units
+
+    def get_ingredient(self, obj):
+        return obj.ingredient.name
 
 
-class RecipeIngredientAdmin(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient', 'quantity')
+class SubscriptionAdmin(admin.ModelAdmin):
+    list_display = ('get_user', 'get_author')
+    search_fields = ('get_user',)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user', 'author')
+
+    def get_user(self, obj):
+        return obj.user.username
+
+    def get_author(self, obj):
+        return obj.author.username
 
 
-admin.site.register(models.Follow, FollowAdmin)
-admin.site.register(models.Recipe, RecipesAdmin)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('get_user', 'get_recipe')
+    search_fields = ('get_user',)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user', 'recipe')
+
+    def get_user(self, obj):
+        return obj.user.username
+
+    def get_recipe(self, obj):
+        return obj.recipe.name
+
+
+class PurchaseAdmin(admin.ModelAdmin):
+    list_display = ('get_user', 'get_recipe')
+    search_fields = ('get_user',)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user', 'recipe')
+
+    def get_user(self, obj):
+        return obj.user.username
+
+    def get_recipe(self, obj):
+        return obj.recipe.name
+
+
+admin.site.register(models.Purchase, PurchaseAdmin)
+admin.site.register(models.Favorite, FavoriteAdmin)
+admin.site.register(models.Subscription, SubscriptionAdmin)
+admin.site.register(models.VolumeIngredient, VolumeIngredientAdmin)
+admin.site.register(models.Recipe, RecipeAdmin)
 admin.site.register(models.Ingredient, IngredientAdmin)
-admin.site.register(models.Tag, TagAdmin)
-admin.site.register(models.RecipeIngredient, RecipeIngredientAdmin)

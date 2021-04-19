@@ -3,8 +3,8 @@ from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 
-from .models import Ingredient, RecipeIngredient, Recipe, User, Follow
-from .forms import RecipeForm
+from .models import Ingredient, VolumeIngredient, Recipe, User, Subscription
+# from .forms import RecipeForm
 
 
 # function for split many recipes on pages
@@ -17,7 +17,10 @@ def split_on_page(request, objects_on_page):
 
 @cache_page(20, key_prefix='index_page')
 def index(request):
+    tag = request.GET.getlist('filters')
     recipes_list = Recipe.objects.all()
+    if tag:
+        recipe_list = recipes_list.filter(tag=tag).distinct().all()
     selection = split_on_page(request, recipes_list)
     return render(request, 'recipes/index.html', selection)
 
@@ -38,7 +41,7 @@ def profile(request, username):
     selection = split_on_page(request, recipe_author)
     follow = None
     if request.user.is_authenticated:
-        follow = Follow.objects.filter(
+        follow = Subscription.objects.filter(
             user=request.user,
             author=user).exists()
     return render(
@@ -60,26 +63,26 @@ def follow_index(request):
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
     if request.user != author:
-        Follow.objects.get_or_create(user=request.user, author=author)
+        Subscription.objects.get_or_create(user=request.user, author=author)
     return redirect('profile', username=username)
 
 
 @login_required
 def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
-    unfollow = Follow.objects.get(user=request.user, author=author)
+    unfollow = Subscription.objects.get(user=request.user, author=author)
     unfollow.delete()
     return redirect('profile', username=username)
 
 
-@login_required
-def new_recipe(request):
-    form = RecipeForm(request.POST or None, files=request.FILES or None)
-    if form.is_valid():
-        form.instance.author = request.user
-        form.save()
-        return redirect('index')
-    return render(request, 'recipes/formRecipe.html', {'form': form})
+# @login_required
+# def new_recipe(request):
+#     form = RecipeForm(request.POST or None, files=request.FILES or None)
+#     if form.is_valid():
+#         form.instance.author = request.user
+#         form.save()
+#         return redirect('index')
+#     return render(request, 'recipes/formRecipe.html', {'form': form})
 
 
 def page_not_found(request, exception):
