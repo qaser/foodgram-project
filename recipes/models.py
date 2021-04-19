@@ -14,22 +14,22 @@ TAGS = (
 
 
 class Ingredient(models.Model):
-    name = models.CharField('ингредиент', max_length=50)
-    units = models.CharField('единица измерения', max_length=120)
+    title = models.CharField('ингредиент', max_length=50)
+    dimention = models.CharField('единица измерения', max_length=120)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['name', 'units'],
+                fields=['title', 'dimention'],
                 name='unique_ingredient'
             ),
         ]
-        ordering = ['name']
+        ordering = ['title']
         verbose_name = 'ингредиент'
         verbose_name_plural = 'ингредиенты'
     
     def __str__(self):
-        return f'{self.name}, {self.units}'
+        return f'{self.title}, {self.dimention}'
 
 
 class VolumeIngredient(models.Model):

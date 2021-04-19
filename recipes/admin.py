@@ -4,9 +4,9 @@ from . import models
 
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'units')
-    search_fields = ('name',)
-    list_filter = ('name', )
+    list_display = ('title', 'dimention')
+    search_fields = ('title',)
+    list_filter = ('title', )
 
 
 class RecipeAdmin(admin.ModelAdmin):
