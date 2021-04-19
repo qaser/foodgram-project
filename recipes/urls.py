@@ -4,13 +4,13 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('subscription/<str:username>', views.follow_index, name='follow'),
-    # path('new-recipe/', views.new_recipe, name='new_recipe'),
+    path('subscription/<str:username>', views.subscription_index, name='subscription'),
     path('users/<str:username>/', views.profile, name='profile'),
+    path('recipes/new/', views.recipe_new, name='recipe_new'),
     path('recipes/<int:recipe_id>/', views.recipe_view, name='recipe_view'),
-    # path('recipes/<int:recipe_id>/edit/', views.post_edit, name='recipe_edit'),
-    # path('recipes/<int:recipe_id>/delete/', views.post_delete, name='recipe_delete'),
-    # path('favorite-recipe/<username>/', views.favor_recipe, name='favorite-recipe'),
-    # path('purchase/', views.shopping_list, name='purchase'),
-    # path('save-purchase', views.download, name='save-purchase'),
+    path('recipes/<int:recipe_id>/edit/', views.recipe_edit, name='recipe_edit'),
+    path('recipes/<int:recipe_id>/delete/', views.recipe_delete, name='recipe_delete'),
+    path('recipes/favorite/<str:username>/', views.recipe_favor, name='recipe_favor'),
+    path('purchase/', views.purchase_cart, name='purchase'),
+    path('save-purchase', views.purchase_save, name='purchase_save'),
 ]

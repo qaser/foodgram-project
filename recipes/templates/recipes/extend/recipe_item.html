@@ -1,28 +1,19 @@
 <div class="card" data-id="{{ recipe.id }}">
-
-    <!-- Отображение картинки -->
-    {% load thumbnail %}
-    {% thumbnail recipe.image "364x240" upscale=True as im %}  
-        <a href="{% url 'recipe' recipe.id %}" class="link"><img class="card__image" src="{{ im.url }}" alt="Изображение готовится"></a>
-    {% endthumbnail %}
-
-
-{% comment %} для открытия рецепта в новом окне добавь после ссылки target="_blank" {% endcomment %}
-    <!-- Отображение карточки рецепта -->
+    <a href="{% url 'recipe_view' recipe.id %}" class="link" target="_blank"><img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="card__image"></a>
     <div class="card__body">
-        <a class="card__title link" href="{% url 'recipe' recipe.id %}">{{ recipe.title }}</a>
+        <a class="card__title link" href="{% url 'recipe_view'  recipe.id %}" target="_blank"> {{ recipe.title }}</a> 
         <ul class="card__items">
-            <li class="card__item"><span class="badge badge_style_green">Обед</span></li>
-            <li class="card__item"><span class="badge badge_style_orange">Завтрак</span></li>
-            <li class="card__item"><span class="badge badge_style_purple">Ужин</span></li>
+            {% for tag in recipe.tag.all %}
+            <li class="card__item"><span class="badge badge_style_{{ tag.color }}">{{ tag.name }}</span></li>
+            {% endfor %}
         </ul>
         <div class="card__items card__items_column">
-            <p class="card__text"><span class="icon-time"></span> {{ recipe.time }} мин. </p>
-            <p class="card__text"><span class="icon-user"></span> <a href="{% url 'profile' recipe.author %}" style="color: black"> {{ recipe.author.get_full_name }} </a></p>
+            <p class="card__text"><span class="icon-time"></span> {{ recipe.time }} мин.</p>
+            <p class="card__text"><span class="icon-user"></span> <a href="{% url 'profile' recipe.author.username %}" style="color: black">{{ recipe.author.username }}</a></p>
         </div>
     </div>
     <div class="card__footer">
-        <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
-        <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>
+        {% include 'recipes/extend/purchase_button.html' %}
+        {% include 'recipes/extend/favor_button.html' %}
     </div>
 </div>

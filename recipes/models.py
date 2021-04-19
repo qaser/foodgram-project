@@ -1,16 +1,22 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.deletion import CASCADE
-from multiselectfield import MultiSelectField
+# from multiselectfield import MultiSelectField
 
 User = get_user_model()
 
 
-TAGS = (
-    ('breakfast', 'завтрак'),
-    ('lunch', 'обед'),
-    ('dinner', 'ужин'),
-)
+class Tag(models.Model):
+    name = models.CharField('имя тэга', max_length=255)
+    value = models.CharField('значение тэга', max_length=50)
+    color = models.CharField('цвет тэга в шаблоне', max_length=30, null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'тэг'
+        verbose_name_plural = 'тэги'
 
 
 class Ingredient(models.Model):
@@ -32,23 +38,6 @@ class Ingredient(models.Model):
         return f'{self.title}, {self.dimention}'
 
 
-class VolumeIngredient(models.Model):
-    ingredient = models.ForeignKey(
-        Ingredient, 
-        verbose_name='ингредиент',
-        on_delete=CASCADE,
-        related_name='volume_ingredient'
-    )
-    quantity = models.PositiveIntegerField('количество')
-
-    class Meta:
-        verbose_name = 'ингредиент в рецепте'
-        verbose_name_plural = 'ингредиенты в рецепте'
-
-    def __str__(self):
-        return f'{self.ingredient.name} - {self.quantity} {self.ingredient.units}'
-
-
 class Recipe(models.Model):
     author = models.ForeignKey(
         User,
@@ -64,11 +53,11 @@ class Recipe(models.Model):
         null=False
     )
     ingredients = models.ManyToManyField(
-        VolumeIngredient,
+        Ingredient,
         related_name='recipes',
         verbose_name='ингредиент',
     )
-    tag = MultiSelectField(choices=TAGS, verbose_name='тэг')
+    tag = models.ManyToManyField(Tag, verbose_name='тэг')
     time = models.PositiveSmallIntegerField('время приготовления, мин.')
     slug = models.SlugField('путь', unique=True, editable=False)
     pub_date = models.DateTimeField(
@@ -84,6 +73,24 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class VolumeIngredient(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(
+        Ingredient, 
+        verbose_name='ингредиент',
+        on_delete=CASCADE,
+        related_name='volume_ingredient'
+    )
+    quantity = models.PositiveIntegerField('количество')
+
+    class Meta:
+        verbose_name = 'ингредиент в рецепте'
+        verbose_name_plural = 'ингредиенты в рецепте'
+
+    def __str__(self):
+        return f'{self.ingredient.name} - {self.quantity} {self.ingredient.units}'
 
 
 class Subscription(models.Model):

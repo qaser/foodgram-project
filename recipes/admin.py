@@ -21,6 +21,12 @@ class RecipeAdmin(admin.ModelAdmin):
         return obj.author.username
 
 
+@admin.register(models.Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name', 'value')
+    empty_value_display = 'None'
+
+
 class VolumeIngredientAdmin(admin.ModelAdmin):
     list_display = ('get_ingredient', 'quantity')
     search_fields = ('get_ingredient',)
