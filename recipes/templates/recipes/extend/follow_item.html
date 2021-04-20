@@ -1,20 +1,22 @@
-<div class="card-user" data-author="{{ username.id }}">
+<div class="card-user" data-author="{{ item.author.id }}">
     <div class="card-user__header">
-        <h2 class="card-user__title">{{ user.get_full_name }}</h2>
+        <h2 class="card-user__title">{{ item.author.get_full_name }}</h2>
     </div>
     <div class="card-user__body">
-
         <ul class="card-user__items">
-            <li class="card-user__item">
-                <div class="recipe">
-                    <img src="./images/testCardImg.png" alt="какой-то-текст" class="recipe__image">
-                    <h3 class="recipe__title">Французские тосты</h3>
-                    <p class="recipe__text"><span class="icon-time"></span> 20 мин.</p>
-                </div>
-            </li>
+
+            {% for recipe in item.author.Recipe.all|slice:":3" %}
+                <li class="card-user__item">
+                    <div class="recipe">
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe__image">
+                        <h3 class="recipe__title">{{ recipe.title }}</h3>
+                        <p class="recipe__text"><span class="icon-time"></span> {{ recipe.cooking_time }} мин.</p>
+                    </div>
+                </li>
+            {% endfor %}
            
             <li class="card-user__item">
-                <a href="#" class="card-user__link link">Еще 7 рецептов...</a>
+                <a href="{% url 'profile' item.author.username %}" class="card-user__link link">Еще рецепты</a>
             </li>
         </ul>
     </div>

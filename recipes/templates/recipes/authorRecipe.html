@@ -1,40 +1,37 @@
 {% extends "foodgram/base.html" %}
 {% load static %}
+{% load user_filters %}
 
-{% block title %}Pецепты автора {{ username.get_full_name }}{% endblock %}
+{% block title %}Pецепты автора {{ profile.get_full_name }}{% endblock %}
 
 {% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/index.css'%}">
+    <link rel="stylesheet" href="{% static 'css/pages/index.css' %}">
 {% endblock %}
 
 {% block content %}
     <!-- <body class="body"> -->
         <main class="main container">
             <div class="main__header">
-                <h1 class="main__title">{{ username.get_full_name }}</h1>
+                <h1 class="main__title">{{ profile.get_full_name }}</h1>
                 <ul class="tags">
-                    <li class="tags__item">
-                        <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="#"></a>
-                        <span class="tags__label">Завтрак</span>
-                    </li>
-                    <li class="tags__item">
-                        <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="#"></a>
-                        <span for="lunch" class="tags__label">Обед</span>
-                    </li>
-                    <li class="tags__item">
-                        <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="#"></a>
-                        <label for="dinner" class="tags__label">Ужин</label>
-                    </li>
+                    {% for tag in all_tags %}
+                        <li class="tags__item">
+                            <a id="{{ tag.pk }}"
+                                class="tags__checkbox tags__checkbox_style_{{ tag.color }}
+                                {% if tag.value in request.GET|get_filter_values %} tags__checkbox_active {% endif %}"
+                                href="{% url 'profile' profile %}?{{ request|get_filter_link:tag }}"></a>
+                            <span class="tags__label">{{ tag.name }}</span>
+                        </li>
+                    {% endfor %}
                 </ul>
             </div>
 
-            {% if username != request.user %}
-    <!--        <p style="padding: 0 0 2em 0;"><a class="button button_style_light-blue" href="#">Подписаться на автора</a></p>-->
-                <div class="author-subscribe" data-author="{{ username.id }}">
-                    {% if follow == True %}
-                        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue" href="{% url 'profile_unfollow' username %}" name="unsubscribe" data-out>Отписаться</button></p>
+            {% if profile != request.user %}
+                <div class="author-subscribe" data-author="{{ profile.id }}">
+                    {% if sub == True %}
+                        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue" href="{% url 'sub_remove' profile.id %}" name="unsubscribe" data-out>Отписаться</button></p>
                     {% else %}
-                        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" href="{% url 'profile_follow' username %}" name="subscribe" data-out>Подписаться на автора</button></p>
+                        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" href="{% url 'sub_add' %}" name="subscribe" data-out>Подписаться на автора</button></p>
                     {% endif %}
                 </div>
             {% endif %}

@@ -1,5 +1,7 @@
 {% extends "foodgram/base.html" %}
 {% load static %}
+{% csrf_token %}
+{% load user_filters %}
 
 {% block title %}Мои подписки{% endblock %}
 
@@ -14,8 +16,8 @@
                 <h1 class="main__title">Мои подписки</h1>
             </div>
             <div class="card-list">
-                {% for user in page %}
-                    {% include "recipes/extend/follow_item.html" with user=user %}
+                {% for item in page %}
+                    {% include "recipes/extend/follow_item.html" with item=item %}
                 {% endfor %}
             </div>
 

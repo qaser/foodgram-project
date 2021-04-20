@@ -21,12 +21,12 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     title = models.CharField('ингредиент', max_length=50)
-    dimention = models.CharField('единица измерения', max_length=120)
+    dimension = models.CharField('единица измерения', max_length=120)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['title', 'dimention'],
+                fields=['title', 'dimension'],
                 name='unique_ingredient'
             ),
         ]
@@ -35,7 +35,7 @@ class Ingredient(models.Model):
         verbose_name_plural = 'ингредиенты'
     
     def __str__(self):
-        return f'{self.title}, {self.dimention}'
+        return f'{self.title}, {self.dimension}'
 
 
 class Recipe(models.Model):
@@ -54,12 +54,12 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        related_name='recipes',
-        verbose_name='ингредиент',
+        through='VolumeIngredient',
+        through_fields=('recipe', 'ingredient')
     )
     tag = models.ManyToManyField(Tag, verbose_name='тэг')
     time = models.PositiveSmallIntegerField('время приготовления, мин.')
-    slug = models.SlugField('путь', unique=True, editable=False)
+    # slug = models.SlugField('путь', unique=True, editable=False)
     pub_date = models.DateTimeField(
         'дата публикации',
         auto_now_add=True,
@@ -76,7 +76,10 @@ class Recipe(models.Model):
 
 
 class VolumeIngredient(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='volume_ingredient')
     ingredient = models.ForeignKey(
         Ingredient, 
         verbose_name='ингредиент',
@@ -90,7 +93,7 @@ class VolumeIngredient(models.Model):
         verbose_name_plural = 'ингредиенты в рецепте'
 
     def __str__(self):
-        return f'{self.ingredient.name} - {self.quantity} {self.ingredient.units}'
+        return f'{self.ingredient.title} - {self.quantity} {self.ingredient.dimension}'
 
 
 class Subscription(models.Model):

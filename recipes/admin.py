@@ -4,7 +4,7 @@ from . import models
 
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('title', 'dimention')
+    list_display = ('title', 'dimension')
     search_fields = ('title',)
     list_filter = ('title', )
 
@@ -28,17 +28,17 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class VolumeIngredientAdmin(admin.ModelAdmin):
-    list_display = ('get_ingredient', 'quantity')
+    list_display = ('get_ingredient', 'quantity', 'recipe')
     search_fields = ('get_ingredient',)
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('ingredient')
 
     def get_units(self, obj):
-        return obj.ingredient.units
+        return obj.ingredient.dimension
 
     def get_ingredient(self, obj):
-        return obj.ingredient.name
+        return obj.ingredient.title
 
 
 class SubscriptionAdmin(admin.ModelAdmin):

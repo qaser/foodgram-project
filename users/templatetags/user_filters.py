@@ -39,6 +39,6 @@ def is_shop(recipe, user):
     return Purchase.objects.filter(user=user, recipe=recipe).exists()
 
 
-@register.filter(name='is_follow')
+@register.filter(name='is_subscribe')
 def is_follow(author, user):
     return Subscription.objects.filter(user=user, author=author).exists()

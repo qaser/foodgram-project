@@ -23,40 +23,69 @@ def index(request):
     recipes_list = Recipe.objects.all()
     if tag:
         recipes_list = recipes_list.filter(tag__value__in=tag).distinct().all()
-        # recipe_list = recipes_list.filter(tag__value__in=tag).distinct().all()
     selection = split_on_page(request, recipes_list)
     return render(request, 'recipes/index.html', selection)
 
 
 def profile(request, username):
-    profile = get_object_or_404(User, username=username)
+    user = get_object_or_404(User, username=username)
     tag = request.GET.getlist('filters')
-    # recipe_list = Recipe.objects.filter(author=profile.pk).all()
-    recipes_list = profile.recipes.all()
+    recipes_list = user.recipes.all()
     if tag:
         recipes_list = recipes_list.filter(tag__value__in=tag)
     selection = split_on_page(request, recipes_list)
-    # follow = None
-    # if request.user.is_authenticated:
-    #     follow = Subscription.objects.filter(
-    #         user=request.user,
-    #         author=user).exists()
+    sub = None
+    if request.user.is_authenticated:
+        sub = Subscription.objects.filter(
+            user=request.user,
+            author=user).exists()
     return render(
         request,
         'recipes/authorRecipe.html',
-        {**{'profile': profile, 'recipe_list': recipes_list,}, **selection},
+        {**{'profile': user, 'sub': sub}, **selection},
+    )
+
+
+@login_required
+def subscription_index(request, username):
+    user = get_object_or_404(User, username=username)
+    author_list = Subscription.objects.filter(user=user).all()
+    selection = split_on_page(request, author_list)
+    return render(
+        request,
+        'recipes/myFollow.html',
+        selection,
     )
 
 
 def recipe_view(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
-    profile = get_object_or_404(User, username=recipe.author)
+    ingredients = recipe.volume_ingredient.all()
     return render(
         request,
         'recipes/single_recipe.html',
-        {'profile': profile, 'recipe': recipe}
+        {'recipe': recipe, 'ingredients': ingredients},
     )
 
+
+# @login_required
+# def recipe_new(request):
+#     """Создание нового рецепта."""
+#     if request.method == 'POST':
+#         form = RecipeForm(request.POST or None, files=request.FILES or None)
+#         if form.is_valid():
+#             recipe = form.save(commit=False)
+#             recipe.author = request.user
+#             # сохраняем рецепт без тегов и количества ингредиентов
+#             recipe.save()
+#             return redirect('index')
+#         tags = request.POST.getlist('tag')
+#         # tags = get_tag(tags)
+#     else:
+#         form = RecipeForm(request.POST or None)
+#         tags = []  # при создании рецепта все теги сначала неактивны
+#     return render(request, 'recipes/formRecipe.html',
+#                   {'form': form, 'tags': tags})
 
 @login_required
 def recipe_new(request):
@@ -131,18 +160,6 @@ def recipe_delete(request, recipe_id):
     if request.user == recipe.author:
         recipe.delete()
     return redirect('index')
-
-
-@login_required
-def subscription_index(request, username):
-    user = get_object_or_404(User, username=username)
-    author_list = Subscription.objects.filter(user=user).all()
-    selection = split_on_page(request, author_list)
-    return render(
-        request,
-        'recipes/myFollow.html',
-        {**{'authors': author_list,}, **selection},
-    )
 
 
 @login_required
