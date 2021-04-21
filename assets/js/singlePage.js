@@ -1,13 +1,14 @@
-const container = document.querySelector('.card-list');
-const container_subscribe = document.querySelector('.author-subscribe');
+const container = document.querySelector('.single-card');
 const counterId = document.querySelector('#counter');
+const apiUrl = 'api';
 const api = new Api(apiUrl);
 const header = new Header(counterId);
+
 const configButton = {
     purchases: {
         attr: 'data-out',
         default: {
-            class: 'button_style_light-blue',
+            class: 'button_style_blue',
             text: '<span class="icon-plus button__icon"></span>Добавить в покупки'
         },
         active: {
@@ -18,12 +19,10 @@ const configButton = {
     favorites: {
         attr: 'data-out',
         default: {
-            class: ['button', 'button_style_none'],
-            text: '<span class="icon-favorite"></span>'
+            text: '<span class="icon-favorite icon-favorite_big"></span>'
         },
         active: {
-            class: '.icon-favorite_active',
-            text: `<span class="icon-favorite icon-favorite_active"></span>`
+            text: `<span class="icon-favorite icon-favorite_big icon-favorite_active"></span>`
         }
     },
     subscribe: {
@@ -42,16 +41,12 @@ const purchases = new Purchases(configButton.purchases, api);
 const favorites = new Favorites(configButton.favorites, api);
 const subscribe = new Subscribe(configButton.subscribe, api);
 
-const authorRecipe = new AuthorRecipe(container, '.card', header, api, true, {
-    purchases,
-    favorites
-});
 
-const authorRecipeSubscribe = new AuthorRecipe(container_subscribe, '.author-subscribe', header, api, true, {
+const singleCard = new SingleCard(container, '.single-card', header, api, true,{
+    purchases,
+    favorites,
     subscribe
 });
-
-authorRecipe.addEvent();
-authorRecipeSubscribe.addEvent();
+singleCard.addEvent();
 
 

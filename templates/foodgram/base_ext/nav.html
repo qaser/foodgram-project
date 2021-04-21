@@ -1,7 +1,8 @@
+{% comment %} маркеры для подсвечивания вкладок {% endcomment %}
 {% url 'index' as index %}
-{% url 'subscriptions' as subs %}
+{% url 'subscriptions' user.username as subs %}
 {% url 'recipe_new' as recipe_new %}
-{% url 'recipe_favor' as recipe_favor %}
+{% url 'recipe_favor' user.username as recipe_favor %}
 {% url 'purchase' as purchase %}
 {% url 'password_change' as pass_change %}
 {% url 'login' as login %}

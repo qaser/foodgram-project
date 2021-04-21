@@ -43,7 +43,7 @@
                     {% if user.username != recipe.author.username %}
                         {% if user.is_authenticated %}
                             {% if recipe.author|is_subscribe:user %}
-                                <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe"><span class="icon-check button__icon"></span> Отписаться от автора </button>
+                                <li class="single-card__item"><button class="button button_style_light-blue button_size_unsubscribe" name="unsubscribe"><span class="icon-check button__icon"></span>Отписаться от автора</button>
                             {% else %}
                                 <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>
                             {% endif %}
@@ -77,5 +77,5 @@
     <script src="{% static 'js/components/SingleCard.js' %}"></script>
     <script src="{% static 'js/components/Header.js' %}"></script>
     <script src="{% static 'js/api/Api.js' %}"></script>
-    <script src="{% static 'js/misc/singlePage.js' %}"></script>
+    <script src="{% static 'js/singlePage.js' %}"></script>
 {% endblock %}

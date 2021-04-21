@@ -66,7 +66,7 @@ class FavoriteAdmin(admin.ModelAdmin):
         return obj.user.username
 
     def get_recipe(self, obj):
-        return obj.recipe.name
+        return obj.recipe.title
 
 
 class PurchaseAdmin(admin.ModelAdmin):
@@ -80,7 +80,7 @@ class PurchaseAdmin(admin.ModelAdmin):
         return obj.user.username
 
     def get_recipe(self, obj):
-        return obj.recipe.name
+        return obj.recipe.title
 
 
 admin.site.register(models.Purchase, PurchaseAdmin)

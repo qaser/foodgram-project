@@ -7,10 +7,10 @@ User = get_user_model()
 
 def generate_purchase_cart(request):
     purchaser = get_object_or_404(User, username=request.user.username)
-    purchase_cart = purchaser.Purchaser.all()
+    purchase_cart = purchaser.purchase.all()
     ingredients = {}
     for item in purchase_cart:
-        for j in item.recipe.recipeingredients_set.all():
+        for j in item.recipe.volume_ingredient.all():
             name = f'{j.ingredient.title} ({j.ingredient.dimension})'
             quantity = j.quantity
             if name in ingredients.keys():

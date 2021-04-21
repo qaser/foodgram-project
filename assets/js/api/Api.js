@@ -3,7 +3,7 @@ class Api {
       this.apiUrl =  apiUrl;
   }
   getPurchases () {
-    return fetch(`/api/purchases`, {
+    return fetch(`/api/purchases/`, {
       headers: {
         'Content-Type': 'application/json',
         'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
@@ -17,7 +17,7 @@ class Api {
       })
   }
   addPurchases (id) {
-    return fetch(`/api/purchases`, {
+    return fetch(`/api/purchases/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ class Api {
       })
   }
   addSubscriptions(id) {
-    return fetch(`/api/subscriptions`, {
+    return fetch(`/api/subscriptions/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json', 
@@ -83,7 +83,7 @@ class Api {
       })
   }
   addFavorites (id)  {
-    return fetch(`/api/favorites`, {
+    return fetch(`/api/favorites/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

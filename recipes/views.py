@@ -113,12 +113,12 @@ def recipe_edit(request, recipe_id):
             recipe.author = request.user
             recipe.save()
             recipe.ingredients.all().delete()
-            for ing_name, amount in ingredients.items():
+            for ing_name, quantity in ingredients.items():
                 ingredient = get_object_or_404(Ingredient, title=ing_name)
                 recipe_ing = VolumeIngredient(
                     recipe=recipe,
                     ingredient=ingredient,
-                    quantity=amount
+                    quantity=quantity
                 )
                 recipe_ing.save()
             form.save_m2m()
@@ -146,11 +146,11 @@ def recipe_delete(request, recipe_id):
 @login_required
 def recipe_favor(request, username):
     tag = request.GET.getlist('filters')
-    recipe_list = Recipe.objects.filter(favor__user__id=request.user.id).all()
+    recipe_list = Recipe.objects.filter(favorites__user__id=request.user.id).all()
     if tag:
         recipe_list = recipe_list.filter(tag__value__in=tag).distinct()
     selection = split_on_page(request, recipe_list)
-    return render(request, 'favorite.html', selection)
+    return render(request, 'recipes/favorite.html', selection)
 
 
 def purchase_cart(request):
