@@ -68,25 +68,6 @@ def recipe_view(request, recipe_id):
     )
 
 
-# @login_required
-# def recipe_new(request):
-#     """Создание нового рецепта."""
-#     if request.method == 'POST':
-#         form = RecipeForm(request.POST or None, files=request.FILES or None)
-#         if form.is_valid():
-#             recipe = form.save(commit=False)
-#             recipe.author = request.user
-#             # сохраняем рецепт без тегов и количества ингредиентов
-#             recipe.save()
-#             return redirect('index')
-#         tags = request.POST.getlist('tag')
-#         # tags = get_tag(tags)
-#     else:
-#         form = RecipeForm(request.POST or None)
-#         tags = []  # при создании рецепта все теги сначала неактивны
-#     return render(request, 'recipes/formRecipe.html',
-#                   {'form': form, 'tags': tags})
-
 @login_required
 def recipe_new(request):
     user = User.objects.get(username=request.user)

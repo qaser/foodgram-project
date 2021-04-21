@@ -1,8 +1,7 @@
-
 class Api {
-    constructor(apiUrl) {
-        this.apiUrl =  apiUrl;
-    }
+  constructor(apiUrl) {
+      this.apiUrl =  apiUrl;
+  }
   getPurchases () {
     return fetch(`/api/purchases`, {
       headers: {
@@ -54,7 +53,7 @@ class Api {
     return fetch(`/api/subscriptions`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json', 
         'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
       },
       body: JSON.stringify({
@@ -116,18 +115,17 @@ class Api {
             return Promise.reject(e.statusText)
         })
   }
-    getIngredients  (text)  {
-        return fetch(`/api/ingredients?query=${text}`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
-            }
-        })
-            .then( e => {
-                if(e.ok) {
-                    return e.json()
-                }
-                return Promise.reject(e.statusText)
-            })
-    }
+  getIngredients  (text)  {
+      return fetch(`/api/ingredients?query=${text}`, {
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      })
+          .then( e => {
+              if(e.ok) {
+                  return e.json()
+              }
+              return Promise.reject(e.statusText)
+          })
+  }
 }
