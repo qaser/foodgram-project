@@ -29,9 +29,9 @@
             {% if profile != request.user %}
                 <div class="author-subscribe" data-author="{{ profile.id }}">
                     {% if sub == True %}
-                        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue" href="{% url 'sub_remove' profile.id %}" name="unsubscribe" data-out>Отписаться</button></p>
+                        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" >Отписаться от автора</button></p>
                     {% else %}
-                        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" href="{% url 'sub_add' %}" name="subscribe" data-out>Подписаться на автора</button></p>
+                        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" data-out>Подписаться на автора</button></p>
                     {% endif %}
                 </div>
             {% endif %}

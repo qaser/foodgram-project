@@ -2,7 +2,6 @@ from django import template
 
 from recipes.models import Favorite, Purchase, Subscription
 
-
 register = template.Library()
 
 
@@ -31,7 +30,6 @@ def get_filter_link(request, tag):
 @register.filter(name='is_favorite')
 def is_favorite(recipe, user):
     return Favorite.objects.filter(user=user, recipe=recipe).exists()
-    # return True
 
 
 @register.filter(name='is_shop')

@@ -10,77 +10,33 @@ class IngredientAdmin(admin.ModelAdmin):
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'get_author')
-    search_fields = ('title', 'get_author')
+    list_display = ('title', 'author')
+    search_fields = ('title', 'author')
     list_filter = ('author__username', 'title', 'tag')
 
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related('author')
 
-    def get_author(self, obj):
-        return obj.author.username
-
-
-@admin.register(models.Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'value')
-    empty_value_display = 'None'
+    list_display = ('name', 'value')
 
 
 class VolumeIngredientAdmin(admin.ModelAdmin):
-    list_display = ('get_ingredient', 'quantity', 'recipe')
-    search_fields = ('get_ingredient',)
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related('ingredient')
-
-    def get_units(self, obj):
-        return obj.ingredient.dimension
-
-    def get_ingredient(self, obj):
-        return obj.ingredient.title
+    list_display = ('ingredient', 'quantity', 'recipe')
+    search_fields = ('ingredient',)
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('get_user', 'get_author')
-    search_fields = ('get_user',)
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related('user', 'author')
-
-    def get_user(self, obj):
-        return obj.user.username
-
-    def get_author(self, obj):
-        return obj.author.username
+    list_display = ('user', 'author')
+    search_fields = ('user',)
 
 
 class FavoriteAdmin(admin.ModelAdmin):
-    list_display = ('get_user', 'get_recipe')
-    search_fields = ('get_user',)
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related('user', 'recipe')
-
-    def get_user(self, obj):
-        return obj.user.username
-
-    def get_recipe(self, obj):
-        return obj.recipe.title
+    list_display = ('user', 'recipe')
+    search_fields = ('user',)
 
 
 class PurchaseAdmin(admin.ModelAdmin):
-    list_display = ('get_user', 'get_recipe')
-    search_fields = ('get_user',)
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related('user', 'recipe')
-
-    def get_user(self, obj):
-        return obj.user.username
-
-    def get_recipe(self, obj):
-        return obj.recipe.title
+    list_display = ('user', 'recipe')
+    search_fields = ('user',)
 
 
 admin.site.register(models.Purchase, PurchaseAdmin)

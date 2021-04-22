@@ -1,12 +1,15 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse
+from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
+from django.views.generic import View
 
-from .utils import generate_purchase_cart, get_ingredients
-from .models import Ingredient, Purchase, VolumeIngredient, Recipe, User, Subscription
 from .forms import RecipeForm
+from .models import (Ingredient, Purchase, Recipe, Subscription, User,
+                     VolumeIngredient)
+from .utils import generate_purchase_cart, get_ingredients
 
 
 # function for split many recipes on pages
@@ -17,7 +20,7 @@ def split_on_page(request, objects_on_page):
     return {'page': page, 'paginator': paginator}
 
 
-# @cache_page(20, key_prefix='index_page')
+@cache_page(20, key_prefix='index_page')
 def index(request):
     tag = request.GET.getlist('filters')
     recipes_list = Recipe.objects.all()
@@ -49,8 +52,8 @@ def profile(request, username):
 @login_required
 def subscription_index(request, username):
     user = get_object_or_404(User, username=username)
-    author_list = Subscription.objects.filter(user=user).all()
-    selection = split_on_page(request, author_list)
+    subs = Subscription.objects.filter(user=user).all()
+    selection = split_on_page(request, subs)
     return render(
         request,
         'recipes/myFollow.html',
@@ -146,7 +149,8 @@ def recipe_delete(request, recipe_id):
 @login_required
 def recipe_favor(request, username):
     tag = request.GET.getlist('filters')
-    recipe_list = Recipe.objects.filter(favorites__user__id=request.user.id).all()
+    recipe_list = Recipe.objects.filter(
+        favorites__user__id=request.user.id).all()
     if tag:
         recipe_list = recipe_list.filter(tag__value__in=tag).distinct()
     selection = split_on_page(request, recipe_list)
@@ -170,6 +174,17 @@ def purchase_save(request):
     response['Content-Disposition'] = \
         'attachment; filename={0}'.format(filename)
     return response
+
+
+class Ingredients(View):
+    def get(self, request):
+        text = request.GET.get('query')
+        ingredients = list(
+            Ingredient.objects.filter(title__icontains=text).values(
+                'title', 'dimension'
+            )
+        )
+        return JsonResponse(ingredients, safe=False)
 
 
 def page_not_found(request, exception):

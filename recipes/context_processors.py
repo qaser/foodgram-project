@@ -1,4 +1,4 @@
-from .models import Tag, Purchase
+from .models import Purchase, Tag
 
 
 def counter(request):

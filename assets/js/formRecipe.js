@@ -7,7 +7,7 @@ const cantidadVal = document.querySelector('#cantidadVal');
 const cantidad = document.querySelector('#cantidad')
 const addIng = document.querySelector('#addIng');
 
-const apiUrl = 'api';
+// const apiUrl = 'api';
 const api = new Api(apiUrl);
 const header = new Header(counterId);
 

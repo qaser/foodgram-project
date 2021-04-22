@@ -1,4 +1,4 @@
-from django.forms import ModelForm, CheckboxSelectMultiple
+from django.forms import CheckboxSelectMultiple, ModelForm
 
 from recipes.models import Recipe
 
@@ -8,4 +8,3 @@ class RecipeForm(ModelForm):
         model = Recipe
         fields = ('title', 'image', 'tag', 'time', 'description')
         widgets = {'tag': CheckboxSelectMultiple()}
-

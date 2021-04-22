@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.deletion import CASCADE
-# from multiselectfield import MultiSelectField
 
 User = get_user_model()
 
@@ -33,7 +32,7 @@ class Ingredient(models.Model):
         ordering = ['title']
         verbose_name = 'ингредиент'
         verbose_name_plural = 'ингредиенты'
-    
+
     def __str__(self):
         return f'{self.title}, {self.dimension}'
 
@@ -81,7 +80,7 @@ class VolumeIngredient(models.Model):
         on_delete=models.CASCADE,
         related_name='volume_ingredient')
     ingredient = models.ForeignKey(
-        Ingredient, 
+        Ingredient,
         verbose_name='ингредиент',
         on_delete=CASCADE,
         related_name='volume_ingredient'
@@ -93,7 +92,8 @@ class VolumeIngredient(models.Model):
         verbose_name_plural = 'ингредиенты в рецепте'
 
     def __str__(self):
-        return f'{self.ingredient.title} - {self.quantity} {self.ingredient.dimension}'
+        return f'{self.ingredient.title} - {self.quantity} \
+                 {self.ingredient.dimension}'
 
 
 class Subscription(models.Model):

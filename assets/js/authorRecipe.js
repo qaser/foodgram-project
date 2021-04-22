@@ -1,7 +1,7 @@
 const container = document.querySelector('.card-list');
 const container_subscribe = document.querySelector('.author-subscribe');
 const counterId = document.querySelector('#counter');
-const apiUrl = 'api';
+// const apiUrl = 'api';
 const api = new Api(apiUrl);
 const header = new Header(counterId);
 const configButton = {

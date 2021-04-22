@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
-
 User = get_user_model()
 
 
+# словарь ингредиентов для корзины
 def generate_purchase_cart(request):
     purchaser = get_object_or_404(User, username=request.user.username)
     purchase_cart = purchaser.purchase.all()
@@ -23,6 +23,7 @@ def generate_purchase_cart(request):
     return result
 
 
+# словарь ингредиентов для рецепта
 def get_ingredients(request):
     ingredients = {}
     for key, ingredient_name in request.POST.items():

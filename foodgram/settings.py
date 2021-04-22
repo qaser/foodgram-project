@@ -16,6 +16,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'recipes',
     'users',
+    'api',
     'django.contrib.sites',
     'django.contrib.flatpages',
     'django.contrib.admin',
@@ -25,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sorl.thumbnail',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -81,6 +83,16 @@ DATABASES = {
 #         'PORT': os.environ.get('DB_PORT'),
 #     }
 # }
+
+
+REST_FRAMEWORK = {
+        'DEFAULT_PERMISSION_CLASSES': [
+            'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        ],
+        'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+       ],
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [

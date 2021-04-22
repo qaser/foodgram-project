@@ -4,20 +4,27 @@
     </div>
     <div class="card-user__body">
         <ul class="card-user__items">
-
-            {% for recipe in item.author.Recipe.all|slice:":3" %}
-                <li class="card-user__item">
-                    <div class="recipe">
-                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe__image">
-                        <h3 class="recipe__title">{{ recipe.title }}</h3>
-                        <p class="recipe__text"><span class="icon-time"></span> {{ recipe.cooking_time }} мин.</p>
-                    </div>
-                </li>
+            {% for recipe in item.author.recipes.all %}
+                {% if forloop.counter < 4 %}
+                    <li class="card-user__item">
+                        {% load thumbnail %}
+                        <div class="recipe">
+                            {% thumbnail recipe.image "72x72" crop="center" upscale=True as im %}
+                                <img src="{{ im.url }}" alt={{ recipe.title }} class="recipe__image">
+                            {% endthumbnail %}
+                            <h3 class="recipe__title">{{ recipe.title }}</h3>
+                            <p class="recipe__text"><span class="icon-time"></span> {{ recipe.time }} мин.</p>
+                        </div>
+                    </li>
+                {% endif %}                            
             {% endfor %}
-           
-            <li class="card-user__item">
-                <a href="{% url 'profile' item.author.username %}" class="card-user__link link">Еще рецепты</a>
-            </li>
+            {% if item.author.recipes.count > 3 %}
+                <li class="card-user__item">
+                    <a href="{% url 'profile' item.author.username %}"
+                        class="card-user__link link">Еще {{ item.author.recipes.count }}
+                    </a>
+                </li>
+            {% endif %}
         </ul>
     </div>
     <div class="card-user__footer">
