@@ -1,6 +1,6 @@
 {% load user_filters %}
                 
-{% if user.is_authenticated %}
+{% if request.user.is_authenticated %}
     {% if recipe|is_shop:user %}
         <button class="button button_style_light-blue-outline" name="purchases"><span class="icon-check button__icon"></span> Рецепт добавлен</button>
     {% else %}

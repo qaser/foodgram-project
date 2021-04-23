@@ -19,9 +19,10 @@
                 {% endif %}                            
             {% endfor %}
             {% if item.author.recipes.count > 3 %}
+                {% load mathfilters %}
                 <li class="card-user__item">
                     <a href="{% url 'profile' item.author.username %}"
-                        class="card-user__link link">Еще {{ item.author.recipes.count }}
+                        class="card-user__link link">Еще рецепты: {{ item.author.recipes.count|sub:3 }} шт.
                     </a>
                 </li>
             {% endif %}

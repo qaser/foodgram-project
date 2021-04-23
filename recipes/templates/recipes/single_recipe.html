@@ -40,7 +40,7 @@
                 </div>
                 <ul class="single-card__items">
                     <li class="single-card__item">{% include 'recipes/extend/purchase_button.html' %}</li>
-                    {% if user.username != recipe.author.username %}
+                    {% if request.user.username != recipe.author.username %}
                         {% if user.is_authenticated %}
                             {% if recipe.author|is_subscribe:user %}
                                 <li class="single-card__item"><button class="button button_style_light-blue button_size_unsubscribe" name="unsubscribe"><span class="icon-check button__icon"></span>Отписаться от автора</button>
