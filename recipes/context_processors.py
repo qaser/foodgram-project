@@ -15,7 +15,6 @@ def shop(request):
             'recipe_id',
             flat=True
         )
-
     else:
         shop_list = []
     return {'shop_list': shop_list}

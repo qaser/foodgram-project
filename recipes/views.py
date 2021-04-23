@@ -76,7 +76,7 @@ def recipe_new(request):
     user = User.objects.get(username=request.user)
     if request.method == 'POST':
         form = RecipeForm(request.POST or None, files=request.FILES or None)
-        ingredients = get_ingredients(request)
+        ingredients = get_ingredients(request)  # функция вынесена в utils
         if not ingredients:
             form.add_error(None, 'Добавьте ингредиенты')
         elif form.is_valid():
@@ -168,7 +168,7 @@ def purchase_cart(request):
 
 @login_required
 def purchase_save(request):
-    result = generate_purchase_cart(request)
+    result = generate_purchase_cart(request)  # функция вынесена в utils
     filename = 'ingredients.txt'
     response = HttpResponse(result, content_type='text/plain')
     response['Content-Disposition'] = \
