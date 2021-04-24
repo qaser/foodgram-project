@@ -91,9 +91,10 @@ REST_FRAMEWORK = {
             'rest_framework.permissions.IsAuthenticatedOrReadOnly',
         ],
         'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
+            'recipes.sessions.CsrfExemptSessionAuthentication',
+            'rest_framework.authentication.BasicAuthentication',
        ],
-    }
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [

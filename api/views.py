@@ -27,19 +27,19 @@ class CreateDestroyView(generics.CreateAPIView, generics.DestroyAPIView):
 class FavoritesView(CreateDestroyView):
     queryset = Favorite.objects.all()
     serializer_class = FavoriteSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     view_name = 'favorite'
 
 
 class SubscriptionView(CreateDestroyView):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     view_name = 'subscription'
 
 
 class PurchaseView(CreateDestroyView):
     queryset = Purchase.objects.all()
     serializer_class = PurchaseSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     view_name = 'purchase'

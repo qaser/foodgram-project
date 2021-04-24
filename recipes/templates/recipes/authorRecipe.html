@@ -25,15 +25,16 @@
                     {% endfor %}
                 </ul>
             </div>
-
-            {% if profile != request.user %}
-                <div class="author-subscribe" data-author="{{ profile.id }}">
-                    {% if sub == True %}
-                        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" >Отписаться от автора</button></p>
-                    {% else %}
-                        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" data-out>Подписаться на автора</button></p>
-                    {% endif %}
-                </div>
+            {% if request.user.is_authenticated %}
+                {% if profile != request.user %}
+                    <div class="author-subscribe" data-author="{{ profile.id }}">
+                        {% if sub == True %}
+                            <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" >Отписаться от автора</button></p>
+                        {% else %}
+                            <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" data-out>Подписаться на автора</button></p>
+                        {% endif %}
+                    </div>
+                {% endif %}
             {% endif %}
 
     <!-- Отображение карточки рецепта -->
