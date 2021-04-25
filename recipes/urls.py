@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path(
-        'subscriptions-list/<str:username>',
+        'subscriptions-list/<str:username>/',
         views.subscription_index,
         name='subscriptions'
     ),
@@ -29,5 +29,4 @@ urlpatterns = [
     ),
     path('purchase/', views.purchase_cart, name='purchase'),
     path('save-purchase', views.purchase_save, name='purchase_save'),
-    path('ingredients/', views.Ingredients.as_view(), name='get_ingredients'),
 ]

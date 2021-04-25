@@ -10,8 +10,8 @@ class IngredientAdmin(admin.ModelAdmin):
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author')
-    search_fields = ('title', 'author')
+    list_display = ('title', 'author', 'pub_date')
+    search_fields = ('title', 'author', 'pub_date')
     list_filter = ('author__username', 'title', 'tag')
 
 

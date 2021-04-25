@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
-from django.views.generic import View
+
 
 from .forms import RecipeForm
 from .models import (Ingredient, Purchase, Recipe, Subscription, User,
@@ -171,20 +171,8 @@ def purchase_save(request):
     result = generate_purchase_cart(request)  # функция вынесена в utils
     filename = 'ingredients.txt'
     response = HttpResponse(result, content_type='text/plain')
-    response['Content-Disposition'] = \
-        'attachment; filename={0}'.format(filename)
+    response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
     return response
-
-
-class Ingredients(View):
-    def get(self, request):
-        text = request.GET.get('query')
-        ingredients = list(
-            Ingredient.objects.filter(title__icontains=text).values(
-                'title', 'dimension'
-            )
-        )
-        return JsonResponse(ingredients, safe=False)
 
 
 def page_not_found(request, exception):

@@ -33,4 +33,9 @@ urlpatterns = [
         views.PurchaseView.as_view(),
         name='purchases_delete'
     ),
+    path(
+        'ingredients/',
+        views.Ingredients.as_view(),
+        name='get_ingredients'
+    ),
 ]

@@ -109,7 +109,7 @@ removeFavorites (id) {
       })
 }
   getIngredients  (text)  {
-      return fetch(`/ingredients/?query=${text}`, {
+      return fetch(`/api/ingredients/?query=${text}`, {
           headers: {
               'Content-Type': 'application/json'
           }
