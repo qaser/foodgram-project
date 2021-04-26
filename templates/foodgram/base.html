@@ -7,15 +7,21 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>{% block title %}{% endblock %} | FoodyDoody</title>
         {% load static %}
-        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}">
-        <!-- <link rel="stylesheet" href="{% static 'css/pages/index.css'%}"> -->
+            <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}">
         {% block style %}{% endblock %}
     </head>
 
     <body class="body">
         {% include 'foodgram/base_ext/nav.html' %}
-        {% block content %}{% endblock %}
+        <main class="main container">
+            {% block content %}{% endblock %}
+            {% if page.has_other_pages %}
+                {% include "foodgram/base_ext/paginator.html" with items=page paginator=paginator %}
+            {% endif %} 
+        </main>       
+
         {% include 'foodgram/base_ext/footer.html' %}
+
     </body>
 
     {% block script %}{% endblock %}

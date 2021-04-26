@@ -9,47 +9,38 @@
 {% endblock %}
 
 {% block content %}
-    <!-- <body class="body"> -->
-        <main class="main container">
-            <div class="main__header">
-                <h1 class="main__title">{{ profile.get_full_name }}</h1>
-                <ul class="tags">
-                    {% for tag in all_tags %}
-                        <li class="tags__item">
-                            <a id="{{ tag.pk }}"
-                                class="tags__checkbox tags__checkbox_style_{{ tag.color }}
-                                {% if tag.value in request.GET|get_filter_values %} tags__checkbox_active {% endif %}"
-                                href="{% url 'profile' profile %}?{{ request|get_filter_link:tag }}"></a>
-                            <span class="tags__label">{{ tag.name }}</span>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% if request.user.is_authenticated %}
-                {% if profile != request.user %}
-                    <div class="author-subscribe" data-author="{{ profile.id }}">
-                        {% if sub == True %}
-                            <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" >Отписаться от автора</button></p>
-                        {% else %}
-                            <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" data-out>Подписаться на автора</button></p>
-                        {% endif %}
-                    </div>
+    <div class="main__header">
+        <h1 class="main__title">{{ profile.get_full_name }}</h1>
+        <ul class="tags">
+            {% for tag in all_tags %}
+                <li class="tags__item">
+                    <a id="{{ tag.pk }}"
+                        class="tags__checkbox tags__checkbox_style_{{ tag.color }}
+                        {% if tag.value in request.GET|get_filter_values %} tags__checkbox_active {% endif %}"
+                        href="{% url 'profile' profile %}?{{ request|get_filter_link:tag }}"></a>
+                    <span class="tags__label">{{ tag.name }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% if request.user.is_authenticated %}
+        {% if profile != request.user %}
+            <div class="author-subscribe" data-author="{{ profile.id }}">
+                {% if sub == True %}
+                    <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" >Отписаться от автора</button></p>
+                {% else %}
+                    <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" data-out>Подписаться на автора</button></p>
                 {% endif %}
-            {% endif %}
-
-    <!-- Отображение карточки рецепта -->
-            <div class="card-list">
-                {% for recipe in page %}
-                    {% include "recipes/extend/recipe_item.html" with recipe=recipe %}
-                {% endfor %}
             </div>
+        {% endif %}
+    {% endif %}
 
-            {% if page.has_other_pages %}
-                {% include "foodgram/base_ext/paginator.html" with items=page paginator=paginator %}
-            {% endif %}
-
-        </main>
-    <!-- </body> -->
+<!-- Отображение карточки рецепта -->
+    <div class="card-list">
+        {% for recipe in page %}
+            {% include "recipes/extend/recipe_item.html" with recipe=recipe %}
+        {% endfor %}
+    </div>
 {% endblock %}
 
 {% block script %}

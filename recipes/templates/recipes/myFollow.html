@@ -10,23 +10,14 @@
 {% endblock %}
 
 {% block content %}
-    <body class="body">
-        <main class="main container">
-            <div class="main__header">
-                <h1 class="main__title">Мои подписки</h1>
-            </div>
-            <div class="card-list">
-                {% for item in page %}
-                    {% include "recipes/extend/follow_item.html" with item=item %}
-                {% endfor %}
-            </div>
-
-            {% if page.has_other_pages %}
-                {% include "foodgram/base_ext/paginator.html" with items=page paginator=paginator %}
-            {% endif %}
-
-        </main>
-    </body>
+    <div class="main__header">
+        <h1 class="main__title">Мои подписки</h1>
+    </div>
+    <div class="card-list">
+        {% for item in page %}
+            {% include "recipes/extend/follow_item.html" with item=item %}
+        {% endfor %}
+    </div>
 {% endblock %}
 
 {% block script %}
