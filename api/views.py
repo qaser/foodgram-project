@@ -26,7 +26,7 @@ class CreateDestroyView(generics.CreateAPIView, generics.DestroyAPIView):
 
 
 class FavoritesView(CreateDestroyView):
-    queryset = Favorite.objects.all()
+    queryset = Favorite.favorite.all()
     serializer_class = FavoriteSerializer
     view_name = 'favorite'
 

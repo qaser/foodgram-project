@@ -7,7 +7,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
     id = serializers.SlugRelatedField(
         source='recipe',
         slug_field='id',
-        queryset=Recipe.objects.all()
+        queryset=Recipe.recipes.all()
     )
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
@@ -20,7 +20,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
     id = serializers.SlugRelatedField(
         source='recipe',
         slug_field='id',
-        queryset=Recipe.objects.all()
+        queryset=Recipe.recipes.all()
     )
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 

@@ -3,6 +3,11 @@ from django.contrib import admin
 from . import models
 
 
+class IngredientQuantityInline(admin.TabularInline):
+    model = models.Recipe.ingredients.through
+    min_num = 1
+
+
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('title', 'dimension')
     search_fields = ('title',)
@@ -10,9 +15,17 @@ class IngredientAdmin(admin.ModelAdmin):
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'pub_date')
+    list_display = ('title', 'author', 'time', 'count_favorite')
     search_fields = ('title', 'author', 'pub_date')
     list_filter = ('author__username', 'title', 'tag')
+    readonly_fields = ('count_favorite',)
+    inlines = (IngredientQuantityInline,)
+
+    def count_favorite(self,  obj):
+        count = models.Favorite.favorite.filter(recipe=obj).count()
+        return count
+
+    count_favorite.short_description = 'количество добавлений в избранное'
 
 
 class TagAdmin(admin.ModelAdmin):

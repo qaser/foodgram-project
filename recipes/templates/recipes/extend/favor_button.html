@@ -1,4 +1,4 @@
-{% load user_filters %}
+{% load recipes_filters %}
 
 {% if request.user.is_authenticated %}
     {% if recipe|is_favorite:user %}

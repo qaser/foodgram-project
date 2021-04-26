@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.deletion import CASCADE
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 User = get_user_model()
 
@@ -37,6 +38,15 @@ class Ingredient(models.Model):
         return f'{self.title}, {self.dimension}'
 
 
+class RecipeManager(models.Manager):
+    def filter_by_tags(self, tag):
+        if tag:
+            queryset = Recipe.objects.filter(tag__name__in=tag.split(',')).distinct()
+        else:
+            queryset = Recipe.objects.all()
+        return queryset
+
+
 class Recipe(models.Model):
     author = models.ForeignKey(
         User,
@@ -63,6 +73,7 @@ class Recipe(models.Model):
         auto_now_add=True,
         db_index=True
     )
+    recipes = RecipeManager()
 
     class Meta:
         ordering = ['-pub_date']
@@ -120,6 +131,14 @@ class Subscription(models.Model):
         verbose_name_plural = 'подписки'
 
 
+class FavoriteManager(models.Manager):
+    def get_favorites(self, user):
+        try:
+            return super().get_queryset().get(user=user).recipes.all()
+        except ObjectDoesNotExist:
+            return []
+
+
 class Favorite(models.Model):
     user = models.ForeignKey(
         User,
@@ -133,6 +152,7 @@ class Favorite(models.Model):
         related_name='favorites',
         verbose_name='рецепт'
     )
+    favorite = FavoriteManager()
 
     class Meta:
         verbose_name = 'избранное'

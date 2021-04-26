@@ -142,6 +142,10 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = "/auth/login/"
+
+
 # EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
 # EMAIL_HOST = os.environ.get('EMAIL_HOST')
 # EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')  
