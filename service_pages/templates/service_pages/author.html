@@ -1,0 +1,20 @@
+{% extends 'foodgram/base.html' %}
+{% load static %}
+
+{% block title %}Об авторе{% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/index.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <main class="main container">
+        <div class="custom-center-block">
+           <p><h3> Меня зовут Алексей, этот сайт я сделал во время обучения на платформе "Яндекс.Практикум"
+           по специальности Python-разработчик.<br></h3>
+           <p><h3><a href='https://github.com/qaser'>Мой профиль на Github</a></h3></p>
+        </div>
+    </main>
+
+{% endblock %}

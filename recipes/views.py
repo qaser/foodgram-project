@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
+from foodgram.settings import PAGINATOR_PAGES
 
 
 from .forms import RecipeForm
@@ -14,7 +15,7 @@ from .utils import generate_purchase_cart, get_ingredients
 
 # function for split many recipes on pages
 def split_on_page(request, objects_on_page):
-    paginator = Paginator(objects_on_page, 6)
+    paginator = Paginator(objects_on_page, PAGINATOR_PAGES)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return {'page': page, 'paginator': paginator}

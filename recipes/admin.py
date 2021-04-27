@@ -11,26 +11,25 @@ class IngredientQuantityInline(admin.TabularInline):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('title', 'dimension')
     search_fields = ('title',)
-    list_filter = ('title', )
+    list_filter = ('dimension', )
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'time', 'count_favorite')
-    search_fields = ('title', 'author', 'pub_date')
-    list_filter = ('author__username', 'title', 'tag')
-    readonly_fields = ('count_favorite',)
-    inlines = (IngredientQuantityInline,)
-
     def count_favorite(self,  obj):
         count = models.Favorite.favorites.filter(recipe=obj).count()
         return count
 
+    list_display = ('title', 'author', 'time', 'count_favorite')
+    search_fields = ('title', 'author', 'pub_date')
+    list_filter = ('author__username', 'tag')
+    readonly_fields = ('count_favorite',)
+    inlines = (IngredientQuantityInline,)
     count_favorite.short_description = 'количество добавлений в избранное'
 
 
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'value')
-
+    list_display = ('name', 'value', 'color')
+    list_filter = ('color',)
 
 class VolumeIngredientAdmin(admin.ModelAdmin):
     list_display = ('ingredient', 'quantity', 'recipe')
