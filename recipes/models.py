@@ -141,6 +141,11 @@ class Subscription(models.Model):
         verbose_name = 'подписка'
         verbose_name_plural = 'подписки'
 
+    def clean(self):
+        if self.author == self.user:
+            raise ValidationError(
+                'Пользователь не может подписываться сам на себя'
+            )
 
 class FavoriteManager(models.Manager):
     def get_favorites(self, user):
