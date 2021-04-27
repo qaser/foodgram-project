@@ -2,6 +2,11 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.deletion import CASCADE
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.validators import MinValueValidator
+
+
+MESSAGE_MIN_TIME = 'Время приготовления должно быть не меньше 1 минуты.'
+MESSAGE_MIN_QUANTITY = 'Количество ингредиента должно быть не меньше 1'
 
 User = get_user_model()
 
@@ -67,7 +72,10 @@ class Recipe(models.Model):
         through_fields=('recipe', 'ingredient')
     )
     tag = models.ManyToManyField(Tag, verbose_name='тэг')
-    time = models.PositiveSmallIntegerField('время приготовления, мин.')
+    time = models.PositiveSmallIntegerField(
+        'время приготовления, мин.',
+        validators=[MinValueValidator(1, message=MESSAGE_MIN_TIME)]
+    )
     pub_date = models.DateTimeField(
         'дата публикации',
         auto_now_add=True,
@@ -95,7 +103,10 @@ class VolumeIngredient(models.Model):
         on_delete=CASCADE,
         related_name='volume_ingredient'
     )
-    quantity = models.PositiveIntegerField('количество')
+    quantity = models.PositiveIntegerField(
+        'количество',
+        validators=[MinValueValidator(1, message=MESSAGE_MIN_QUANTITY)]
+    )
 
     class Meta:
         verbose_name = 'ингредиент в рецепте'
@@ -143,16 +154,16 @@ class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='favorites',
+        related_name='favorite',
         verbose_name='пользователь'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favorites',
+        related_name='favorite',
         verbose_name='рецепт'
     )
-    favorite = FavoriteManager()
+    favorites = FavoriteManager()
 
     class Meta:
         verbose_name = 'избранное'

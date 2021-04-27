@@ -22,7 +22,7 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = (IngredientQuantityInline,)
 
     def count_favorite(self,  obj):
-        count = models.Favorite.favorite.filter(recipe=obj).count()
+        count = models.Favorite.favorites.filter(recipe=obj).count()
         return count
 
     count_favorite.short_description = 'количество добавлений в избранное'

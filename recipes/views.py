@@ -23,7 +23,7 @@ def split_on_page(request, objects_on_page):
 @cache_page(20, key_prefix='index_page')
 def index(request):
     tag = request.GET.getlist('filters')
-    recipes_list = Recipe.objects.all()
+    recipes_list = Recipe.recipes.all()
     if tag:
         recipes_list = recipes_list.filter(tag__value__in=tag).distinct().all()
     selection = split_on_page(request, recipes_list)
@@ -149,8 +149,8 @@ def recipe_delete(request, recipe_id):
 @login_required
 def recipe_favor(request, username):
     tag = request.GET.getlist('filters')
-    recipe_list = Recipe.objects.filter(
-        favorites__user__id=request.user.id).all()
+    recipe_list = Recipe.recipes.filter(
+        favorite__user__id=request.user.id).all()
     if tag:
         recipe_list = recipe_list.filter(tag__value__in=tag).distinct()
     selection = split_on_page(request, recipe_list)
