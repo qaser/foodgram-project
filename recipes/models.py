@@ -13,7 +13,7 @@ User = get_user_model()
 
 class Tag(models.Model):
     name = models.CharField('имя тэга', max_length=255)
-    value = models.CharField('значение тэга', max_length=50)
+    value = models.CharField('слаг тэга', max_length=50)
     color = models.CharField('цвет тэга в шаблоне', max_length=30, null=True)
 
     def __str__(self):
@@ -46,7 +46,7 @@ class Ingredient(models.Model):
 class RecipeManager(models.Manager):
     def filter_by_tags(self, tag):
         if tag:
-            queryset = Recipe.objects.filter(tag__name__in=tag.split(',')).distinct()
+            queryset = Recipe.objects.filter(tag__value__in=tag.split(','))
         else:
             queryset = Recipe.objects.all()
         return queryset
