@@ -1,6 +1,5 @@
 const container = document.querySelector('.single-card');
 const counterId = document.querySelector('#counter');
-// const apiUrl = 'api';
 const api = new Api(apiUrl);
 const header = new Header(counterId);
 
