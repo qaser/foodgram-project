@@ -64,11 +64,11 @@ def subscription_index(request, username):
 
 def recipe_view(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
-    ingredients = recipe.volume_ingredient.all()
+    # ingredients = recipe.volume_ingredient.all()
     return render(
         request,
         'recipes/single_recipe.html',
-        {'recipe': recipe, 'ingredients': ingredients},
+        {'recipe': recipe},
     )
 
 

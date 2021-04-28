@@ -12,7 +12,6 @@ docopt==0.6.2
 iniconfig==1.0.1
 isort==5.4.2
 lazy-object-proxy==1.6.0
-django_mathfilters-1.0.0
 mccabe==0.6.1
 more-itertools==8.4.0
 packaging==20.4

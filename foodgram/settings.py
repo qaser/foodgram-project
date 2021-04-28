@@ -25,8 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sorl.thumbnail',
-    'rest_framework',
-    'mathfilters'
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

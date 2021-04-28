@@ -1,0 +1,4 @@
+{% load thumbnail %}
+{% thumbnail recipe.image "480x480" upscale=True as im %}  
+    <a class="link"><img class="card__image" src="{{ im.url }}" alt="изображение готовится"></a>
+{% endthumbnail %}

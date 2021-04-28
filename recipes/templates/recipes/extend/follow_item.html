@@ -1,11 +1,17 @@
+{% load recipes_filters %}
 <div class="card-user" data-author="{{ item.author.id }}">
     <div class="card-user__header">
-        <h2 class="card-user__title">{{ item.author.get_full_name }}</h2>
+        <h2 class="card-user__title">
+            {% if item.author.get_full_name %}
+                {{ item.author.get_full_name }}
+            {% else %} 
+                {{ item.author.username }}
+            {% endif %}
+        </h2>
     </div>
     <div class="card-user__body">
         <ul class="card-user__items">
-            {% for recipe in item.author.recipes.all %}
-                {% if forloop.counter < 4 %}
+            {% for recipe in item.author.recipes.all|slice:":3" %}
                     <li class="card-user__item">
                         {% load thumbnail %}
                         <div class="recipe">
@@ -16,13 +22,11 @@
                             <p class="recipe__text"><span class="icon-time"></span> {{ recipe.time }} мин.</p>
                         </div>
                     </li>
-                {% endif %}                            
             {% endfor %}
             {% if item.author.recipes.count > 3 %}
-                {% load mathfilters %}
                 <li class="card-user__item">
                     <a href="{% url 'profile' item.author.username %}"
-                        class="card-user__link link">Еще рецепты: {{ item.author.recipes.count|sub:3 }} шт.
+                        class="card-user__link link">Еще {{ item.author.recipes.count|add:"-3"|word_conjugate:"рецепт,рецепта,рецептов" }}
                     </a>
                 </li>
             {% endif %}
