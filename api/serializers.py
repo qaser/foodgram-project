@@ -42,6 +42,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         model = Subscription
 
     def validate(self, attrs):
-        if attrs['author'] == attrs['user']:
+        user = self.context['request'].user
+        if user == attrs:
             raise serializers.ValidationError('Нельзя подписаться на себя')
-        return super().validate(attrs)
+        return attrs

@@ -113,8 +113,7 @@ class VolumeIngredient(models.Model):
         verbose_name_plural = 'ингредиенты в рецепте'
 
     def __str__(self):
-        return f'{self.ingredient.title} - {self.quantity} \
-                 {self.ingredient.dimension}'
+        return f'{self.ingredient.title} - {self.quantity} {self.ingredient.dimension}'
 
 
 class Subscription(models.Model):
@@ -146,6 +145,7 @@ class Subscription(models.Model):
             raise ValidationError(
                 'Пользователь не может подписываться сам на себя'
             )
+
 
 class FavoriteManager(models.Manager):
     def get_favorites(self, user):
@@ -179,6 +179,20 @@ class Favorite(models.Model):
                 name='unique_favorite'
             ),
         ]
+
+
+class PurchaseManager(models.Manager):
+    def get_purchase(self, user):
+        """
+        Фукция возвращает QuerySet рецептов добавленных в покупки. Если таких
+        рецепров нет возвращает пустой лист.
+        """
+
+        try:
+            return super().get_queryset().get(
+                user=user).recipes.all()
+        except ObjectDoesNotExist:
+            return []
 
 
 class Purchase(models.Model):
