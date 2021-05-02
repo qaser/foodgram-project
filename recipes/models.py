@@ -26,7 +26,7 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     title = models.CharField('ингредиент', max_length=50)
-    dimension = models.CharField('единица измерения', max_length=120)
+    dimension = models.CharField('единица измерения', max_length=20)
 
     class Meta:
         constraints = [
@@ -43,13 +43,13 @@ class Ingredient(models.Model):
         return f'{self.title}, {self.dimension}'
 
 
-class RecipeManager(models.Manager):
-    def filter_by_tags(self, tag):
-        if tag:
-            queryset = Recipe.objects.filter(tag__value__in=tag.split(','))
-        else:
-            queryset = Recipe.objects.all()
-        return queryset
+# class RecipeManager(models.Manager):
+#     def filter_by_tags(self, tag):
+#         if tag:
+#             queryset = Recipe.objects.filter(tag__value__in=tag.split(','))
+#         else:
+#             queryset = Recipe.objects.all()
+#         return queryset
 
 
 class Recipe(models.Model):
@@ -81,7 +81,7 @@ class Recipe(models.Model):
         auto_now_add=True,
         db_index=True
     )
-    recipes = RecipeManager()
+    # recipes = RecipeManager()
 
     class Meta:
         ordering = ['-pub_date']
@@ -116,12 +116,12 @@ class VolumeIngredient(models.Model):
         return f'{self.ingredient.title} - {self.quantity} {self.ingredient.dimension}'
 
 
-class SubscriptionManager(models.Manager):
-    def get_subscriptions(self, user):
-        try:
-            return super().get_queryset().annotate(user=user)
-        except ObjectDoesNotExist:
-            return []
+# class SubscriptionManager(models.Manager):
+#     def get_subscriptions(self, user):
+#         try:
+#             return super().get_queryset().annotate(user=user)
+#         except ObjectDoesNotExist:
+#             return []
 
 
 class Subscription(models.Model):
@@ -155,12 +155,12 @@ class Subscription(models.Model):
             )
 
 
-class FavoriteManager(models.Manager):
-    def get_favorites(self, user):
-        try:
-            return super().get_queryset().annotate(user=user)
-        except ObjectDoesNotExist:
-            return []
+# class FavoriteManager(models.Manager):
+#     def get_favorites(self, user):
+#         try:
+#             return super().get_queryset().annotate(user=user)
+#         except ObjectDoesNotExist:
+#             return []
 
 
 class Favorite(models.Model):
@@ -176,7 +176,7 @@ class Favorite(models.Model):
         related_name='favorite',
         verbose_name='рецепт'
     )
-    favorites = FavoriteManager()
+    # favorites = FavoriteManager()
 
     class Meta:
         verbose_name = 'избранное'
@@ -189,12 +189,12 @@ class Favorite(models.Model):
         ]
 
 
-class PurchaseManager(models.Manager):
-    def get_purchase(self, user):
-        try:
-            return super().get_queryset().annotate(user=user)
-        except ObjectDoesNotExist:
-            return []
+# class PurchaseManager(models.Manager):
+#     def get_purchase(self, user):
+#         try:
+#             return super().get_queryset().annotate(user=user)
+#         except ObjectDoesNotExist:
+#             return []
 
 
 class Purchase(models.Model):

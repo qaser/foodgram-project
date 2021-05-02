@@ -1,54 +1,56 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
+from rest_framework import filters, mixins, viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
-from django.views.generic import View
-
-from api.serializers import (FavoriteSerializer, PurchaseSerializer,
-                             SubscriptionSerializer)
-from recipes.models import Favorite, Purchase, Subscription, User, Ingredient
 
 
-class CreateDestroyView(generics.CreateAPIView, generics.DestroyAPIView):
-    view_name = ''
+from recipes.models import Ingredient, Subscription, Favorite
+from .serializers import (IngredientSerializer, SubscriptionSerializer,
+                          FavoriteSerializer, PurchaseSerializer)
 
-    def delete(self, request, *args, **kwargs):
-        user = get_object_or_404(User, username=request.user)
-        if self.view_name == 'favorite':
-            obj = user.favorite.filter(recipe__id=kwargs['id'])
-        elif self.view_name == 'subscription':
-            obj = user.follower.filter(author__id=kwargs['id'])
-        else:
-            obj = user.purchase.filter(recipe__id=kwargs['id'])
+
+class CreateDestroyViewSet(mixins.CreateModelMixin,
+                           mixins.DestroyModelMixin,
+                           viewsets.GenericViewSet):
+    def get_object(self, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        filter_kwargs = {
+            self.lookup_field: self.kwargs[lookup_url_kwarg],
+            **kwargs,
+        }
+        obj = get_object_or_404(queryset, **filter_kwargs)
+        return obj
+
+    def destroy(self, request, *args, **kwargs):
+        obj = self.get_object(user=self.request.user)
         if obj.delete():
-            return JsonResponse({'Success': True})
+            return JsonResponse({'Success': True}, status=status.HTTP_200_OK)
         return JsonResponse({'Success': False})
 
 
-class FavoritesView(CreateDestroyView):
-    queryset = Favorite.favorites.all()
-    serializer_class = FavoriteSerializer
-    view_name = 'favorite'
+class IngredientViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('^title',)
 
 
-class SubscriptionView(CreateDestroyView):
+class SubscriptionViewSet(CreateDestroyViewSet):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
-    view_name = 'subscription'
+    lookup_field = 'author'
 
 
-class PurchaseView(CreateDestroyView):
-    queryset = Purchase.objects.all()
+class FavoriteViewSet(CreateDestroyViewSet):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer
+    lookup_field = 'recipe'
+
+
+class PurchaseViewSet(mixins.ListModelMixin, CreateDestroyViewSet):
     serializer_class = PurchaseSerializer
-    view_name = 'purchase'
+    lookup_field = 'recipe'
 
-
-class Ingredients(View):
-    def get(self, request):
-        text = request.GET.get('query')
-        ingredients = list(
-            Ingredient.objects.filter(title__icontains=text).values(
-                'title', 'dimension'
-            )
-        )
-        return JsonResponse(ingredients, safe=False)
+    def get_queryset(self):
+        return self.request.user.purchase.all()
