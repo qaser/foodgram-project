@@ -6,8 +6,8 @@ User = get_user_model()
 
 # словарь ингредиентов для корзины
 def generate_purchase_cart(request):
-    purchaser = get_object_or_404(User, username=request.user.username)
-    purchase_cart = purchaser.purchase.all()
+    user = get_object_or_404(User, username=request.user.username)
+    purchase_cart = user.purchases.all()
     ingredients = {}
     for item in purchase_cart:
         for j in item.recipe.volume_ingredient.all():
@@ -23,11 +23,12 @@ def generate_purchase_cart(request):
     return result
 
 
-# словарь ингредиентов для рецепта
 def get_ingredients(request):
     ingredients = {}
-    for key, ingredient_name in request.POST.items():
-        if 'nameIngredient' in key:
-            _ = key.split('_')
-            ingredients[ingredient_name] = int(request.POST[f'valueIngredient_{_[1]}'])
+    for key, title in request.POST.items():
+        if not key.startswith('nameIngredient_'):
+            continue
+        arg = key.split('_')[1]
+        amount = request.POST['valueIngredient_' + arg]
+        ingredients[title] = amount
     return ingredients

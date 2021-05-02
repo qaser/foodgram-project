@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, mixins, viewsets, status
-from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 
 
@@ -53,4 +52,4 @@ class PurchaseViewSet(mixins.ListModelMixin, CreateDestroyViewSet):
     lookup_field = 'recipe'
 
     def get_queryset(self):
-        return self.request.user.purchase.all()
+        return self.request.user.purchases.all()

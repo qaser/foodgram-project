@@ -43,13 +43,13 @@ class Ingredient(models.Model):
         return f'{self.title}, {self.dimension}'
 
 
-# class RecipeManager(models.Manager):
-#     def filter_by_tags(self, tag):
-#         if tag:
-#             queryset = Recipe.objects.filter(tag__value__in=tag.split(','))
-#         else:
-#             queryset = Recipe.objects.all()
-#         return queryset
+class RecipeManager(models.Manager):
+    def filter_by_tags(self, tags):
+        if tags:
+            queryset = Recipe.objects.filter(tag__name__in=tags.split(',')).distinct()
+        else:
+            queryset = Recipe.objects.all()
+        return queryset
 
 
 class Recipe(models.Model):
@@ -81,7 +81,7 @@ class Recipe(models.Model):
         auto_now_add=True,
         db_index=True
     )
-    # recipes = RecipeManager()
+    objects = RecipeManager()
 
     class Meta:
         ordering = ['-pub_date']
@@ -167,13 +167,13 @@ class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='favorite',
+        related_name='favorites',
         verbose_name='пользователь'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favorite',
+        related_name='favorites',
         verbose_name='рецепт'
     )
     # favorites = FavoriteManager()
@@ -201,13 +201,13 @@ class Purchase(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='purchase',
+        related_name='purchases',
         verbose_name='пользователь'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='purchase',
+        related_name='purchases',
         verbose_name='рецепт'
     )
 

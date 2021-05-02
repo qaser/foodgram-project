@@ -15,8 +15,8 @@ class IngredientAdmin(admin.ModelAdmin):
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    def count_favorite(self,  obj):
-        count = models.Favorite.favorites.filter(recipe=obj).count()
+    def count_favorite(self,  recipe):
+        count = recipe.favorites.all().count()
         return count
 
     list_display = ('title', 'author', 'time', 'count_favorite')

@@ -1,7 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse
-from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 from foodgram.settings import PAGINATOR_PAGES
@@ -23,20 +22,20 @@ def split_on_page(request, objects_on_page):
 
 @cache_page(20, key_prefix='index_page')
 def index(request):
-    tag = request.GET.getlist('filters')
+    tags = request.GET.getlist('filters')
     recipes_list = Recipe.objects.all()
-    if tag:
-        recipes_list = recipes_list.filter(tag__value__in=tag).distinct().all()
+    if tags:
+        recipes_list = recipes_list.filter(tag__value__in=tags).distinct().all()
     selection = split_on_page(request, recipes_list)
     return render(request, 'recipes/index.html', selection)
 
 
 def profile(request, username):
     user = get_object_or_404(User, username=username)
-    tag = request.GET.getlist('filters')
+    tags = request.GET.getlist('filters')
     recipes_list = user.recipes.all()
-    if tag:
-        recipes_list = recipes_list.filter(tag__value__in=tag)
+    if tags:
+        recipes_list = recipes_list.filter(tag__value__in=tags)
     selection = split_on_page(request, recipes_list)
     sub = None
     if request.user.is_authenticated:
@@ -53,7 +52,8 @@ def profile(request, username):
 @login_required
 def subscription_index(request, username):
     user = get_object_or_404(User, username=username)
-    subs = Subscription.objects.filter(user=user).all()
+    # subs = Subscription.objects.filter(user=user).all()
+    subs = user.follower.all()
     selection = split_on_page(request, subs)
     return render(
         request,
@@ -112,7 +112,8 @@ def recipe_edit(request, recipe_id):
         )
         ingredients = get_ingredients(request)
         if form.is_valid():
-            VolumeIngredient.objects.filter(recipe=recipe).delete()
+            # VolumeIngredient.objects.filter(recipe=recipe).delete()
+            recipe.volume_ingredient.all().delete()
             recipe = form.save(commit=False)
             recipe.author = request.user
             recipe.save()
@@ -174,11 +175,3 @@ def purchase_save(request):
     response = HttpResponse(result, content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
     return response
-
-
-# def page_not_found(request, exception):
-#     return render(request, 'misc/404.html', {'path': request.path}, status=404)
-
-
-# def server_error(request):
-#     return render(request, 'misc/500.html', status=500)
