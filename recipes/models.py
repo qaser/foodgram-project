@@ -116,6 +116,14 @@ class VolumeIngredient(models.Model):
         return f'{self.ingredient.title} - {self.quantity} {self.ingredient.dimension}'
 
 
+class SubscriptionManager(models.Manager):
+    def get_subscriptions(self, user):
+        try:
+            return super().get_queryset().annotate(user=user)
+        except ObjectDoesNotExist:
+            return []
+
+
 class Subscription(models.Model):
     user = models.ForeignKey(
         User,
@@ -150,7 +158,7 @@ class Subscription(models.Model):
 class FavoriteManager(models.Manager):
     def get_favorites(self, user):
         try:
-            return super().get_queryset().get(user=user).recipes.all()
+            return super().get_queryset().annotate(user=user)
         except ObjectDoesNotExist:
             return []
 
@@ -183,14 +191,8 @@ class Favorite(models.Model):
 
 class PurchaseManager(models.Manager):
     def get_purchase(self, user):
-        """
-        Фукция возвращает QuerySet рецептов добавленных в покупки. Если таких
-        рецепров нет возвращает пустой лист.
-        """
-
         try:
-            return super().get_queryset().get(
-                user=user).recipes.all()
+            return super().get_queryset().annotate(user=user)
         except ObjectDoesNotExist:
             return []
 
