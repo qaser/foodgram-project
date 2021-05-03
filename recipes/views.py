@@ -175,3 +175,31 @@ def purchase_save(request):
     response = HttpResponse(result, content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
     return response
+
+
+@login_required
+def purchases_download(request):
+    title = 'recipe__ingredients__title'
+    dimension = 'recipe__ingredients__dimension'
+    quantity = 'recipe__ingredients_amounts__quantity'
+
+    ingredients = request.user.purchases.select_related('recipe').order_by(
+        title).values(title, dimension).annotate(amount=Sum(quantity)).all()
+
+    if not ingredients:
+        return render(request, 'misc/400.html', status=400)
+
+    text = 'Список покупок:\n\n'
+    for number, ingredient in enumerate(ingredients, start=1):
+        amount = ingredient['amount']
+        text += (
+            f'{number}) '
+            f'{ingredient[title]} - '
+            f'{amount} '
+            f'{ingredient[dimension]}\n'
+        )
+
+    response = HttpResponse(text, content_type='text/plain')
+    filename = 'shopping_list.txt'
+    response['Content-Disposition'] = f'attachment; filename={filename}'
+    return response
