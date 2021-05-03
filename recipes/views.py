@@ -4,12 +4,14 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 from foodgram.settings import PAGINATOR_PAGES
+from django.views.generic import DetailView, ListView
+from django.db.models import Count, Prefetch, Subquery, Sum
 
 
 from .forms import RecipeForm
 from .models import (Ingredient, Purchase, Recipe, Subscription, User,
-                     VolumeIngredient)
-from .utils import generate_purchase_cart, get_ingredients
+                     VolumeIngredient, Favorite)
+from .utils import generate_purchase_cart, get_ingredients, paginator_initial
 
 
 # function for split many recipes on pages
@@ -20,14 +22,39 @@ def split_on_page(request, objects_on_page):
     return {'page': page, 'paginator': paginator}
 
 
+# @cache_page(20, key_prefix='index_page')
+# def index(request):
+#     tags = request.GET.getlist('filters')
+#     print(tags)
+#     recipes_list = Recipe.objects.all()
+#     if tags:
+#         recipes_list = recipes_list.filter(tag__value__in=tags).distinct().all()
+#     selection = split_on_page(request, recipes_list)
+#     return render(request, 'recipes/index.html', selection)
+
+
 @cache_page(20, key_prefix='index_page')
 def index(request):
-    tags = request.GET.getlist('filters')
-    recipes_list = Recipe.objects.all()
-    if tags:
-        recipes_list = recipes_list.filter(tag__value__in=tags).distinct().all()
+    # tags = request.GET.getlist('filters')
+    # print(tags)
+    recipes_list = Recipe.objects.recipe_with_tag(
+        request.META.get('active_tags')
+    ).selective_annotation(bask=True, fav=True, user=request.user.pk)
     selection = split_on_page(request, recipes_list)
     return render(request, 'recipes/index.html', selection)
+
+
+# class Index(ListView):
+#     template_name = 'recipes/index.html'
+#     paginate_by = PAGINATOR_PAGES
+
+#     def get_queryset(self):
+#         return Recipe.objects.recipe_with_tag(
+#             self.request.META.get('active_tags')
+#         ).selective_annotation(bask=True, fav=True, user=self.request.user.pk)
+
+#     def paginate_queryset(self, queryset, page_size):
+#         return(paginator_initial(self.request, queryset, self.paginate_by))
 
 
 def profile(request, username):
@@ -177,29 +204,29 @@ def purchase_save(request):
     return response
 
 
-@login_required
-def purchases_download(request):
-    title = 'recipe__ingredients__title'
-    dimension = 'recipe__ingredients__dimension'
-    quantity = 'recipe__ingredients_amounts__quantity'
+# @login_required
+# def purchases_download(request):
+#     title = 'recipe__ingredients__title'
+#     dimension = 'recipe__ingredients__dimension'
+#     quantity = 'recipe__ingredients_amounts__quantity'
 
-    ingredients = request.user.purchases.select_related('recipe').order_by(
-        title).values(title, dimension).annotate(amount=Sum(quantity)).all()
+#     ingredients = request.user.purchases.select_related('recipe').order_by(
+#         title).values(title, dimension).annotate(amount=Sum(quantity)).all()
 
-    if not ingredients:
-        return render(request, 'misc/400.html', status=400)
+#     if not ingredients:
+#         return render(request, 'misc/400.html', status=400)
 
-    text = 'Список покупок:\n\n'
-    for number, ingredient in enumerate(ingredients, start=1):
-        amount = ingredient['amount']
-        text += (
-            f'{number}) '
-            f'{ingredient[title]} - '
-            f'{amount} '
-            f'{ingredient[dimension]}\n'
-        )
+#     text = 'Список покупок:\n\n'
+#     for number, ingredient in enumerate(ingredients, start=1):
+#         amount = ingredient['amount']
+#         text += (
+#             f'{number}) '
+#             f'{ingredient[title]} - '
+#             f'{amount} '
+#             f'{ingredient[dimension]}\n'
+#         )
 
-    response = HttpResponse(text, content_type='text/plain')
-    filename = 'shopping_list.txt'
-    response['Content-Disposition'] = f'attachment; filename={filename}'
-    return response
+#     response = HttpResponse(text, content_type='text/plain')
+#     filename = 'shopping_list.txt'
+#     response['Content-Disposition'] = f'attachment; filename={filename}'
+#     return response

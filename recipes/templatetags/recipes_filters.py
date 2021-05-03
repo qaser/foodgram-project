@@ -10,13 +10,9 @@ def addclass(field, css):
     return field.as_widget(attrs={"class": css})
 
 
-@register.filter(name='get_filter_values')
-def get_filter_values(value):
-    return value.getlist('filters')
-
-
-@register.filter(name='get_filter_link')
-def get_filter_link(request, tag):
+# генерация ссылки для тегов (использую в tags.html)
+@register.filter(name='get_tag_link')
+def get_tag_link(request, tag):
     new_request = request.GET.copy()
     if tag.value in request.GET.getlist('filters'):
         filters = new_request.getlist('filters')
@@ -42,7 +38,7 @@ def is_follow(author, user):
     return Subscription.objects.filter(user=user, author=author).exists()
 
 
-# склонение слова "рецепт"
+# склонение слова "рецепт" (использую в follow_item.html)
 @register.filter
 def word_conjugate(number, args):
     args = [arg.strip() for arg in args.split(',')]

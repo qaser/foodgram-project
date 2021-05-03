@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models.deletion import CASCADE
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import MinValueValidator
+from django.db.models import Exists, OuterRef
 
 
 MESSAGE_MIN_TIME = 'Время приготовления должно быть не меньше 1 минуты.'
@@ -43,13 +44,22 @@ class Ingredient(models.Model):
         return f'{self.title}, {self.dimension}'
 
 
-class RecipeManager(models.Manager):
-    def filter_by_tags(self, tags):
-        if tags:
-            queryset = Recipe.objects.filter(tag__name__in=tags.split(',')).distinct()
-        else:
-            queryset = Recipe.objects.all()
-        return queryset
+class RecipeQuerySet(models.QuerySet):
+
+    def recipe_with_tag(self, tags):  # передаю теги из view
+        # tag = [tag for tag in tags]
+        return self.filter(
+            tag__value__in=tags
+        ).select_related('author').prefetch_related('tag').distinct()
+
+    def selective_annotation(self, bask=False, fav=False, subs=False, **kwargs):
+        if bask:
+            self = self.annotate(basket=Exists(Purchase.objects.filter(recipe=OuterRef('pk'), **kwargs)))
+        if fav:
+            self = self.annotate(favorite=Exists(Favorite.objects.filter(recipe=OuterRef('pk'), **kwargs)))
+        if subs:
+            self = self.annotate(subscribe=Exists(Subscription.objects.filter(author=OuterRef('author'), **kwargs)))
+        return self
 
 
 class Recipe(models.Model):
@@ -81,7 +91,7 @@ class Recipe(models.Model):
         auto_now_add=True,
         db_index=True
     )
-    objects = RecipeManager()
+    objects = RecipeQuerySet.as_manager()
 
     class Meta:
         ordering = ['-pub_date']
@@ -116,14 +126,6 @@ class VolumeIngredient(models.Model):
         return f'{self.ingredient.title} - {self.quantity} {self.ingredient.dimension}'
 
 
-# class SubscriptionManager(models.Manager):
-#     def get_subscriptions(self, user):
-#         try:
-#             return super().get_queryset().annotate(user=user)
-#         except ObjectDoesNotExist:
-#             return []
-
-
 class Subscription(models.Model):
     user = models.ForeignKey(
         User,
@@ -155,14 +157,6 @@ class Subscription(models.Model):
             )
 
 
-# class FavoriteManager(models.Manager):
-#     def get_favorites(self, user):
-#         try:
-#             return super().get_queryset().annotate(user=user)
-#         except ObjectDoesNotExist:
-#             return []
-
-
 class Favorite(models.Model):
     user = models.ForeignKey(
         User,
@@ -176,7 +170,6 @@ class Favorite(models.Model):
         related_name='favorites',
         verbose_name='рецепт'
     )
-    # favorites = FavoriteManager()
 
     class Meta:
         verbose_name = 'избранное'
@@ -187,14 +180,6 @@ class Favorite(models.Model):
                 name='unique_favorite'
             ),
         ]
-
-
-# class PurchaseManager(models.Manager):
-#     def get_purchase(self, user):
-#         try:
-#             return super().get_queryset().annotate(user=user)
-#         except ObjectDoesNotExist:
-#             return []
 
 
 class Purchase(models.Model):

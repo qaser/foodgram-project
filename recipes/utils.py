@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 
 User = get_user_model()
@@ -32,3 +33,18 @@ def get_ingredients(request):
         amount = request.POST['valueIngredient_' + arg]
         ingredients[title] = amount
     return ingredients
+
+
+def paginator_initial(request, model_objs, paginator_count):
+    paginator = Paginator(model_objs, paginator_count)
+    page_number = request.GET.get('page')
+    if page_number:
+        if not page_number.isdigit():
+            page = paginator.get_page(None)
+        elif int(page_number) > paginator.num_pages:
+            page = paginator.get_page(paginator.num_pages)
+        else:
+            page = paginator.get_page(page_number)
+        return paginator, page, page.object_list, page.has_other_pages()
+    page = paginator.get_page(None)
+    return paginator, page, page.object_list, page.has_other_pages()

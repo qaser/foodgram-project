@@ -1,14 +1,6 @@
 from .models import Purchase, Tag
 
 
-def counter(request):
-    if request.user.is_authenticated:
-        count = request.user.purchases.all().count()
-    else:
-        count = 0
-    return {'count': count}
-
-
 def all_tags(request):
     all_tags = Tag.objects.all()
     return {'all_tags': all_tags}
