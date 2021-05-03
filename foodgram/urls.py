@@ -6,6 +6,7 @@ from django.urls import include, path
 
 handler404 = 'service_pages.views.page_not_found'  # noqa
 handler500 = 'service_pages.views.server_error'  # noqa
+handler400 = 'service_pages.views.bad_request'  # noqa
 
 urlpatterns = [
     path('master-chief/', admin.site.urls),

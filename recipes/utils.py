@@ -11,28 +11,11 @@ def get_recipes_by_tags(request, recipes):
     filters = ''
     active_tags = request.META['active_tags']
     for tag in active_tags:
-        filters += '&filters=' + tag
+        filters += f'&filters={tag}'
     if active_tags:
         recipes = recipes.filter(tag__value__in=active_tags).distinct()
     context = {'recipes': recipes, 'filters': filters}
     return context
-
-
-# словарь ингредиентов для корзины
-def generate_purchase_cart(request):
-    user = get_object_or_404(User, username=request.user.username)
-    purchase_cart = user.purchases.all()
-    ingredients = {}
-    for item in purchase_cart:
-        for obj in item.recipe.volume_ingredient.all():
-            title = obj.ingredient.title
-            dimension = obj.ingredient.dimension
-            if title in ingredients:
-                ingredients[title][dimension] += obj.quantity
-            else:
-                ingredients[title] = {dimension: 0}
-                ingredients[title][dimension] += obj.quantity
-    return ingredients
 
 
 def get_ingredients(request):

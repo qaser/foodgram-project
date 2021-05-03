@@ -37,7 +37,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'recipes.recipes_middleware.TagsMiddleware',
-    'recipes.recipes_middleware.PaginatorMiddleware',
+    # 'recipes.recipes_middleware.PaginatorMiddleware',
 ]
 
 ROOT_URLCONF = 'foodgram.urls'
@@ -55,7 +55,6 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # "recipes.context_processors.url_parse",
             ]
         },
     }

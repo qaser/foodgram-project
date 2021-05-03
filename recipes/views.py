@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 from foodgram.settings import PAGINATOR_PAGES
@@ -18,19 +19,24 @@ from .utils import generate_purchase_cart, get_ingredients, paginator_initial, g
 def split_on_page(request, objects_on_page):
     paginator = Paginator(objects_on_page, PAGINATOR_PAGES)
     page_number = request.GET.get('page')
+    print(page_number)
     page = paginator.get_page(page_number)
+    if int(page_number) > paginator.num_pages:
+        return HttpResponseRedirect('/?page=%s'  % (paginator.num_pages))
     return {'page': page, 'paginator': paginator}
 
 
 @cache_page(20, key_prefix='index_page')
 def index(request):
     """Предоставляет список рецептов для всех пользователей"""
-    recipe_list = Recipe.objects.all()
-    recipes_by_tags = get_recipes_by_tags(request, recipe_list)
-    paginator = Paginator(recipes_by_tags.get('recipes'), PAGINATOR_PAGES)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-    context = {'page': page, 'paginator': paginator, **recipes_by_tags}
+    # recipe_list = Recipe.objects.all()
+    recipes_by_tags = get_recipes_by_tags(request, Recipe.objects.all())
+    selection = split_on_page(request, recipes_by_tags.get('recipes'))
+    # paginator = Paginator(recipes_by_tags.get('recipes'), PAGINATOR_PAGES)
+    # page_number = request.GET.get('page')
+    # page = paginator.get_page(page_number)
+    # context = {'page': page, 'paginator': paginator, **recipes_by_tags}
+    context = {**recipes_by_tags, **selection}
     return render(request, 'recipes/index.html', context)
 
 
@@ -81,7 +87,7 @@ def recipe_new(request):
     user = User.objects.get(username=request.user)
     if request.method == 'POST':
         form = RecipeForm(request.POST or None, files=request.FILES or None)
-        ingredients = get_ingredients(request)  # функция вынесена в utils
+        ingredients = get_ingredients(request)
         if not ingredients:
             form.add_error(None, 'Добавьте ингредиенты')
         elif form.is_valid():
@@ -175,40 +181,26 @@ def purchase_cart(request):
 
 @login_required
 def purchase_save(request):
-    result = generate_purchase_cart(request)  # функция вынесена в utils
-    ingredient_txt = []
-    for product, quantity in result.items():
-        for key, value in quantity.items():
-            ingredient_txt += [f'{product.capitalize()} ({key}) - {value} \n']
-    filename = 'ingredients.txt'
-    response = HttpResponse(ingredient_txt, content_type='text/plain')
+    title = 'recipe__ingredients__title'
+    dimension = 'recipe__ingredients__dimension'
+    quantity = 'recipe__volume_ingredient__quantity'
+
+    ingredients = request.user.purchases.select_related('recipe').order_by(
+        title).values(title, dimension).annotate(amount=Sum(quantity)).all()
+
+    if not ingredients:
+        return render(request, '/misc/400.html', status=400)
+
+    text = 'Список покупок:\n\n'
+    for number, ingredient in enumerate(ingredients, start=1):
+        amount = ingredient['amount']
+        text += (
+            f'{number}) '
+            f'{ingredient[title]}, '
+            f'{ingredient[dimension]} - '
+            f'{amount}\n'
+        )
+    response = HttpResponse(text, content_type='text/plain')
+    filename = 'purchases.txt'
     response['Content-Disposition'] = f'attachment; filename={filename}'
     return response
-
-
-# @login_required
-# def purchases_download(request):
-#     title = 'recipe__ingredients__title'
-#     dimension = 'recipe__ingredients__dimension'
-#     quantity = 'recipe__ingredients_amounts__quantity'
-
-#     ingredients = request.user.purchases.select_related('recipe').order_by(
-#         title).values(title, dimension).annotate(amount=Sum(quantity)).all()
-
-#     if not ingredients:
-#         return render(request, 'misc/400.html', status=400)
-
-#     text = 'Список покупок:\n\n'
-#     for number, ingredient in enumerate(ingredients, start=1):
-#         amount = ingredient['amount']
-#         text += (
-#             f'{number}) '
-#             f'{ingredient[title]} - '
-#             f'{amount} '
-#             f'{ingredient[dimension]}\n'
-#         )
-
-#     response = HttpResponse(text, content_type='text/plain')
-#     filename = 'shopping_list.txt'
-#     response['Content-Disposition'] = f'attachment; filename={filename}'
-#     return response

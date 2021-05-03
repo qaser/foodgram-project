@@ -21,7 +21,6 @@ class TagsMiddleware:
     def __call__(self, request):
         request.META['all_tags'] = all_tags(request)
         request.META['active_tags'] = active_tags(request)
-        # print(request.META['active_tags'])
         return self.get_response(request)
 
 

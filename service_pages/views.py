@@ -1,4 +1,5 @@
 from django.views.generic.base import TemplateView
+from django.shortcuts import get_object_or_404, redirect, render
 
 
 class AuthorView(TemplateView):
@@ -15,3 +16,7 @@ def page_not_found(request, exception):
 
 def server_error(request):
     return render(request, 'misc/500.html', status=500)
+
+
+def bad_request(request, exception):
+    return render(request, 'misc/400.html', {'path': request.path}, status=400)
