@@ -11,7 +11,7 @@ from django.db.models import Count, Prefetch, Subquery, Sum
 from .forms import RecipeForm
 from .models import (Ingredient, Purchase, Recipe, Subscription, User,
                      VolumeIngredient, Favorite)
-from .utils import generate_purchase_cart, get_ingredients, paginator_initial
+from .utils import generate_purchase_cart, get_ingredients, paginator_initial, get_recipes_by_tags
 
 
 # function for split many recipes on pages
@@ -22,76 +22,53 @@ def split_on_page(request, objects_on_page):
     return {'page': page, 'paginator': paginator}
 
 
-# @cache_page(20, key_prefix='index_page')
-# def index(request):
-#     tags = request.GET.getlist('filters')
-#     print(tags)
-#     recipes_list = Recipe.objects.all()
-#     if tags:
-#         recipes_list = recipes_list.filter(tag__value__in=tags).distinct().all()
-#     selection = split_on_page(request, recipes_list)
-#     return render(request, 'recipes/index.html', selection)
-
-
 @cache_page(20, key_prefix='index_page')
 def index(request):
-    # tags = request.GET.getlist('filters')
-    # print(tags)
-    recipes_list = Recipe.objects.recipe_with_tag(
-        request.META.get('active_tags')
-    ).selective_annotation(bask=True, fav=True, user=request.user.pk)
-    selection = split_on_page(request, recipes_list)
-    return render(request, 'recipes/index.html', selection)
-
-
-# class Index(ListView):
-#     template_name = 'recipes/index.html'
-#     paginate_by = PAGINATOR_PAGES
-
-#     def get_queryset(self):
-#         return Recipe.objects.recipe_with_tag(
-#             self.request.META.get('active_tags')
-#         ).selective_annotation(bask=True, fav=True, user=self.request.user.pk)
-
-#     def paginate_queryset(self, queryset, page_size):
-#         return(paginator_initial(self.request, queryset, self.paginate_by))
+    """Предоставляет список рецептов для всех пользователей"""
+    recipe_list = Recipe.objects.all()
+    recipes_by_tags = get_recipes_by_tags(request, recipe_list)
+    paginator = Paginator(recipes_by_tags.get('recipes'), PAGINATOR_PAGES)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    context = {'page': page, 'paginator': paginator, **recipes_by_tags}
+    return render(request, 'recipes/index.html', context)
 
 
 def profile(request, username):
+    """Показывает страницу автора рецепта"""
+    # user = request.user
     user = get_object_or_404(User, username=username)
-    tags = request.GET.getlist('filters')
-    recipes_list = user.recipes.all()
-    if tags:
-        recipes_list = recipes_list.filter(tag__value__in=tags)
-    selection = split_on_page(request, recipes_list)
-    sub = None
-    if request.user.is_authenticated:
-        sub = Subscription.objects.filter(
-            user=request.user,
-            author=user).exists()
-    return render(
-        request,
-        'recipes/authorRecipe.html',
-        {**{'profile': user, 'sub': sub}, **selection},
-    )
+    recipe_list = user.recipes.order_by('-pub_date')
+    recipes_by_tags = get_recipes_by_tags(request, recipe_list)
+    paginator = Paginator(recipes_by_tags.get('recipes'), PAGINATOR_PAGES)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    context = {
+        'profile': user,
+        'page': page,
+        'paginator': paginator,
+        **recipes_by_tags
+    }
+    return render(request, 'recipes/authorRecipe.html', context)
 
 
 @login_required
 def subscription_index(request, username):
-    user = get_object_or_404(User, username=username)
-    # subs = Subscription.objects.filter(user=user).all()
-    subs = user.follower.all()
-    selection = split_on_page(request, subs)
-    return render(
-        request,
-        'recipes/myFollow.html',
-        selection,
-    )
+    """Предоставляет список подписок пользователя"""
+    subscriptions = Subscription.objects.filter(user=request.user)
+    paginator = Paginator(subscriptions, PAGINATOR_PAGES)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    context = {
+        'page': page,
+        'paginator': paginator,
+        'subscriptions': subscriptions,
+    }
+    return render(request, 'recipes/myFollow.html', context)
 
 
 def recipe_view(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
-    # ingredients = recipe.volume_ingredient.all()
     return render(
         request,
         'recipes/single_recipe.html',
@@ -177,13 +154,14 @@ def recipe_delete(request, recipe_id):
 
 @login_required
 def recipe_favor(request, username):
-    tag = request.GET.getlist('filters')
-    recipe_list = Recipe.objects.filter(
-        favorite__user__id=request.user.id).all()
-    if tag:
-        recipe_list = recipe_list.filter(tag__value__in=tag).distinct()
-    selection = split_on_page(request, recipe_list)
-    return render(request, 'recipes/favorite.html', selection)
+    """Предоставляет список любимых рецептов пользователя"""
+    favorites_list = Recipe.objects.favorites(user=request.user)
+    favorites_by_tags = get_recipes_by_tags(request, favorites_list)
+    paginator = Paginator(favorites_by_tags.get('recipes'), PAGINATOR_PAGES)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    context = {'page': page, 'paginator': paginator, **favorites_by_tags}
+    return render(request, 'recipes/favorite.html', context)
 
 
 def purchase_cart(request):
@@ -198,9 +176,13 @@ def purchase_cart(request):
 @login_required
 def purchase_save(request):
     result = generate_purchase_cart(request)  # функция вынесена в utils
+    ingredient_txt = []
+    for product, quantity in result.items():
+        for key, value in quantity.items():
+            ingredient_txt += [f'{product.capitalize()} ({key}) - {value} \n']
     filename = 'ingredients.txt'
-    response = HttpResponse(result, content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename={0}'.format(filename)
+    response = HttpResponse(ingredient_txt, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename={filename}'
     return response
 
 

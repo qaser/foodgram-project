@@ -44,22 +44,36 @@ class Ingredient(models.Model):
         return f'{self.title}, {self.dimension}'
 
 
-class RecipeQuerySet(models.QuerySet):
+# class RecipeQuerySet(models.QuerySet):
 
-    def recipe_with_tag(self, tags):  # передаю теги из view
-        # tag = [tag for tag in tags]
-        return self.filter(
-            tag__value__in=tags
-        ).select_related('author').prefetch_related('tag').distinct()
+#     def recipe_with_tag(self, tags):  # передаю теги из view
+#         # tag = [tag for tag in tags]
+#         return self.filter(
+#             tag__value__in=tags
+#         ).select_related('author').prefetch_related('tag').distinct()
 
-    def selective_annotation(self, bask=False, fav=False, subs=False, **kwargs):
-        if bask:
-            self = self.annotate(basket=Exists(Purchase.objects.filter(recipe=OuterRef('pk'), **kwargs)))
-        if fav:
-            self = self.annotate(favorite=Exists(Favorite.objects.filter(recipe=OuterRef('pk'), **kwargs)))
-        if subs:
-            self = self.annotate(subscribe=Exists(Subscription.objects.filter(author=OuterRef('author'), **kwargs)))
-        return self
+#     def selective_annotation(self, bask=False, fav=False, subs=False, **kwargs):
+#         if bask:
+#             self = self.annotate(basket=Exists(Purchase.objects.filter(recipe=OuterRef('pk'), **kwargs)))
+#         if fav:
+#             self = self.annotate(favorite=Exists(Favorite.objects.filter(recipe=OuterRef('pk'), **kwargs)))
+#         if subs:
+#             self = self.annotate(subscribe=Exists(Subscription.objects.filter(author=OuterRef('author'), **kwargs)))
+#         return self
+
+
+class RecipeManager(models.Manager):
+    def favorites(self, user):
+        """Возвращает любимые рецепты пользователя"""
+        favorite_recipes_ids = list(Favorite.objects.filter(
+            user=user).values_list('recipe_id', flat=True))
+        return self.get_queryset().filter(id__in=favorite_recipes_ids)
+
+    def purchases(self, user):
+        """Возвращает рецепты, добавленные в список покупок"""
+        purchase_recipes_ids = list(Purchase.objects.filter(
+            user=user).values_list('recipe_id', flat=True))
+        return self.get_queryset().filter(id__in=purchase_recipes_ids)
 
 
 class Recipe(models.Model):
@@ -91,7 +105,7 @@ class Recipe(models.Model):
         auto_now_add=True,
         db_index=True
     )
-    objects = RecipeQuerySet.as_manager()
+    objects = RecipeManager()
 
     class Meta:
         ordering = ['-pub_date']

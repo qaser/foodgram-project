@@ -1,8 +1,21 @@
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
+from .models import Tag
 
 User = get_user_model()
+
+
+def get_recipes_by_tags(request, recipes):
+    """Возвращает набор рецептов в зависимости от выбранных тегов"""
+    filters = ''
+    active_tags = request.META['active_tags']
+    for tag in active_tags:
+        filters += '&filters=' + tag
+    if active_tags:
+        recipes = recipes.filter(tag__value__in=active_tags).distinct()
+    context = {'recipes': recipes, 'filters': filters}
+    return context
 
 
 # словарь ингредиентов для корзины
@@ -11,17 +24,15 @@ def generate_purchase_cart(request):
     purchase_cart = user.purchases.all()
     ingredients = {}
     for item in purchase_cart:
-        for j in item.recipe.volume_ingredient.all():
-            name = f'{j.ingredient.title} ({j.ingredient.dimension})'
-            quantity = j.quantity
-            if name in ingredients.keys():
-                ingredients[name] += quantity
+        for obj in item.recipe.volume_ingredient.all():
+            title = obj.ingredient.title
+            dimension = obj.ingredient.dimension
+            if title in ingredients:
+                ingredients[title][dimension] += obj.quantity
             else:
-                ingredients[name] = quantity
-    result = []
-    for key, quantity in ingredients.items():
-        result.append(f'{key} - {quantity}')
-    return result
+                ingredients[title] = {dimension: 0}
+                ingredients[title][dimension] += obj.quantity
+    return ingredients
 
 
 def get_ingredients(request):
