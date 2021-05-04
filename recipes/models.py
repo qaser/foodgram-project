@@ -63,13 +63,13 @@ class Ingredient(models.Model):
 
 
 class RecipeManager(models.Manager):
-    def favorites(self, user):
+    def user_favor(self, user):
         """Возвращает любимые рецепты пользователя"""
         favorite_recipes_ids = list(Favorite.objects.filter(
             user=user).values_list('recipe_id', flat=True))
         return self.get_queryset().filter(id__in=favorite_recipes_ids)
 
-    def purchases(self, user):
+    def user_purchase(self, user):
         """Возвращает рецепты, добавленные в список покупок"""
         purchase_recipes_ids = list(Purchase.objects.filter(
             user=user).values_list('recipe_id', flat=True))

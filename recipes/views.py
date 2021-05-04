@@ -12,7 +12,7 @@ from django.db.models import Count, Prefetch, Subquery, Sum
 from .forms import RecipeForm
 from .models import (Ingredient, Purchase, Recipe, Subscription, User,
                      VolumeIngredient, Favorite)
-from .utils import generate_purchase_cart, get_ingredients, paginator_initial, get_recipes_by_tags
+from .utils import get_ingredients, paginator_initial, get_recipes_by_tags
 
 
 # function for split many recipes on pages
@@ -21,8 +21,8 @@ def split_on_page(request, objects_on_page):
     page_number = request.GET.get('page')
     print(page_number)
     page = paginator.get_page(page_number)
-    if int(page_number) > paginator.num_pages:
-        return HttpResponseRedirect('/?page=%s'  % (paginator.num_pages))
+    # if int(page_number) > paginator.num_pages:
+    #     return HttpResponseRedirect('/?page=%s'  % (paginator.num_pages))
     return {'page': page, 'paginator': paginator}
 
 
