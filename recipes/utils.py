@@ -1,13 +1,15 @@
+from foodgram.settings import PAGINATOR_PAGES
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from .models import Tag
+from django.urls import reverse
 
 User = get_user_model()
 
 
+# рецепты с фильтрацией по тегам и аннотированием
 def get_recipes_by_tags(request, recipes):
-    """Возвращает набор рецептов в зависимости от выбранных тегов"""
     filters = ''
     active_tags = request.META['active_tags']
     for tag in active_tags:
@@ -31,16 +33,27 @@ def get_ingredients(request):
     return ingredients
 
 
-def paginator_initial(request, model_objs, paginator_count):
-    paginator = Paginator(model_objs, paginator_count)
+# разбиваю элементы на страницы
+def split_on_page(request, objects_on_page):
+    paginator = Paginator(objects_on_page, PAGINATOR_PAGES)
     page_number = request.GET.get('page')
-    if page_number:
-        if not page_number.isdigit():
-            page = paginator.get_page(None)
-        elif int(page_number) > paginator.num_pages:
-            page = paginator.get_page(paginator.num_pages)
-        else:
-            page = paginator.get_page(page_number)
-        return paginator, page, page.object_list, page.has_other_pages()
-    page = paginator.get_page(None)
-    return paginator, page, page.object_list, page.has_other_pages()
+    page = paginator.get_page(page_number)
+    return {'page': page, 'paginator': paginator}
+
+
+# проверка превышения страниц в запросе
+def page_out_of_paginator(request, limit_page):
+    page_number = request.GET.get('page')
+    print(page_number)
+    if page_number is not None and int(page_number) > limit_page:
+        return True
+    return False
+
+
+# генерация строки запроса с тегами и последней страницей
+def generate_path(request, limit_page):
+    url_tail = ''
+    for tag in request.META['active_tags']:
+        url_tail = f'{url_tail}&filters={tag}'
+    url = reverse(request.resolver_match.url_name)
+    return f'{url}?page={limit_page}{url_tail}'

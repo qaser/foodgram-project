@@ -27,7 +27,12 @@
             </li>
             {% endfor %}
         </ul>
-        <a href="{% url 'purchase_save' %}"> Скачать список </a>
+        {% if purchase %}
+            <a class="shopping-list__button link" style="font-size: 20px;" href="{% url 'purchase_save' %}">Скачать список</a>
+        {% else %}
+            <a class="shopping-list__button" style="font-size: 20px; color: black;">Ваш список пока пуст</a>
+            <a class="shopping-list__button link" style="font-size: 20px;" href="{% url 'index' %}">Добавьте рецепты на главной странице</a>
+        {% endif %}
     </div>
 {% endblock %}
 

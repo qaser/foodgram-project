@@ -1,4 +1,6 @@
 {% load thumbnail %}
 {% thumbnail recipe.image {{ size }} upscale=True as im %}  
-    <a class="link"><img class="card__image" src="{{ im.url }}" alt="изображение готовится"></a>
+    <a class="link">
+        <img class="card__image" src="{{ im.url }}" alt="{% static 'img/testCardImg.png' %}" title="{{ recipe.title }}">
+    </a>
 {% endthumbnail %}
