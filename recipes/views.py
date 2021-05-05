@@ -48,7 +48,7 @@ def index(request):
     """Предоставляет список рецептов для всех пользователей"""
     recipe_list = Recipe.objects.all()
     recipes_by_tags = get_recipes_by_tags(request, recipe_list)
-    selection = split_on_page(request, recipes_by_tags.get('recipes'))
+    # selection = split_on_page(request, recipes_by_tags.get('recipes'))
     paginator = Paginator(recipes_by_tags.get('recipes'), PAGINATOR_PAGES)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -59,7 +59,7 @@ def index(request):
     url = reverse(request.resolver_match.url_name)
     if page_number is not None and int(page_number) > paginator.num_pages:
         return redirect(f'{url}?page={paginator.num_pages}{output}')
-    context = {**recipes_by_tags, **selection}
+    # context = {**recipes_by_tags, **selection}
     return render(request, 'recipes/index.html', context)
 
 
