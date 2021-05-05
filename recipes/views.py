@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 from foodgram.settings import PAGINATOR_PAGES
 from django.views.generic import DetailView, ListView
+from django.urls import reverse, reverse_lazy
 from django.db.models import Count, Prefetch, Subquery, Sum
 
 
@@ -19,23 +20,45 @@ from .utils import get_ingredients, paginator_initial, get_recipes_by_tags
 def split_on_page(request, objects_on_page):
     paginator = Paginator(objects_on_page, PAGINATOR_PAGES)
     page_number = request.GET.get('page')
-    print(page_number)
     page = paginator.get_page(page_number)
-    # if int(page_number) > paginator.num_pages:
-    #     return HttpResponseRedirect('/?page=%s'  % (paginator.num_pages))
+    output = ''
+    for arg in request.META['active_tags']:
+        output = f'{output}&filters={arg}'
+    url = reverse(request.resolver_match.url_name)
+    if page_number is not None:
+        if int(page_number) > paginator.num_pages:
+            return redirect(f'{url}?page={paginator.num_pages}{output}')
     return {'page': page, 'paginator': paginator}
+
+
+def page_out_of_paginator(request, limit_page):
+    page_number = request.GET.get('page')
+    url_tail = ''
+    for tag in request.META['active_tags']:
+        url_tail = f'{url_tail}&filters={tag}'
+    url = reverse(request.resolver_match.url_name)
+    if page_number is not None and int(page_number) > limit_page:
+        # if int(page_number) > limit_page:
+        return True
+    return False
 
 
 @cache_page(20, key_prefix='index_page')
 def index(request):
     """Предоставляет список рецептов для всех пользователей"""
-    # recipe_list = Recipe.objects.all()
-    recipes_by_tags = get_recipes_by_tags(request, Recipe.objects.all())
+    recipe_list = Recipe.objects.all()
+    recipes_by_tags = get_recipes_by_tags(request, recipe_list)
     selection = split_on_page(request, recipes_by_tags.get('recipes'))
-    # paginator = Paginator(recipes_by_tags.get('recipes'), PAGINATOR_PAGES)
-    # page_number = request.GET.get('page')
-    # page = paginator.get_page(page_number)
-    # context = {'page': page, 'paginator': paginator, **recipes_by_tags}
+    paginator = Paginator(recipes_by_tags.get('recipes'), PAGINATOR_PAGES)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    context = {'page': page, 'paginator': paginator, **recipes_by_tags}
+    output = ''
+    for arg in request.META['active_tags']:
+        output = f'{output}&filters={arg}'
+    url = reverse(request.resolver_match.url_name)
+    if page_number is not None and int(page_number) > paginator.num_pages:
+        return redirect(f'{url}?page={paginator.num_pages}{output}')
     context = {**recipes_by_tags, **selection}
     return render(request, 'recipes/index.html', context)
 

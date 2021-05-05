@@ -84,11 +84,11 @@ class RecipeManager(models.Manager):
 
 class RecipeQuerySet(models.QuerySet):
     def is_annotated(self, user):
-        # in_purchases = Purchase.objects.filter(
-        #     recipe=models.OuterRef(''),
-        #     user=user
-        # )
-        in_favorites = Favorite.objects.filter(
+        in_purchases = Purchase.objects.filter(
+            recipe=models.OuterRef('id'),
+            user=user
+        )
+        in_favor = Favorite.objects.filter(
             recipe=models.OuterRef('id'),
             user=user
         )
@@ -97,10 +97,10 @@ class RecipeQuerySet(models.QuerySet):
             user=user
         )
         return self.annotate(
-            in_favored=models.Exists(in_favorites),
-            # in_purchased=models.Exists(in_purchases),
+            in_favored=models.Exists(in_favor),
+            in_purchased=models.Exists(in_purchases),
             in_subscriptions=models.Exists(in_subs)
-            )
+        )
 
 
 class Recipe(models.Model):

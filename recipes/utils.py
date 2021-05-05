@@ -13,7 +13,9 @@ def get_recipes_by_tags(request, recipes):
     for tag in active_tags:
         filters += f'&filters={tag}'
     if active_tags:
-        recipes = recipes.filter(tag__value__in=active_tags).distinct()
+        recipes = recipes.filter(tag__value__in=active_tags).distinct().is_annotated(user=request.user)
+        print(recipes)
+    recipes = recipes.is_annotated(user=request.user)
     context = {'recipes': recipes, 'filters': filters}
     return context
 
