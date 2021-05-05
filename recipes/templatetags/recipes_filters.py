@@ -25,9 +25,11 @@ def get_tag_link(request, tag):
 
 @register.filter(name='is_favorite')
 def is_favorite(recipe, user):
-    a = Recipe.objects.is_annotated(user=user).get(id=1)
-    print(a)
-    return Recipe.objects.all()
+    a = Recipe.objects.is_annotated(user=user)
+    for i in a:
+        print(i.in_favored)
+    # print(a)
+    return None
 
 
 @register.filter(name='is_shop')
