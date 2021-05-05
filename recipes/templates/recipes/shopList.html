@@ -17,11 +17,11 @@
     <div class="card-list card-list_column">
         <ul class="shopping-list">
             {% for recipe in purchase %}
-            <li class="shopping-list__item" data-id="{{ recipe.recipe.id }}">
+            <li class="shopping-list__item" data-id="{{ recipe.id }}">
                 <div class="recipe recipe_reverse">
-                    <img src="{{ recipe.recipe.image.url }}" alt="{{ recipe.recipe.title }}" class="recipe__image recipe__image_big">
-                    <h3 class="recipe__title">{{ recipe.recipe.title }}</h3>
-                    <p class="recipe__text"><span class="icon-time"></span> {{ recipe.recipe.time }} мин.</p>
+                    <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe__image recipe__image_big">
+                    <h3 class="recipe__title">{{ recipe.title }}</h3>
+                    <p class="recipe__text"><span class="icon-time"></span> {{ recipe.time }} мин.</p>
                 </div>
                 <a class="shopping-list__button link">Удалить</a>
             </li>

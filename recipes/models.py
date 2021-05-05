@@ -63,17 +63,44 @@ class Ingredient(models.Model):
 
 
 class RecipeManager(models.Manager):
+    def get_queryset(self):
+        return RecipeQuerySet(self.model, using=self._db)
+
+    def is_annotated(self, user):
+        return self.get_queryset().is_annotated(user=user)
+
     def user_favor(self, user):
         """Возвращает любимые рецепты пользователя"""
-        favorite_recipes_ids = list(Favorite.objects.filter(
+        favorite_recipes = list(Favorite.objects.filter(
             user=user).values_list('recipe_id', flat=True))
-        return self.get_queryset().filter(id__in=favorite_recipes_ids)
+        return self.get_queryset().filter(id__in=favorite_recipes)
 
     def user_purchase(self, user):
         """Возвращает рецепты, добавленные в список покупок"""
-        purchase_recipes_ids = list(Purchase.objects.filter(
+        purchase_recipes = list(Purchase.objects.filter(
             user=user).values_list('recipe_id', flat=True))
-        return self.get_queryset().filter(id__in=purchase_recipes_ids)
+        return self.get_queryset().filter(id__in=purchase_recipes)
+
+
+class RecipeQuerySet(models.QuerySet):
+    def is_annotated(self, user):
+        in_purchases = Purchase.objects.filter(
+            recipe=models.OuterRef(''),
+            user=user
+        )
+        in_favorites = Favorite.objects.filter(
+            recipe=models.OuterRef('id'),
+            user=user
+        )
+        in_subs = Subscription.objects.filter(
+            author=models.OuterRef('author'),
+            user=user
+        )
+        return self.annotate(
+            in_favored=models.Exists(in_favorites),
+            in_purchased=models.Exists(in_purchases),
+            in_subscriptions=models.Exists(in_subs)
+            )
 
 
 class Recipe(models.Model):

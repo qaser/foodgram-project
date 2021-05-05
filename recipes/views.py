@@ -161,7 +161,7 @@ def recipe_delete(request, recipe_id):
 @login_required
 def recipe_favor(request, username):
     """Предоставляет список любимых рецептов пользователя"""
-    favorites_list = Recipe.objects.favorites(user=request.user)
+    favorites_list = Recipe.objects.user_favor(user=request.user)
     favorites_by_tags = get_recipes_by_tags(request, favorites_list)
     paginator = Paginator(favorites_by_tags.get('recipes'), PAGINATOR_PAGES)
     page_number = request.GET.get('page')
@@ -171,7 +171,7 @@ def recipe_favor(request, username):
 
 
 def purchase_cart(request):
-    purchase = Purchase.objects.filter(user=request.user).all()
+    purchase = Recipe.objects.user_purchase(user=request.user)
     return render(
         request,
         'recipes/shopList.html',

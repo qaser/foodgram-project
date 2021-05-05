@@ -1,6 +1,6 @@
 from django import template
 
-from ..models import Favorite, Purchase, Subscription
+from ..models import Favorite, Purchase, Subscription, Recipe
 
 register = template.Library()
 
@@ -25,7 +25,9 @@ def get_tag_link(request, tag):
 
 @register.filter(name='is_favorite')
 def is_favorite(recipe, user):
-    return Favorite.objects.filter(user=user, recipe=recipe).exists()
+    a = Recipe.objects.is_annotated(user=user).get(id=1)
+    print(a)
+    return Recipe.objects.all()
 
 
 @register.filter(name='is_shop')
