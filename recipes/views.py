@@ -65,22 +65,31 @@ def recipe_view(request, recipe_id):
 
 @login_required
 def recipe_new(request):
-    form = RecipeForm(request.POST or None, files=request.FILES or None)
-    if request.method == 'POST':
-        ingredients = get_ingredients(request)
-        if not ingredients:
-            form.add_error(None, 'Должен быть хотя бы один ингредиент')
-        elif form.is_valid():
-            recipe = form.save(commit=False)
-            recipe.author = request.user
-            recipe.save()
-            for title, amount in ingredients.items():
-                VolumeIngredient.add_ingredient(recipe.id, title, amount)
-            return redirect('index')
+    form = RecipeForm(request.POST or None, files=request.FILES or None,
+                      initial={'author': request.user})
+    if form.is_valid():
+        form.save()
+        return redirect('index')
+    return render(request, 'recipes/formRecipe.html', {'form': form})
 
-    form = RecipeForm()
-    context = {'form': form}
-    return render(request, 'recipes/formRecipe.html', context)
+
+    # form = RecipeForm(request.POST or None, files=request.FILES or None)
+    # if request.method == 'POST':
+    #     ingredients = get_ingredients(request)
+    #     if not ingredients:
+    #         form.add_error(None, 'Должен быть хотя бы один ингредиент')
+    #     elif form.is_valid():
+    #         # recipe = form.save(commit=False)
+    #         form.instance.author = request.user
+    #         form.save()
+    #         for title, amount in ingredients.items():
+    #             VolumeIngredient.add_ingredient(form.instance, title, amount)
+    #         return redirect('index')
+    # form = RecipeForm()
+    # context = {'form': form}
+    # return render(request, 'recipes/formRecipe.html', context)
+
+    
     # user = User.objects.get(username=request.user)
     # if request.method == 'POST':
     #     form = RecipeForm(request.POST or None, files=request.FILES or None)
@@ -88,13 +97,13 @@ def recipe_new(request):
     #     if not ingredients:
     #         form.add_error(None, 'Добавьте ингредиенты')
     #     elif form.is_valid():
-    #         recipe = form.save(commit=False)
-    #         recipe.author = user
-    #         recipe.save()
+    #         print(form.instance)
+    #         form.instance.author = request.user
+    #         form.save()
     #         for ing_name, amount in ingredients.items():
     #             ingredient = get_object_or_404(Ingredient, title=ing_name)
     #             recipe_ing = VolumeIngredient(
-    #                 recipe=recipe,
+    #                 recipe=form.instance,
     #                 ingredient=ingredient,
     #                 quantity=amount
     #             )

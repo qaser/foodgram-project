@@ -2,7 +2,7 @@ from foodgram.settings import PAGINATOR_PAGES
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
-from .models import Tag
+from .models import Ingredient, Tag, VolumeIngredient
 from django.urls import reverse
 
 User = get_user_model()
@@ -22,16 +22,29 @@ def get_recipes_by_tags(request, recipes):
     return context
 
 
-def get_ingredients(request):
-    ingredients = {}
-    for key, title in request.POST.items():
-        if not key.startswith('nameIngredient_'):
-            continue
-        arg = key.split('_')[1]
-        amount = request.POST['valueIngredient_' + arg]
-        ingredients[title] = amount
-    return ingredients
+# def get_ingredients(request):
+#     ingredients = {}
+#     for key, title in request.POST.items():
+#         if not key.startswith('nameIngredient_'):
+#             continue
+#         arg = key.split('_')[1]
+#         amount = request.POST['valueIngredient_' + arg]
+#         ingredients[title] = amount
+#     return ingredients
 
+
+def get_ingredients(ingredients, recipe):
+    ingredients_for_save = []
+    for ingredient in ingredients:
+        product = get_object_or_404(Ingredient, title=ingredient['title'])
+        ingredients_for_save.append(
+            VolumeIngredient(
+                recipe=recipe,
+                ingredient=product,
+                quantity=ingredient['quantity']
+            )
+        )
+    return ingredients_for_save
 
 # разбиваю элементы на страницы
 def split_on_page(request, objects_on_page):
