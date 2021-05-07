@@ -15,9 +15,8 @@ def get_recipes_by_tags(request, recipes):
     for tag in active_tags:
         filters += f'&filters={tag}'
     if active_tags:
-        recipes = recipes.filter(tag__value__in=active_tags).distinct().is_annotated(user=request.user)
-        print(recipes)
-    recipes = recipes.is_annotated(user=request.user)
+        recipes = recipes.filter(tag__value__in=active_tags).distinct()
+    recipes = recipes.is_annotated(user=request.user.is_authenticated)
     context = {'recipes': recipes, 'filters': filters}
     return context
 
@@ -46,6 +45,7 @@ def get_ingredients(ingredients, recipe):
         )
     return ingredients_for_save
 
+
 # разбиваю элементы на страницы
 def split_on_page(request, objects_on_page):
     paginator = Paginator(objects_on_page, PAGINATOR_PAGES)
@@ -57,7 +57,6 @@ def split_on_page(request, objects_on_page):
 # проверка превышения страниц в запросе
 def page_out_of_paginator(request, limit_page):
     page_number = request.GET.get('page')
-    print(page_number)
     if page_number is not None and int(page_number) > limit_page:
         return True
     return False

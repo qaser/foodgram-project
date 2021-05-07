@@ -1,78 +1,73 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 
-from .models import Ingredient, VolumeIngredient, Recipe, Tag
-from .utils import get_ingredients
+from .models import Ingredient, VolumeIngredient, Recipe
 
 
 class RecipeForm(forms.ModelForm):
-    tags = forms.ModelMultipleChoiceField(
-        queryset=Tag.objects.all(),
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'tags__checkbox'}),
-        to_field_name='slug',
-        required=False
-    )
+    # prep_time = forms.IntegerField(
+    #     min_value=1,
+    #     required=True,
+    # )
 
     class Meta:
         model = Recipe
-        fields = ('title', 'tags', 'ingredients',
-                  'time', 'description', 'image')
+        fields = ('title', 'tag', 'time', 'description', 'image')
 
-    def clean_ingredients(self):
-        ingredients = list(
-            zip(
-                self.data.getlist('nameIngredient'),
-                self.data.getlist('unitsIngredient'),
-                self.data.getlist('valueIngredient'),
-            ),
-        )
-        if not ingredients:
-            raise forms.ValidationError('Добавьте ингредиент')
+    def __init__(self, *args, **kwargs):
+        super(RecipeForm, self).__init__(*args, **kwargs)
+        self.fields['tag'].error_messages = {
+            'required': 'Выберите хотя бы один тег'}
 
-        ingredients_clean = []
-        for title, unit, amount in ingredients:
-            if int(amount) < 0:
-                raise forms.ValidationError(
-                    'Добавьте хотя бы один ингредиент'
+    def clean_ingredient(self):
+        super().clean()
+        new_ingredients_list = {}
+        for key, title in self.data.items():
+            if 'nameIngredient_' in key:
+                elem = key.split("_")
+                new_ingredients_list[title] = int(self.data[f'valueIngredient'
+                                                            f'_{elem[1]}'])
+        ing_titles = self.data.getlist("nameIngredient")
+        ing_amount = self.data.getlist("valueIngredient")
+        for title, amount in new_ingredients_list.items():
+            ing_titles.append(title)
+            ing_amount.append(amount)
+        clean_items = {}
+        for number, item in enumerate(ing_titles):
+            ingredient = get_object_or_404(Ingredients, title=item)
+            clean_items[ingredient] = ing_amount[number]
+        self.cleaned_data['items'] = clean_items
+        return self.cleaned_data['items']
+
+    def clean(self):
+        ingredients = self.clean_ingredient()
+        if len(ingredients) == 0:
+            raise ValidationError(
+                'Из ничего вкусно не получится! Добавьте что-нибудь',
+            )
+        for value in ingredients.values():
+            if int(value) < 1:
+                raise ValidationError(
+                    'Уберите ингридиент с 0 значением',
                 )
-            elif not Ingredient.objects.filter(title=title).exists():
-                raise forms.ValidationError(
-                    'Ингредиенты должны быть из списка')
-            else:
-                ingredients_clean.append({
-                    'title': title,
-                    'unit': unit,
-                    'amount': amount,
-                })
-        return ingredients_clean
-
-    def clean_title(self):
-        data = self.cleaned_data['title']
-        if not data:
-            raise forms.ValidationError('Добавьте название рецепта')
-        return data
-
-    def clean_description(self):
-        data = self.cleaned_data['description']
-        if not data:
-            raise forms.ValidationError('Добавьте описание рецепта')
-        return data
-
-    def clean_tags(self):
-        data = self.cleaned_data['tags']
-        if not data:
-            raise forms.ValidationError('Добавьте тег')
-        return data
 
     def save(self, commit=True):
-        instance = super().save(commit=False)
-        instance.author = self.initial['author']
-        instance.save()
-        ingredients = self.cleaned_data['ingredients']
-        self.cleaned_data['ingredients'] = []
+        request = self.initial["request"]
+        recipe = super().save(commit=False)
+        recipe.author = request.user
+        recipe.save()
         self.save_m2m()
-        VolumeIngredient.objects.bulk_create(
-            get_ingredients(ingredients, instance))
-        return instance
+        new_ingredients = self.clean_ingridient()
+        recipe_ingredients = VolumeIngredient.objects.filter(
+            recipe=self.instance)
+        recipe_ingredients.delete()
+        for ingredient, quantity in new_ingredients.items():
+            VolumeIngredient.objects.update_or_create(
+                recipe=self.instance,
+                ingredient=ingredient,
+                quantity=quantity)
+        return self.instance
 
 
 
