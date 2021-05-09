@@ -1,6 +1,6 @@
 from django import template
 
-from ..models import Favorite, Purchase, Subscription, Recipe
+from ..models import Subscription
 
 register = template.Library()
 
@@ -14,7 +14,7 @@ def addclass(field, css):
 @register.filter(name='get_tag_link')
 def get_tag_link(request, tag):
     new_request = request.GET.copy()
-    if tag.value in request.GET.getlist('filters'):
+    if tag.value in request.META['active_tags']:
         filters = new_request.getlist('filters')
         filters.remove(tag.value)
         new_request.setlist('filters', filters)

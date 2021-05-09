@@ -44,39 +44,22 @@ class Ingredient(models.Model):
         return f'{self.title}, {self.dimension}'
 
 
-# class RecipeQuerySet(models.QuerySet):
-
-#     def recipe_with_tag(self, tags):  # передаю теги из view
-#         # tag = [tag for tag in tags]
-#         return self.filter(
-#             tag__value__in=tags
-#         ).select_related('author').prefetch_related('tag').distinct()
-
-#     def selective_annotation(self, bask=False, fav=False, subs=False, **kwargs):
-#         if bask:
-#             self = self.annotate(basket=Exists(Purchase.objects.filter(recipe=OuterRef('pk'), **kwargs)))
-#         if fav:
-#             self = self.annotate(favorite=Exists(Favorite.objects.filter(recipe=OuterRef('pk'), **kwargs)))
-#         if subs:
-#             self = self.annotate(subscribe=Exists(Subscription.objects.filter(author=OuterRef('author'), **kwargs)))
-#         return self
-
-
 class RecipeManager(models.Manager):
     def get_queryset(self):
         return RecipeQuerySet(self.model, using=self._db)
 
+    # проверка наличия аттрибутов у пользователя
     def is_annotated(self, user):
         return self.get_queryset().is_annotated(user=user)
 
     def user_favor(self, user):
-        """Возвращает любимые рецепты пользователя"""
+        # любимые рецепты пользователя
         favorite_recipes = list(Favorite.objects.filter(
             user=user).values_list('recipe_id', flat=True))
         return self.get_queryset().filter(id__in=favorite_recipes)
 
     def user_purchase(self, user):
-        """Возвращает рецепты, добавленные в список покупок"""
+        # рецепты в корзине
         purchase_recipes = list(Purchase.objects.filter(
             user=user).values_list('recipe_id', flat=True))
         return self.get_queryset().filter(id__in=purchase_recipes)
@@ -186,6 +169,11 @@ class Subscription(models.Model):
             models.UniqueConstraint(
                 fields=['user', 'author'],
                 name='unique_subscription'
+            ),
+            # запрет подписки на уровне БД
+            models.CheckConstraint(
+                name='self_subscription_denied',
+                check=~models.Q(user__exact=models.F('author')),
             ),
         ]
         verbose_name = 'подписка'

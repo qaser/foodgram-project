@@ -10,8 +10,15 @@ def all_tags(request):
     return all_tags
 
 
+# можно этого не делать. для единообразия работы с тегами
 def active_tags(request):
     return request.GET.getlist('filters')
+
+
+# def insert_tags(request):
+#     response = self.get_response(request)
+#         print(response)
+#         page = request.GET.get('page')
 
 
 class TagsMiddleware:
@@ -32,15 +39,24 @@ class TagsMiddleware:
 
 #     def __call__(self, request):
 #         response = self.get_response(request)
+#         # print(request.context)
+#         # print(dir(response))
 #         page = request.GET.get('page')
+#         # print(f'{page} page')
 #         try:
-#             paginator = response.context_data.get('paginator')
+#             paginator = response.get('paginator')
+#             # print(f'{paginator} paginator')
 #         except AttributeError:
 #             paginator = None
+#         # print(f'{paginator} paginator')
 #         if (page and paginator) and (page.isdigit() is False or int(page) > paginator.num_pages):
-#             q = request.GET.get('q')
+#             filters = request.GET.get('filters')
+#             print(filters)
 #             full_path = f'{request.path}?page={paginator.num_pages}'
-#             if q:
-#                 full_path = f'{full_path}&q={q}'
+#             if filters:
+#                 full_path = f'{full_path}&filters={filters}'
+#                 print(full_path)
 #             return redirect(full_path)
 #         return response
+
+

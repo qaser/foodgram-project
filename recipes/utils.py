@@ -21,17 +21,6 @@ def get_recipes_by_tags(request, recipes):
     return context
 
 
-# def get_ingredients(request):
-#     ingredients = {}
-#     for key, title in request.POST.items():
-#         if not key.startswith('nameIngredient_'):
-#             continue
-#         arg = key.split('_')[1]
-#         amount = request.POST['valueIngredient_' + arg]
-#         ingredients[title] = amount
-#     return ingredients
-
-
 def get_ingredients(ingredients, recipe):
     ingredients_for_save = []
     for ingredient in ingredients:
