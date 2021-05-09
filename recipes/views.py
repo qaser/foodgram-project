@@ -6,8 +6,8 @@ from django.views.decorators.cache import cache_page
 
 from .forms import RecipeForm
 from .models import Ingredient, Recipe, Subscription, User, VolumeIngredient
-from .utils import (generate_path, get_ingredients, get_recipes_by_tags,
-                    page_out_of_paginator, split_on_page)
+from .utils import (generate_path, get_ingredients, get_ingredients_qwerty, get_recipes_by_tags,
+                    page_out_of_paginator, save_recipe, split_on_page)
 
 
 # список рецептов для главной страницы
@@ -67,12 +67,11 @@ def recipe_view(request, recipe_id):
 
 @login_required
 def recipe_new(request):
-    form = RecipeForm(request.POST or None, files=request.FILES or None,
-                      initial={'author': request.user})
+    form = RecipeForm(request.POST or None, files=request.FILES or None)
     if form.is_valid():
-        form.save()
-        return redirect('index')
-    return render(request, 'recipes/formRecipe.html', {'form': form})
+        if recipe_save(request, form):
+            return redirect('index')
+    return render(request, 'foodgram/recipe_new.html', {'form': form})
 
 
 @login_required()

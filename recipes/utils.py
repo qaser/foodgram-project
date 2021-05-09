@@ -58,3 +58,34 @@ def generate_path(request, limit_page):
         url_tail = f'{url_tail}&filters={tag}'
     url = reverse(request.resolver_match.url_name)
     return f'{url}?page={limit_page}{url_tail}'
+
+
+def get_ingredients_qwerty(data):
+    ingredient_numbers = set()
+    ingredients = []
+    for key in data:
+        if key.startswith('nameIngredient_'):
+            _, number = key.split('_')
+            ingredient_numbers.add(number)
+    for number in ingredient_numbers:
+        ingredients.append(
+            {
+                'title': data[f'nameIngredient_{number}'],
+                'dimension': data[f'unitsIngredient_{number}'],
+                'quantity': data[f'valueIngredient_{number}'],
+            }
+        )
+    return ingredients
+
+
+def save_recipe(recipe, ingredients, request):
+    recipe.author = request.user
+    recipe.save()
+    recipe_ingredients = []
+
+    for item in ingredients:
+        recipe_ing = VolumeIngredient(
+            quantity=item.get('quantity'),
+            ingredient=Ingredient.objects.get(title=item.get('title')),
+            recipe=recipe)
+        recipe_ing.save()
