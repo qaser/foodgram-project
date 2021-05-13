@@ -69,9 +69,9 @@ def recipe_view(request, recipe_id):
 def recipe_new(request):
     form = RecipeForm(request.POST or None, files=request.FILES or None)
     if form.is_valid():
-        if recipe_save(request, form):
+        if save_recipe(request, form):
             return redirect('index')
-    return render(request, 'foodgram/recipe_new.html', {'form': form})
+    return render(request, 'recipes/formRecipe.html', {'form': form})
 
 
 @login_required()
