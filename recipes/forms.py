@@ -10,19 +10,20 @@ class RecipeForm(ModelForm):
         fields = ['title', 'time',
                   'description', 'image', 'tag']
 
-    def clean(self):
-        known_ids = []
-        for items in self.data.keys():
-            if 'nameIngredient' in items:
-                id = items.split('_')
-                known_ids.append(id)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ingredients = extract_ingredients(self.data)
 
-        for id in known_ids:
-            value = self.data.get(f'valueIngredient_{id}')
-
-            if value <= 0:
-                raise ValidationError(
-                    'Пожалуйста, добавьте хотя бы один ингредиент')
+    def clean(self, *args, **kwargs):
+        super().clean()
+        if not self.ingredients:
+            return self.add_error(None, 'Необходимо указать хотя бы один ингредиент для рецепта')
+        uniq_ingredients = list({(v['name'], v['dimension']): v for v in self.ingredients}.values())
+        if len(uniq_ingredients) != len(self.ingredients):
+            return self.add_error(None, 'Исключите дублирование ингредиентов')
+        for ingredient in self.ingredients:
+            if not Ingredient.objects.filter(name=ingredient['name'], dimension=ingredient['dimension']):
+                return self.add_error(None, f"Ингредиента \"{ingredient['name']}\" нет.")
 
 
 
