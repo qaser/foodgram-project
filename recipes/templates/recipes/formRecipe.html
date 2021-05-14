@@ -2,7 +2,7 @@
 {% load static %} 
 {% load user_filters %} 
  
-{% block title %}Создание рецепта{% endblock %} 
+{% block title %}{{ recipe|yesno:"Редактирование рецепта,Создание рецепта" }}{% endblock %} 
  
 {% block style %} 
     <link rel="stylesheet" href="{% static 'css/pages/form.css'%}"> 
@@ -10,9 +10,9 @@
  
  
 {% block content %} 
-    <main class="main container"> 
+    <main class="main container">
         <div class="main__header"> 
-            <h1 class="main__title">Создание рецепта</h1> 
+            <h1 class="main__title">{{ recipe|yesno:"Редактирование рецепта,Создание рецепта" }}</h1> 
         </div> 
         <div class="form-container"> 
             <form class="form" method="post" enctype="multipart/form-data"> 
@@ -27,7 +27,7 @@
                             {% for error in form.title.errors %} 
                                 <span class="form__error">{{ error|escape }}</span> 
                             {% endfor %} 
-                        {% endif %} 
+                        {% endif %}
                     </div> 
                 </div> 
                 <div class="form__group"> 
@@ -76,7 +76,7 @@
                     <label for="{{ form.description.id_for_label }}" class="form__label">Описание</label> 
                     <div class="form__field-group"> 
                         {{ form.description|addclass:"form__textarea" }} 
-                        {% if form.errors %} 
+                        {% if form.errors %}
                             {% for error in field.errors %} 
                                 <span class="form__error">{{ error|escape }}</span> 
                             {% endfor %} 
@@ -92,8 +92,13 @@
                 </div> 
  
                  
-                <div class="form__footer"> 
-                    <button class="button button_style_blue">Создать рецепт</button> 
+                <div class="form__footer">
+                    {% if not recipe %}
+                        <button class="button button_style_blue">Создать рецепт</button>
+                    {% else %}
+                        <button class="button button_style_blue">Сохранить изменения</button>
+                        <a style="margin-left: 2.5em" href="{% url 'recipe_delete' recipe.id %}" class="single-card__text">Удалить рецепт</a>
+                    {% endif %}
                 </div> 
             </form> 
         </div> 

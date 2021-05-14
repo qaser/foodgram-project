@@ -17,6 +17,12 @@ def index(request):
     recipes_by_tags = get_recipes_by_tags(request, recipe_list)
     # выборка, разделённая на страницы
     selection = split_on_page(request, recipes_by_tags.get('recipes'))
+    # извлекаю из пагинатора число получившихся страниц
+    # затем проверяю номер страницы в запросе и сравниваю с лимитом
+    # если запрос превышает лимит, то перенаправляю на 
+    # сгенерированный путь с последней доступной страницей и 
+    # выставленными фильтрами (тегами)
+    # функции для этих манипуляций вынесены в утилиты
     limit_page = selection['paginator'].num_pages
     check_paginator = page_out_of_paginator(request, limit_page)
     if check_paginator:
@@ -70,30 +76,30 @@ def recipe_new(request):
     user = User.objects.get(username=request.user) 
     if request.method == 'POST': 
         form = RecipeForm(request.POST or None, files=request.FILES or None) 
-        ingredients = get_ingredients(request)  # функция вынесена в utils 
+        ingredients = get_ingredients(request)
         if not ingredients: 
             form.add_error(None, 'Добавьте ингредиенты') 
         elif form.is_valid(): 
             recipe = form.save(commit=False) 
             recipe.author = user 
-            recipe.save() 
+            recipe.save()
             for ing_name, amount in ingredients.items(): 
                 ingredient = get_object_or_404(Ingredient, title=ing_name) 
                 recipe_ing = VolumeIngredient( 
-                    recipe=recipe, 
-                    ingredient=ingredient, 
-                    quantity=amount 
+                    recipe=recipe,
+                    ingredient=ingredient,
+                    quantity=amount
                 ) 
-                recipe_ing.save() 
-            form.save_m2m() 
-            return redirect('index') 
-    else: 
-        form = RecipeForm() 
-    return render(request, 'recipes/formRecipe.html', {'form': form}) 
+                recipe_ing.save()
+            form.save_m2m()
+            return redirect('index')
+    else:
+        form = RecipeForm()
+    return render(request, 'recipes/formRecipe.html', {'form': form})
  
  
 @login_required 
-def recipe_edit(request, recipe_id): 
+def recipe_edit(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id) 
     if request.user != recipe.author: 
         return redirect('recipe', recipe_id=recipe.id) 
@@ -127,8 +133,8 @@ def recipe_edit(request, recipe_id):
     ) 
     return render( 
         request, 
-        'recipes/formChangeRecipe.html', 
-        {'form': form, 'recipe': recipe, } 
+        'recipes/formRecipe.html', 
+        {'form': form, 'recipe': recipe,} 
     ) 
 
 
