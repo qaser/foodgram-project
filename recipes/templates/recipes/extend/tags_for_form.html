@@ -1,9 +1,13 @@
-<div class="tags">
-    {% for tag in request.META.all_tags %}
-        <div class="tags__item">
-            <input type="checkbox" name="recipe_tag" id="id_recipe_tag_{{ tag.value }}" class="tags__checkbox tags__checkbox_style_{{ tag.color }} tags__checkbox_active"
-                   value={{ tag.value }} {% if tag.value in request.META.active_tags  %} checked {% endif %}>
-            <label for="id_recipe_tag_{{ tag.value }}" class="tags__label">{{ tag.name }}</label>
-        </div>
-    {% endfor %}
-</div>
+<div class="tags"> 
+    {% for tag_choice, tag_value in form.tag.field.choices %} 
+        <div class="tags__item"> 
+            <input  
+                type="checkbox"  
+                name="tag"  
+                value="{{ tag_choice.instance.pk }}" 
+                id="id_{{ tag_choice.instance.value }}"  
+                class="tags__checkbox tags__checkbox_style_{{ tag_choice.instance.color }}"> 
+                <label for="id_{{ tag_choice.instance.value }}" class="tags__label">{{ tag_choice.instance.name }}</label> 
+        </div> 
+    {% endfor %} 
+</div> 

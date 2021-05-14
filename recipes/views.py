@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_page
 
 from .forms import RecipeForm
 from .models import Ingredient, Recipe, Subscription, User, VolumeIngredient
-from .utils import (generate_path, get_ingredients, get_ingredients_qwerty, get_recipes_by_tags,
+from .utils import (generate_path, get_ingredients, get_recipes_by_tags,
                     page_out_of_paginator, save_recipe, split_on_page)
 
 
@@ -65,126 +65,71 @@ def recipe_view(request, recipe_id):
     )
 
 
-@login_required
-def recipe_new(request):
-    form = RecipeForm(request.POST or None, files=request.FILES or None)
-    if form.is_valid():
-        if save_recipe(request, form):
-            return redirect('index')
-    return render(request, 'recipes/formRecipe.html', {'form': form})
-
-
-@login_required()
-def recipe_edit(request, recipe_id):
-    recipe = get_object_or_404(Recipe, id=recipe_id)
-    if recipe.author != request.user:
-        return redirect('recipe', id=recipe_id)
-    form = RecipeForm(request.POST or None, files=request.FILES or None,
-                      instance=recipe, initial={'author': request.user})
-    tags = recipe.tags.all()
-    ingredients = VolumeIngredient.objects.filter(recipe=recipe)
-    context = {'form': form,
-               'is_created': True,
-               'recipe_id': recipe.id,
-               'tags': tags,
-               'ingredients': ingredients}
-    if form.is_valid():
-        form.save()
-        return redirect('recipe', recipe.id)
-    return render(request, 'recipes/formRecipe.html', context)
-
-
-# @login_required
-# def recipe_new(request):
-#     form = RecipeForm(request.POST or None, files=request.FILES or None,
-#                       initial={'author': request.user})
-#     if form.is_valid():
-#         form.save()
-#         return redirect('index')
-#     return render(request, 'recipes/formRecipe.html', {'form': form})
-
-
-    # form = RecipeForm(request.POST or None, files=request.FILES or None)
-    # if request.method == 'POST':
-    #     ingredients = get_ingredients(request)
-    #     if not ingredients:
-    #         form.add_error(None, 'Должен быть хотя бы один ингредиент')
-    #     elif form.is_valid():
-    #         # recipe = form.save(commit=False)
-    #         form.instance.author = request.user
-    #         form.save()
-    #         for title, amount in ingredients.items():
-    #             VolumeIngredient.add_ingredient(form.instance, title, amount)
-    #         return redirect('index')
-    # form = RecipeForm()
-    # context = {'form': form}
-    # return render(request, 'recipes/formRecipe.html', context)
-
-    
-    # user = User.objects.get(username=request.user)
-    # if request.method == 'POST':
-    #     form = RecipeForm(request.POST or None, files=request.FILES or None)
-    #     ingredients = get_ingredients(request)
-    #     if not ingredients:
-    #         form.add_error(None, 'Добавьте ингредиенты')
-    #     elif form.is_valid():
-    #         print(form.instance)
-    #         form.instance.author = request.user
-    #         form.save()
-    #         for ing_name, amount in ingredients.items():
-    #             ingredient = get_object_or_404(Ingredient, title=ing_name)
-    #             recipe_ing = VolumeIngredient(
-    #                 recipe=form.instance,
-    #                 ingredient=ingredient,
-    #                 quantity=amount
-    #             )
-    #             recipe_ing.save()
-    #         form.save_m2m()
-    #         return redirect('index')
-    # else:
-    #     form = RecipeForm()
-    # return render(request, 'recipes/formRecipe.html', {'form': form})
-
-
-# @login_required
-# def recipe_edit(request, recipe_id):
-#     recipe = get_object_or_404(Recipe, id=recipe_id)
-#     if request.user != recipe.author:
-#         return redirect('recipe', recipe_id=recipe.id)
-#     if request.method == "POST":
-#         form = RecipeForm(
-#             request.POST or None,
-#             files=request.FILES or None,
-#             instance=recipe
-#         )
-#         ingredients = get_ingredients(request)
-#         if form.is_valid():
-#             # VolumeIngredient.objects.filter(recipe=recipe).delete()
-#             recipe.volume_ingredient.all().delete()
-#             recipe = form.save(commit=False)
-#             recipe.author = request.user
-#             recipe.save()
-#             recipe.ingredients.all().delete()
-#             for ing_name, quantity in ingredients.items():
-#                 ingredient = get_object_or_404(Ingredient, title=ing_name)
-#                 recipe_ing = VolumeIngredient(
-#                     recipe=recipe,
-#                     ingredient=ingredient,
-#                     quantity=quantity
-#                 )
-#                 recipe_ing.save()
-#             form.save_m2m()
-#             return redirect('index')
-#     form = RecipeForm(
-#         request.POST or None,
-#         files=request.FILES or None,
-#         instance=recipe
-#     )
-#     return render(
-#         request,
-#         'recipes/formChangeRecipe.html',
-#         {'form': form, 'recipe': recipe, }
-    # )
+@login_required 
+def recipe_new(request): 
+    user = User.objects.get(username=request.user) 
+    if request.method == 'POST': 
+        form = RecipeForm(request.POST or None, files=request.FILES or None) 
+        ingredients = get_ingredients(request)  # функция вынесена в utils 
+        if not ingredients: 
+            form.add_error(None, 'Добавьте ингредиенты') 
+        elif form.is_valid(): 
+            recipe = form.save(commit=False) 
+            recipe.author = user 
+            recipe.save() 
+            for ing_name, amount in ingredients.items(): 
+                ingredient = get_object_or_404(Ingredient, title=ing_name) 
+                recipe_ing = VolumeIngredient( 
+                    recipe=recipe, 
+                    ingredient=ingredient, 
+                    quantity=amount 
+                ) 
+                recipe_ing.save() 
+            form.save_m2m() 
+            return redirect('index') 
+    else: 
+        form = RecipeForm() 
+    return render(request, 'recipes/formRecipe.html', {'form': form}) 
+ 
+ 
+@login_required 
+def recipe_edit(request, recipe_id): 
+    recipe = get_object_or_404(Recipe, id=recipe_id) 
+    if request.user != recipe.author: 
+        return redirect('recipe', recipe_id=recipe.id) 
+    if request.method == "POST": 
+        form = RecipeForm( 
+            request.POST or None, 
+            files=request.FILES or None, 
+            instance=recipe 
+        ) 
+        ingredients = get_ingredients(request) 
+        if form.is_valid(): 
+            VolumeIngredient.objects.filter(recipe=recipe).delete() 
+            recipe = form.save(commit=False) 
+            recipe.author = request.user 
+            recipe.save() 
+            recipe.ingredients.all().delete() 
+            for ing_name, quantity in ingredients.items(): 
+                ingredient = get_object_or_404(Ingredient, title=ing_name) 
+                recipe_ing = VolumeIngredient( 
+                    recipe=recipe, 
+                    ingredient=ingredient, 
+                    quantity=quantity 
+                ) 
+                recipe_ing.save() 
+            form.save_m2m() 
+            return redirect('index') 
+    form = RecipeForm( 
+        request.POST or None, 
+        files=request.FILES or None, 
+        instance=recipe 
+    ) 
+    return render( 
+        request, 
+        'recipes/formChangeRecipe.html', 
+        {'form': form, 'recipe': recipe, } 
+    ) 
 
 
 # удаление рецепта

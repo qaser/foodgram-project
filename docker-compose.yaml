@@ -15,7 +15,7 @@ services:
     env_file:
       - ./.env
   web:
-    image: dangerexit/yamdb:v1.0
+    image: dangerexit/foody_doody:v1.0
     container_name: web
     restart: always
     depends_on:

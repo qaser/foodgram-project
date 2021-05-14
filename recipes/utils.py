@@ -21,18 +21,16 @@ def get_recipes_by_tags(request, recipes):
     return context
 
 
-def get_ingredients(ingredients, recipe):
-    ingredients_for_save = []
-    for ingredient in ingredients:
-        product = get_object_or_404(Ingredient, title=ingredient['title'])
-        ingredients_for_save.append(
-            VolumeIngredient(
-                recipe=recipe,
-                ingredient=product,
-                quantity=ingredient['quantity']
-            )
-        )
-    return ingredients_for_save
+# словарь ингредиентов для рецепта 
+def get_ingredients(request): 
+    ingredients = {} 
+    for key, ingredient_name in request.POST.items(): 
+        if 'nameIngredient' in key: 
+            _ = key.split('_') 
+            ingredients[ingredient_name] = int(request.POST[ 
+                f'valueIngredient_{_[1]}'] 
+            ) 
+    return ingredients
 
 
 # разбиваю элементы на страницы
@@ -58,24 +56,6 @@ def generate_path(request, limit_page):
         url_tail = f'{url_tail}&filters={tag}'
     url = reverse(request.resolver_match.url_name)
     return f'{url}?page={limit_page}{url_tail}'
-
-
-def get_ingredients_qwerty(data):
-    ingredient_numbers = set()
-    ingredients = []
-    for key in data:
-        if key.startswith('nameIngredient_'):
-            _, number = key.split('_')
-            ingredient_numbers.add(number)
-    for number in ingredient_numbers:
-        ingredients.append(
-            {
-                'title': data[f'nameIngredient_{number}'],
-                'dimension': data[f'unitsIngredient_{number}'],
-                'quantity': data[f'valueIngredient_{number}'],
-            }
-        )
-    return ingredients
 
 
 def save_recipe(recipe, ingredients, request):
