@@ -1,3 +1,5 @@
+from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 from foodgram.settings import PAGINATOR_PAGES
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
@@ -56,16 +58,3 @@ def generate_path(request, limit_page):
         url_tail = f'{url_tail}&filters={tag}'
     url = reverse(request.resolver_match.url_name)
     return f'{url}?page={limit_page}{url_tail}'
-
-
-def save_recipe(recipe, ingredients, request):
-    recipe.author = request.user
-    recipe.save()
-    recipe_ingredients = []
-
-    for item in ingredients:
-        recipe_ing = VolumeIngredient(
-            quantity=item.get('quantity'),
-            ingredient=Ingredient.objects.get(title=item.get('title')),
-            recipe=recipe)
-        recipe_ing.save()

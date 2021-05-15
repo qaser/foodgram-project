@@ -8,3 +8,5 @@ venv/
 docker-compose.yaml
 nginx/
 yamdb_workflow.yaml
+
+.env

@@ -44,8 +44,10 @@ coverage/
 .coverage
 .coverage/
 
-media/
-.media
-.media/
+# media/
+# .media
+# .media/
+
+media/cache/
 
 run.sh

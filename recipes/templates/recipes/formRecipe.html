@@ -23,26 +23,24 @@
                     <label for="{{ form.title.id_for_label }}" class="form__label">Название рецепта</label> 
                     <div class="form__field-group"> 
                         {{ form.title|addclass:"form__input" }} 
-                        {% if form.errors %} 
-                            {% for error in form.title.errors %} 
-                                <span class="form__error">{{ error|escape }}</span> 
-                            {% endfor %} 
+                        {% if form.title.errors %} 
+                            <span class="form__error">{{ form.title.error|escape }}</span> 
                         {% endif %}
                     </div> 
-                </div> 
+                </div>
+
                 <div class="form__group"> 
                     <p class="form__label">Теги</p> 
                     <div class="form__field-group"> 
 
                         {% include "recipes/extend/tags_for_form.html" %}
 
-                        {% if form.errors %} 
-                            {% for error in form.tag.errors %} 
-                                <span class="form__error">{{ error|escape }}</span> 
-                            {% endfor %} 
+                        {% if form.tag.errors %} 
+                            <span class="form__error">{{ form.tag.errors|escape }}</span> 
                         {% endif %} 
                     </div> 
-                </div> 
+                </div>
+
                 <div class="form__group"> 
                     <label for="nameIngredient" class="form__label">Ингредиенты</label> 
                     <div class="form__field-group"> 
@@ -59,27 +57,25 @@
                         <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span> 
                         <span class="form__error"></span> 
                     </div> 
-                </div> 
+                </div>
+
                 <div class="form__group"> 
-                    <label for="{{ form.cooking_time.id_for_label }}" class="form__label">Время приготовления</label> 
+                    <label for="{{ form.time.id_for_label }}" class="form__label">Время приготовления</label> 
                     <div class="form__field-group form__field-group_time"> 
                         {{ form.time|addclass:"form__input" }} 
-                        <label for="id_time" class="form__label">минут</label> 
-                        {% if form.errors %} 
-                            {% for error in field.errors %} 
-                                <span class="form__error">{{ error|escape }}</span> 
-                            {% endfor %} 
+                        <label for="{{ form.time.id_for_label }}" class="form__label">минут</label> 
+                        {% if form.time.errors %} 
+                            <span class="form__error">{{ form.time.errors|escape }}</span> 
                         {% endif %} 
-                    </div> 
-                </div> 
+                    </div>
+                </div>
+
                 <div class="form__group"> 
                     <label for="{{ form.description.id_for_label }}" class="form__label">Описание</label> 
                     <div class="form__field-group"> 
                         {{ form.description|addclass:"form__textarea" }} 
-                        {% if form.errors %}
-                            {% for error in field.errors %} 
-                                <span class="form__error">{{ error|escape }}</span> 
-                            {% endfor %} 
+                        {% if form.description.errors %}
+                            <span class="form__error">{{ form.description.errors|escape }}</span>
                         {% endif %} 
                     </div> 
                 </div> 
@@ -91,15 +87,8 @@
                     </div>
                 </div> 
  
-                 
-                <div class="form__footer">
-                    {% if not recipe %}
-                        <button class="button button_style_blue">Создать рецепт</button>
-                    {% else %}
-                        <button class="button button_style_blue">Сохранить изменения</button>
-                        <a style="margin-left: 2.5em" href="{% url 'recipe_delete' recipe.id %}" class="single-card__text">Удалить рецепт</a>
-                    {% endif %}
-                </div> 
+                {% include "recipes/extend/save_button.html" with recipe=recipe %}
+
             </form> 
         </div> 
     </main> 
@@ -110,5 +99,5 @@
     <script src="{% static 'js/components/Header.js' %}"></script> 
     <script src="{% static 'js/utils/debouncing.js' %}"></script> 
     <script src="{% static 'js/api/Api.js' %}"></script> 
-    <script src="{% static 'js/formRecipe.js' %}"></script> 
+    <script src="{% static 'js/formRecipe.js' %}"></script>
 {% endblock %}

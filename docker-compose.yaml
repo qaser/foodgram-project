@@ -15,7 +15,7 @@ services:
     env_file:
       - ./.env
   web:
-    image: dangerexit/foody_doody:v1.0
+    image: dangerexit/foody-doody:v1.0
     container_name: web
     restart: always
     depends_on:
@@ -31,8 +31,8 @@ services:
     restart: always
     volumes:
       - ./nginx:/etc/nginx/conf.d
-      - static_data:/yamdb/static:ro
-      - media_data:/yamdb/media:ro
+      - static_data:/foody-doody/static:ro
+      - media_data:/foody-doody/media:ro
     depends_on:
       - web
     ports:
