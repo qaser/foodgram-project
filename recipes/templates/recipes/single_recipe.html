@@ -9,6 +9,7 @@
 {% endblock %}
 
 {% block content %}
+    {% csrf_token %}
     <div class="single-card" data-id="{{ recipe.id }}" data-author="{{ recipe.author.id }}">
 
     {% load thumbnail %}
@@ -50,9 +51,9 @@
             </div>
             <ul class="single-card__items">
                 <li class="single-card__item">{% include 'recipes/extend/purchase_button.html' %}</li>
-                {% if request.user.username != recipe.author.username %}
+                {% if user.username != recipe.author.username %}
                     {% if user.is_authenticated %}
-                        {% if recipe.in_subscriptions %}
+                        {% if recipe.author.in_subscriptions %}
                             <li class="single-card__item"><button class="button button_style_light-blue button_size_unsubscribe" name="unsubscribe"><span class="icon-check button__icon"></span>Отписаться от автора</button>
                         {% else %}
                             <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>

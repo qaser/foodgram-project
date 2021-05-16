@@ -2,6 +2,7 @@
 <ul class="tags">
     {% for tag in request.META.all_tags %}
         <li class="tags__item">
+            {% csrf_token %}
             <a id="{{ tag.pk }}"
                 class="tags__checkbox tags__checkbox_style_{{ tag.color }}
                 {% if tag.value in request.META.active_tags %} tags__checkbox_active {% endif %}"

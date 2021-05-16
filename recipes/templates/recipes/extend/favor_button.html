@@ -1,5 +1,7 @@
 {% load recipes_filters %}
-{% if request.user.is_authenticated %}
+{% if user.is_authenticated %}
+    {% csrf_token %}
+    
     {% if recipe.in_favored %}
         <button class="button button_style_none" name="favorites">
             <span class="icon-favorite icon-favorite_active"></span>

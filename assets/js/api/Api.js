@@ -20,7 +20,7 @@ class Api {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
       },
       body: JSON.stringify({
         recipe: id
@@ -37,7 +37,7 @@ class Api {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        // 'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
       }
     });
     if (e.ok) {
@@ -51,7 +51,7 @@ class Api {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
       },
       body: JSON.stringify({
         author: id,
@@ -68,7 +68,7 @@ class Api {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        // 'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
       }
     });
     if (e.ok) {
@@ -82,7 +82,7 @@ class Api {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
       },
       body: JSON.stringify({
         recipe: id
@@ -99,7 +99,7 @@ class Api {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        // 'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
       }
     });
     if (e.ok) {
@@ -111,7 +111,7 @@ class Api {
   async getIngredients(text) {
     const e = await fetch(`${this.apiUrl}/ingredients/?search=${text}`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       }
     });
     if (e.ok) {

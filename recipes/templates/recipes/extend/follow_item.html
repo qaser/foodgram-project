@@ -1,4 +1,5 @@
 {% load recipes_filters %}
+{% csrf_token %}
 <div class="card-user" data-author="{{ item.author.id }}">
     <div class="card-user__header">
         <h2 class="card-user__title">

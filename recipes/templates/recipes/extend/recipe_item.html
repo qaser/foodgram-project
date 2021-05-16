@@ -1,4 +1,5 @@
 {% load static %}
+{% csrf_token %}
 <div class="card" data-id="{{ recipe.id }}">
     {% load thumbnail %}
     {% thumbnail recipe.image "364x240" crop="center" as im %}

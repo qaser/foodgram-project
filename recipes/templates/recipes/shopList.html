@@ -4,7 +4,6 @@
    
 {% load static %}
 {% load recipes_filters %}
-{% csrf_token %}
 
 {% block style %}
     <link rel="stylesheet" href="{% static 'css/pages/shopList.css' %}">
@@ -17,6 +16,7 @@
     <div class="card-list card-list_column">
         <ul class="shopping-list">
             {% for recipe in purchase %}
+            {% csrf_token %}
             <li class="shopping-list__item" data-id="{{ recipe.id }}">
                 <div class="recipe recipe_reverse">
                     <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe__image recipe__image_big">

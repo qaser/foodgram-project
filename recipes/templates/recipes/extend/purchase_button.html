@@ -1,4 +1,5 @@
-{% if request.user.is_authenticated %}
+{% if user.is_authenticated %}
+    
     {% if recipe.in_purchased %}
         <button class="button button_style_light-blue-outline" name="purchases"><span class="icon-check button__icon"></span> Рецепт добавлен</button>
     {% else %}

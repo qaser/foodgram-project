@@ -1,10 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.deletion import CASCADE
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.validators import MinValueValidator
-from django.db.models import Exists, OuterRef
-
 
 MESSAGE_MIN_TIME = 'Время приготовления должно быть не меньше 1 минуты.'
 MESSAGE_MIN_QUANTITY = 'Количество ингредиента должно быть не меньше 1'
@@ -147,7 +145,8 @@ class VolumeIngredient(models.Model):
         verbose_name_plural = 'ингредиенты в рецепте'
 
     def __str__(self):
-        return f'{self.ingredient.title} - {self.quantity} {self.ingredient.dimension}'
+        return (f'{self.ingredient.title} - {self.quantity} '
+                f'{self.ingredient.dimension}')
 
 
 class Subscription(models.Model):

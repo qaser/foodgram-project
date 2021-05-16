@@ -1,5 +1,5 @@
+from django.shortcuts import render
 from django.views.generic.base import TemplateView
-from django.shortcuts import get_object_or_404, redirect, render
 
 
 class AuthorView(TemplateView):

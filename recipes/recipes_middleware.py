@@ -1,7 +1,3 @@
-import re
-
-from django.shortcuts import redirect
-
 from .models import Tag
 
 

@@ -1,7 +1,5 @@
 from django import template
 
-from ..models import Subscription
-
 register = template.Library()
 
 
@@ -21,26 +19,6 @@ def get_tag_link(request, tag):
     else:
         new_request.appendlist('filters', tag.value)
     return new_request.urlencode()
-
-
-# @register.filter(name='is_favorite')
-# def is_favorite(recipe, user):
-#     a = Recipe.objects.all().is_annotated(user=user)
-#     for i in a:
-#         print(i.in_favored)
-#     # print(a)
-#     # return Recipe.objects.is_annotated(user=user)
-#     return Recipe.objects.all().is_annotated(user=user)
-
-
-# @register.filter(name='is_shop')
-# def is_shop(recipe, user):
-#     return Purchase.objects.filter(user=user, recipe=recipe).exists()
-
-
-@register.filter(name='is_subscribe')
-def is_follow(author, user):
-    return Subscription.objects.filter(user=user, author=author).exists()
 
 
 # склонение слова "рецепт" (использую в follow_item.html)

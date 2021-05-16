@@ -5,9 +5,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 
 from .forms import RecipeForm
-from .models import Ingredient, Recipe, Subscription, User, VolumeIngredient
-from .utils import (generate_path, get_ingredients, get_recipes_by_tags,
-                    page_out_of_paginator, split_on_page)
+from .models import Recipe, Subscription, User, VolumeIngredient
+from .utils import (generate_path, get_recipes_by_tags, page_out_of_paginator,
+                    split_on_page)
 
 
 # список рецептов для главной страницы
@@ -19,8 +19,8 @@ def index(request):
     selection = split_on_page(request, recipes_by_tags.get('recipes'))
     # извлекаю из пагинатора число получившихся страниц
     # затем проверяю номер страницы в запросе и сравниваю с лимитом
-    # если запрос превышает лимит, то перенаправляю на 
-    # сгенерированный путь с последней доступной страницей и 
+    # если запрос превышает лимит, то перенаправляю на
+    # сгенерированный путь с последней доступной страницей и
     # выставленными фильтрами (тегами)
     # функции для этих манипуляций вынесены в утилиты
     limit_page = selection['paginator'].num_pages
@@ -72,7 +72,7 @@ def recipe_view(request, recipe_id):
 
 
 # новый рецепт
-@login_required 
+@login_required
 def recipe_new(request):
     form = RecipeForm(
         request.POST or None,
@@ -86,10 +86,10 @@ def recipe_new(request):
         if form.is_valid():
             form.save()
             return redirect('index')
- 
+
 
 # редактирование рецепта
-@login_required 
+@login_required
 def recipe_edit(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if recipe.author != request.user:

@@ -1,4 +1,5 @@
 <div class="form__footer">
+    {% csrf_token %}
     {% if not recipe %}
         <button class="button button_style_blue">Создать рецепт</button>
     {% else %}

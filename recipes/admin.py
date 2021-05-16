@@ -31,6 +31,7 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'value', 'color')
     list_filter = ('color',)
 
+
 class VolumeIngredientAdmin(admin.ModelAdmin):
     list_display = ('ingredient', 'quantity', 'recipe')
     search_fields = ('ingredient',)
