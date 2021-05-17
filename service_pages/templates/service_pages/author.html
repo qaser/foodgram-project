@@ -4,17 +4,16 @@
 {% block title %}Об авторе{% endblock %}
 
 {% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pages/single.css'%}">
 {% endblock %}
 
 {% block content %}
 
-    <main class="main container">
-        <div class="custom-center-block">
-           <p><h3> Меня зовут Алексей, этот сайт я сделал во время обучения на платформе "Яндекс.Практикум"
-           по специальности Python-разработчик.<br></h3>
-           <p><h3><a href='https://github.com/qaser'>Мой профиль на Github</a></h3></p>
-        </div>
-    </main>
+    <img class="card__image" src="{% static 'img/2107.jpg'%}" width=300px>
+    <div class="single-card__info">
+        <p class="single-card__text">Меня зовут Алексей, это веб-приложение я сделал во время обучения на платформе</p>
+        <p class="single-card__text">"Яндекс.Практикум" по специальности Python-разработчик.<br></p>
+        <p class="single-card__text"><a href='https://github.com/qaser'>Мой профиль на Github</a></p>
+    </div>
 
 {% endblock %}

@@ -4,22 +4,25 @@
 {% block title %}Технологии{% endblock %}
 
 {% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pages/single.css' %}">
 {% endblock %}
 
 {% block content %}
-    <main class="main container">
-        <div class="custom-center-block">
-            <p><h2>Для создания этого сайта использовались следующие технологии:</h2>
+    <img class="card__image" src="{% static 'img/floppy.jpg'%}" width=200px>
+    <div class="single-card__text">
+            Для создания этого сайта использовались следующие технологии:
+    </div>
+        <div class="single-card__text">
             <ul>
-                <li><h3><a href='https://www.python.org/'>Python</a></h3></li>
-                <li><h3><a href='https://www.djangoproject.com/'>Django</a></h3></li>
-                <li><h3><a href='https://www.postgresql.org/'>PostgreSQL</a></h3></li>
-                <li><h3><a href='https://nginx.org/ru/'>NGINX</a></h3></li>
-                <li><h3><a href='https://www.docker.com/'>Docker</a></h3></li>
-                <li><h3><a href='https://docs.docker.com/compose/'>Docker-compose</a></h3></li>
+                <li><a href='https://www.python.org/'>Python</a></li>
+                <li><a href='https://www.djangoproject.com/'>Django</a></li>
+                <li><a href='https://www.postgresql.org/'>PostgreSQL</a></li>
+                <li><a href='https://nginx.org/ru/'>NGINX</a></li>
+                <li><a href='https://www.docker.com/'>Docker</a></li>
+                <li><a href='https://docs.docker.com/compose/'>Docker-compose</a></li>
+                <li><a href='https://en.wikipedia.org/wiki/Coffee'>Кофе</a></li>
+                <li><a href='https://music.yandex.ru/album/13894605'>Музыка</a></li>
+                <li><a href='https://en.wikipedia.org/wiki/Procrastination'>Вечный спутник</a></li>
             </ul>
-            </p>
         </div>
-    </main>
 {% endblock %}
