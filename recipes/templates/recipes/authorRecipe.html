@@ -3,7 +3,7 @@
 {% load recipes_filters %}
 {% csrf_token %}
 
-{% block title %}Pецепты автора {{ profile.get_full_name }}{% endblock %}
+{% block title %}Pецепты автора {{ author.get_full_name }}{% endblock %}
 
 {% block style %}
     <link rel="stylesheet" href="{% static 'css/pages/index.css' %}">
@@ -12,24 +12,16 @@
 {% block content %}
     <div class="main__header">
         <h1 class="main__title">
-            {% if profile.get_full_name %}
-                {{ profile.get_full_name }}
+            {% if author.get_full_name %}
+                {{ author.get_full_name }}
             {% else %}
-                {{ profile.username }}
+                {{ author.username }}
             {% endif %}
         </h1>
         {% include 'recipes/extend/tags.html' %}
     </div>
     {% if user.is_authenticated %}
-        {% if profile != user %}
-            <div class="author-subscribe" data-author="{{ profile.id }}">
-                {% if recipe.author.in_subscriptions %}
-                    <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" >Отписаться от автора</button></p>
-                {% else %}
-                    <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_auto" name="subscribe" data-out>Подписаться на автора</button></p>
-                {% endif %}
-            </div>
-        {% endif %}
+        {% include 'recipes/extend/subs_button.html' with author=author user=user tag='p' style='padding: 0 0 2em 0;' check=author.in_subscriptions %}
     {% endif %}
 
 <!-- Отображение карточки рецепта -->

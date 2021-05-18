@@ -43,7 +43,7 @@ def profile(request, username):
     if check_paginator:
         redirect_path = generate_path(request, limit_page)
         return redirect(redirect_path)
-    context = {'profile': user, **selection}
+    context = {'author': user, **selection}
     return render(request, 'recipes/authorRecipe.html', context)
 
 
