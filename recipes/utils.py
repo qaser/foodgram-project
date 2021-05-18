@@ -17,7 +17,9 @@ def get_recipes_by_tags(request, recipes):
         recipes = recipes.filter(tag__value__in=active_tags).distinct()
     # if request.user.is_authenticated:
     #     recipes = recipes.is_annotated(user=request.user)
-    recipes = (recipes.is_annotated(user=request.user) if request.user.is_authenticated else recipes)
+    recipes = (recipes.is_annotated(user=request.user)
+               if request.user.is_authenticated
+               else recipes)
     context = {'recipes': recipes, 'filters': filters}
     return context
 
