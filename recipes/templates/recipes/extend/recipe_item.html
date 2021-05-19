@@ -27,7 +27,9 @@
         </div>
     </div>
     <div class="card__footer">
-        {% include 'recipes/extend/purchase_button.html' %}
-        {% include 'recipes/extend/favor_button.html' %}
+    {% if user.is_authenticated %}
+        {% include 'recipes/extend/purchase_button.html' with recipe=recipe %}
+        {% include 'recipes/extend/favor_button.html' with check=recipe.favorite %}
+    {% endif %}
     </div>
 </div>

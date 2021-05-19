@@ -22,7 +22,7 @@
 
     <div class="card-list">
         {% for recipe in page %}
-            {% include "recipes/extend/recipe_item.html" with recipe=recipe %}
+            {% include "recipes/extend/recipe_item.html" with recipe=recipe user=user %}
         {% endfor %}
     </div>
 {% endblock %}

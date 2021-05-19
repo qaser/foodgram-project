@@ -1,6 +1,5 @@
 {% extends "foodgram/base.html" %}
 {% load static %}
-{% load recipes_filters %}
 
 {% block title %}{{ recipe.title }}{% endblock %}
 
@@ -23,7 +22,10 @@
             <div class="single-card__header-info">
                 <h1 class="single-card__title"> {{ recipe.title }} </h1>
                 <div class="single-card__favorite">
-                    {% include 'recipes/extend/favor_button.html' %}
+                    {% if user.is_authenticated %}
+                        {% include 'recipes/extend/favor_button.html' with check=recipe.favorite %}
+                        <div class="single-card__favorite-tooltip tooltip">{{ recipe.favorite|yesno:'Убрать из избранного, Добавить в избранное'}}</div>
+                    {% endif %}
                 </div>
             </div>
             <ul class="single-card__items">
@@ -50,15 +52,11 @@
                 </ul>
             </div>
             <ul class="single-card__items">
-                <li class="single-card__item">{% include 'recipes/extend/purchase_button.html' %}</li>
-                {% if user.username != recipe.author.username %}
-                    {% if user.is_authenticated %}
-                        {% if recipe.author.in_subscriptions %}
-                            <li class="single-card__item"><button class="button button_style_light-blue button_size_unsubscribe" name="unsubscribe"><span class="icon-check button__icon"></span>Отписаться от автора</button>
-                        {% else %}
-                            <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>
-                        {% endif %}
-                    {% endif %}
+                {% if user.is_authenticated %}
+                    <li class="single-card__item">
+                        {% include 'recipes/extend/purchase_button.html' with recipe=recipe %}
+                    </li> 
+                    {% include 'recipes/extend/subs_button.html' with author=recipe.author user=user tagging='li' style='height: 48px;' check=recipe.subs %}
                 {% endif %}
             </ul>
             <div class="single-card__section">

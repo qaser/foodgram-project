@@ -1,20 +1,10 @@
-{% load recipes_filters %}
-{% if user.is_authenticated %}
-    {% csrf_token %}
-    
-    {% if recipe.in_favored %}
-        <button class="button button_style_none" name="favorites">
-            <span class="icon-favorite icon-favorite_active"></span>
-        </button>
-        {% if request.resolver_match.url_name == 'recipe_view' %}
-            <div class="single-card__favorite-tooltip tooltip">Удалить из избранного</div>
-        {% endif %}
-    {% else %}
-        <button class="button button_style_none" name="favorites" data-out>
-            <span class="icon-favorite"></span>
-        </button>
-        {% if request.resolver_match.url_name == 'recipe_view' %}
-            <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
-        {% endif %}
-    {% endif %}
+{% csrf_token %} 
+{% if check %}
+    <button class="button button_style_none" name="favorites">
+        <span class="icon-favorite icon-favorite_active"></span>
+    </button>
+{% else %}
+    <button class="button button_style_none" name="favorites" data-out>
+        <span class="icon-favorite"></span>
+    </button>
 {% endif %}
