@@ -21,13 +21,13 @@
         {% include 'recipes/extend/tags.html' %}
     </div>
     {% if user.is_authenticated %}
-        {% include 'recipes/extend/subs_button.html' with author=author user=user tagging='p' style='padding: 0 0 2em 0;' check=author.recipe.subs %}
+        {% include 'recipes/extend/buttons/subs_button.html' with author=author tagging='p' style='padding: 0 0 2em 0;' check=page.0.subs %}
     {% endif %}
 
 <!-- Отображение карточки рецепта -->
     <div class="card-list">
         {% for recipe in page %}
-            {% include "recipes/extend/recipe_item.html" with recipe=recipe %}
+            {% include "recipes/extend/recipe_item.html" %}
         {% endfor %}
     </div>
 {% endblock %}

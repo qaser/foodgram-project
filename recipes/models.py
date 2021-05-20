@@ -52,14 +52,12 @@ class RecipeManager(models.Manager):
 
     # отдельная выборка для избранного 
     def user_favor(self, user):
-        # любимые рецепты пользователя
         favorite_recipes = list(Favorite.objects.filter(
             user=user).values_list('recipe_id', flat=True))
         return self.get_queryset().filter(id__in=favorite_recipes)
 
     # отдельная выборка для заказов
     def user_purchase(self, user):
-        # рецепты в корзине
         purchase_recipes = list(Purchase.objects.filter(
             user=user).values_list('recipe_id', flat=True))
         return self.get_queryset().filter(id__in=purchase_recipes)
@@ -67,24 +65,26 @@ class RecipeManager(models.Manager):
 
 class RecipeQuerySet(models.QuerySet):
     def is_annotated(self, user):
-        in_purchases = Purchase.objects.filter(
-            recipe=models.OuterRef('id'),
-            user=user
-        )
-        in_favor = Favorite.objects.filter(
-            recipe=models.OuterRef('id'),
-            user=user
-        )
-        in_subs = Subscription.objects.filter(
-            author=models.OuterRef('author'),
-            user=user
-        )
-        # возврат queryset'a
-        return self.annotate(
-            favorite=models.Exists(in_favor),  # вхождение рецепта в избранное
-            purchased=models.Exists(in_purchases),  # вхождение в заказ
-            subs=models.Exists(in_subs)  # вхождение в подписку
-        )
+        if user.is_authenticated:
+            in_purchases = Purchase.objects.filter(
+                recipe=models.OuterRef('id'),
+                user=user
+            )
+            in_favor = Favorite.objects.filter(
+                recipe=models.OuterRef('id'),
+                user=user
+            )
+            in_subs = Subscription.objects.filter(
+                author=models.OuterRef('author'),
+                user=user
+            )
+            # возврат queryset'a
+            return self.annotate(
+                favorite=models.Exists(in_favor),  # вхождение рецепта в избранное
+                purchased=models.Exists(in_purchases),  # вхождение в заказ
+                subs=models.Exists(in_subs)  # вхождение в подписку
+            )
+        return self
 
 
 class Recipe(models.Model):

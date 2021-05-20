@@ -35,8 +35,13 @@ def index(request):
 # страница автора рецептов
 def profile(request, username):
     user = get_object_or_404(User, username=username)
-    # recipe_list = user.recipes.order_by('-pub_date')
-    recipe_list = Recipe.objects.is_annotated(user=user)
+    recipe_list = Recipe.objects.filter(
+        author=user
+    ).is_annotated(
+        request.user,
+    ).distinct().select_related(
+        'author'
+    )
     recipes_by_tags = get_recipes_by_tags(request, recipe_list)
     selection = split_on_page(request, recipes_by_tags.get('recipes'))
     limit_page = selection['paginator'].num_pages

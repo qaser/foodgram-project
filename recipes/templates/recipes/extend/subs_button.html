@@ -1,9 +1,0 @@
-{% if user != author %}
-    <div class="author-subscribe" data-author="{{ author.id }}">
-        <{{ tagging }} style={{ style }}>
-            <button class="button button_style_light-blue button_size" name="subscribe">
-                {{ check| yesno:'Отписаться от автора,Подписаться на автора' }}
-            </button>
-        </{{ tagging }}
-    </div>
-{% endif %}
