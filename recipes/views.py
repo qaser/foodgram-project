@@ -11,7 +11,7 @@ from .utils import (generate_path, get_recipes_by_tags, page_out_of_paginator,
 
 
 # список рецептов для главной страницы
-@cache_page(20, key_prefix='index_page')
+# @cache_page(20, key_prefix='index_page')
 def index(request):
     recipe_list = Recipe.objects.all()
     recipes_by_tags = get_recipes_by_tags(request, recipe_list)

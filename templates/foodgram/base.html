@@ -12,7 +12,7 @@
     </head>
 
     <body class="body">
-        {% include 'foodgram/base_ext/nav.html' %}
+        {% include 'foodgram/base_ext/nav.html' with tally=user.purchases.count mark=request.resolver_match.url_name %}
         <main class="main container">
             {% block content %}{% endblock %}
             {% if page.has_other_pages %}

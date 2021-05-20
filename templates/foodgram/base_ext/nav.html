@@ -2,33 +2,43 @@
     <nav class="nav">
         <div class="nav__container container">
             <ul class="nav__items list">
-                <li class="nav__item{% if request.resolver_match.url_name == 'index' %} nav__item_active{% endif %}">
+                <li class="nav__item{% if mark == 'index' %} nav__item_active{% endif %}">
                     <a href="{% url 'index' %}" class="nav__link link">Рецепты</a>
                 </li>
-                {% if request.user.is_authenticated %}
-                    <li class="nav__item{% if request.resolver_match.url_name == 'subscriptions' %} nav__item_active{% endif %}">
+                {% if user.is_authenticated %}
+                    <li class="nav__item{% if mark == 'subscriptions' %} nav__item_active{% endif %}">
                         <a href="{% url 'subscriptions' user.username %}" class="nav__link link">Мои подписки</a>
                     </li>
-                    <li class="nav__item{% if request.resolver_match.url_name == 'recipe_new' %} nav__item_active{% endif %}">
+                    <li class="nav__item{% if mark == 'recipe_new' %} nav__item_active{% endif %}">
                         <a href="{% url 'recipe_new' %}" class="nav__link link">Создать рецепт</a>
                     </li>
-                    <li class="nav__item{% if request.resolver_match.url_name == 'recipe_favor' %} nav__item_active{% endif %}">
+                    <li class="nav__item{% if mark == 'recipe_favor' %} nav__item_active{% endif %}">
                         <a href="{% url 'recipe_favor' user.username %}" class="nav__link link">Избранное</a>
                     </li>
-                    <li class="nav__item {% if request.path == purchase %}nav__item_active{% endif %}">
+                    <li class="nav__item{% if mark == 'purchase' %} nav__item_active{% endif %}">
                         <a href="{% url 'purchase' %}" class="nav__link link">Список покупок</a>
-                        <span class="badge badge_style_blue nav__badge" id="counter">{{ user.purchases.all.count }}</span>
+                        <span class="badge badge_style_blue nav__badge" id="counter">{% if tally %}{{ tally }}{% endif %}</span>
                     </li>
                 {% endif %}
             </ul>
             <ul class="nav__items list">
-                {% if request.user.is_authenticated %}
-                    <li class="nav__item"><a href="{% url 'profile' user.username %}" class="nav__link link">{{ user.username }}</a></li>
-                    <li class="nav__item"><a href="{% url 'password_change' %}" class="nav__link link">Изменить пароль</a></li>
-                    <li class="nav__item"><a href="{% url 'logout' %}" class="nav__link link">Выход</a></li>
+                {% if user.is_authenticated %}
+                    <li class="nav__item{% if mark == 'profile' %} nav__item_active{% endif %}">
+                        <a href="{% url 'profile' user.username %}" class="nav__link link">{{ user.username }}</a>
+                    </li>
+                    <li class="nav__item{% if mark == 'password_change' %} nav__item_active{% endif %}">
+                        <a href="{% url 'password_change' %}" class="nav__link link">Изменить пароль</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="{% url 'logout' %}" class="nav__link link">Выход</a>
+                    </li>
                 {% else %}
-                    <li class="nav__item"><a href="{% url 'login' %}" class="nav__link link">Войти</a></li>
-                    <li class="nav__item"><a href="{% url 'signup' %}" style='padding-top: 16px' class="button button_style_blue">Создать аккаунт</a></li>
+                    <li class="nav__item">
+                        <a href="{% url 'login' %}" class="nav__link link">Войти</a>
+                    </li>
+                    <li class="nav__item">
+                        <a href="{% url 'signup' %}" style='padding-top: 16px' class="button button_style_blue">Создать аккаунт</a>
+                    </li>
                 {% endif %}
             </ul>
         </div>

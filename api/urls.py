@@ -5,17 +5,17 @@ from . import views
 
 router = DefaultRouter()
 router.register(
-    r'ingredients',
+    'ingredients',
     views.IngredientViewSet,
     basename='ingredients'
 )
 router.register(
-    r'subscriptions',
+    'subscriptions',
     views.SubscriptionViewSet,
     basename='subscriptions'
 )
-router.register(r'favorites', views.FavoriteViewSet, basename='favorites')
-router.register(r'purchases', views.PurchaseViewSet, basename='purchases')
+router.register('favorites', views.FavoriteViewSet, basename='favorites')
+router.register('purchases', views.PurchaseViewSet, basename='purchases')
 
 urlpatterns = [
     path('', include(router.urls)),
