@@ -91,10 +91,10 @@ def recipe_new(request):
     context = {'form': form}
     if request.method != 'POST':
         return render(request, 'recipes/formRecipe.html', context)
-    else:
-        if form.is_valid():
-            form.save()
-            return redirect('index')
+    if form.is_valid():
+        form.instance.author = request.user
+        form.save()
+        return redirect('index')
 
 
 # редактирование рецепта
@@ -158,9 +158,9 @@ def purchase_cart(request):
 def purchase_save(request):
     title = 'recipe__ingredients__title'
     dimension = 'recipe__ingredients__dimension'
-    quantity = 'recipe__volume_ingredient__quantity'
+    volume = 'recipe__volume_ingredient__volume'
     ingredients = request.user.purchases.select_related('recipe').order_by(
-        title).values(title, dimension).annotate(amount=Sum(quantity)).all()
+        title).values(title, dimension).annotate(amount=Sum(volume)).all()
     if not ingredients:
         return render(request, '/misc/400.html', status=400)
     text = 'Список покупок:\n\n'

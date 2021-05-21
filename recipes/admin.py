@@ -3,7 +3,7 @@ from django.contrib import admin
 from . import models
 
 
-class IngredientQuantityInline(admin.TabularInline):
+class IngredientVolumeInline(admin.TabularInline):
     model = models.Recipe.ingredients.through
     min_num = 1
 
@@ -23,7 +23,7 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('title', 'author', 'pub_date')
     list_filter = ('author__username', 'tag')
     readonly_fields = ('count_favorite',)
-    inlines = (IngredientQuantityInline,)
+    inlines = (IngredientVolumeInline,)
     count_favorite.short_description = 'количество добавлений в избранное'
 
 
@@ -33,7 +33,7 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class VolumeIngredientAdmin(admin.ModelAdmin):
-    list_display = ('ingredient', 'quantity', 'recipe')
+    list_display = ('ingredient', 'volume', 'recipe')
     search_fields = ('ingredient',)
 
 

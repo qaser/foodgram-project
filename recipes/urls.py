@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path(
-        'subscriptions-list/<str:username>/',
+        'subscriptions/<str:username>/',
         views.subscription_index,
         name='subscriptions'
     ),

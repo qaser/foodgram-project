@@ -9,7 +9,7 @@ handler500 = 'service_pages.views.server_error'  # noqa
 handler400 = 'service_pages.views.bad_request'  # noqa
 
 urlpatterns = [
-    path('master-chief/', admin.site.urls),
+    path('master-chef/', admin.site.urls),
     path('auth/', include('users.urls')),
     path('auth/', include('django.contrib.auth.urls')),
     path('service/', include('service_pages.urls')),

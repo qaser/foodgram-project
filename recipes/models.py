@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models.deletion import CASCADE
 
 MESSAGE_MIN_TIME = 'Время приготовления должно быть не меньше 1 минуты.'
-MESSAGE_MIN_QUANTITY = 'Количество ингредиента должно быть не меньше 1'
+MESSAGE_MIN_VOLUME = 'Количество ингредиента должно быть не меньше 1'
 
 User = get_user_model()
 
@@ -138,9 +138,9 @@ class VolumeIngredient(models.Model):
         on_delete=CASCADE,
         related_name='volume_ingredient'
     )
-    quantity = models.PositiveIntegerField(
+    volume = models.PositiveIntegerField(
         'количество',
-        validators=[MinValueValidator(1, message=MESSAGE_MIN_QUANTITY)]
+        validators=[MinValueValidator(1, message=MESSAGE_MIN_VOLUME)]
     )
 
     class Meta:
@@ -148,7 +148,7 @@ class VolumeIngredient(models.Model):
         verbose_name_plural = 'ингредиенты в рецепте'
 
     def __str__(self):
-        return (f'{self.ingredient.title} - {self.quantity} '
+        return (f'{self.ingredient.title} - {self.volume} '
                 f'{self.ingredient.dimension}')
 
 
