@@ -2,15 +2,16 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import cache_page
 
 from .forms import RecipeForm
 from .models import Recipe, Subscription, User
-from .utils import (generate_path, get_recipes_by_tags,
-                    page_out_of_paginator, split_on_page)
+from .utils import (generate_path, get_recipes_by_tags, page_out_of_paginator,
+                    split_on_page)
 
 
 # список рецептов для главной страницы
-# @cache_page(20, key_prefix='index_page')
+@cache_page(20, key_prefix='index_page')
 def index(request):
     recipe_list = Recipe.objects.all()
     recipes_by_tags = get_recipes_by_tags(request, recipe_list)
