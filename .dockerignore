@@ -12,6 +12,3 @@ yamdb_workflow.yaml
 .env
 
 db.sqlite3
-
-.migrations/
-migrations/
