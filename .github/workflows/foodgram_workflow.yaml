@@ -68,7 +68,8 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
-          sudo docker-compose down --rmi type local
+          sudo docker-compose down
+          sudo docker image rm -f dangerexit/foody-doody:v1.0
           sudo docker-compose rm -s
           sudo docker-compose up --force-recreate -d
     
