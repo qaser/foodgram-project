@@ -33,7 +33,7 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class VolumeIngredientAdmin(admin.ModelAdmin):
-    list_display = ('ingredient', 'volume', 'recipe')
+    list_display = ('ingredient', 'quantity', 'recipe')
     search_fields = ('ingredient',)
 
 

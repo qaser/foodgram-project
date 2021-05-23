@@ -2,12 +2,11 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.decorators.cache import cache_page
 
 from .forms import RecipeForm
-from .models import Recipe, Subscription, User, VolumeIngredient
-from .utils import (generate_path, get_recipes_by_tags, page_out_of_paginator,
-                    split_on_page)
+from .models import Recipe, Subscription, User
+from .utils import (generate_path, get_recipes_by_tags,
+                    page_out_of_paginator, split_on_page)
 
 
 # список рецептов для главной страницы
@@ -35,13 +34,8 @@ def index(request):
 # страница автора рецептов
 def profile(request, username):
     user = get_object_or_404(User, username=username)
-    recipe_list = Recipe.objects.filter(
-        author=user
-    ).is_annotated(
-        request.user,
-    ).distinct().select_related(
-        'author'
-    )
+    recipe_list = Recipe.objects.filter(author=user).is_annotated(
+        request.user).distinct().select_related('author')
     recipes_by_tags = get_recipes_by_tags(request, recipe_list)
     selection = split_on_page(request, recipes_by_tags.get('recipes'))
     limit_page = selection['paginator'].num_pages
@@ -83,18 +77,12 @@ def recipe_view(request, recipe_id):
 # новый рецепт
 @login_required
 def recipe_new(request):
-    form = RecipeForm(
-        request.POST or None,
-        files=request.FILES or None,
-        initial={'request': request}
-    )
-    context = {'form': form}
-    if request.method != 'POST':
-        return render(request, 'recipes/formRecipe.html', context)
+    form = RecipeForm(request.POST or None, files=request.FILES or None)
     if form.is_valid():
         form.instance.author = request.user
         form.save()
         return redirect('index')
+    return render(request, 'recipes/formRecipe.html', {'form': form})
 
 
 # редактирование рецепта
@@ -106,19 +94,13 @@ def recipe_edit(request, recipe_id):
     form = RecipeForm(
         request.POST or None,
         files=request.FILES or None,
-        initial={'request': request},
         instance=recipe
     )
-    if request.method == 'POST':
-        if form.is_valid():
-            VolumeIngredient.objects.filter(recipe=recipe).delete()
-            form.save()
-            return redirect('recipe_view', recipe_id)
-    return render(
-        request,
-        'recipes/formRecipe.html',
-        {'form': form, 'recipe': recipe}
-    )
+    context = {'form': form, 'recipe': recipe}
+    if form.is_valid():
+        form.save()
+        return redirect('recipe_view', recipe.id)
+    return render(request, 'recipes/formRecipe.html', context)
 
 
 # удаление рецепта
@@ -156,22 +138,32 @@ def purchase_cart(request):
 
 @login_required
 def purchase_save(request):
+    lenght = 0
     title = 'recipe__ingredients__title'
     dimension = 'recipe__ingredients__dimension'
-    volume = 'recipe__volume_ingredient__volume'
+    quantity = 'recipe__volume_ingredient__quantity'
     ingredients = request.user.purchases.select_related('recipe').order_by(
-        title).values(title, dimension).annotate(amount=Sum(volume)).all()
+        title).values(title, dimension).annotate(amount=Sum(quantity)).all()
     if not ingredients:
         return render(request, '/misc/400.html', status=400)
-    text = 'Список покупок:\n\n'
+    text = 'Веб-приложение foody-doody.ru\n\nСписок покупок:\n\n'
+    # определяю самую длинное название ингредиента
+    for i in ingredients:
+        if len(i[title]) > lenght:
+            lenght = len(i[title])
+    # генерирую текст списка ингредиентов
     for number, ingredient in enumerate(ingredients, start=1):
         amount = ingredient['amount']
-        text += (
-            f'{number}) '
-            f'{ingredient[title]}, '
-            f'{ingredient[dimension]} - '
-            f'{amount}\n'
+        # для удобства чтения списка покупок делаю динамические отступы
+        number_space = ('  ' if number < 10 else ' ')
+        amount_space = '.' * (lenght - len(ingredient[title]) + 3)
+        text = '{}{}'.format(
+            text,
+            f'{number}){number_space}{ingredient[title].capitalize()}'
+            f'{amount_space}{amount}, {ingredient[dimension]}\n'
         )
+    footer = "\n\nIt's Foody-Doody time!"  # двойные кавычки детектед
+    text = '{}{}'.format(text, footer)
     response = HttpResponse(text, content_type='text/plain')
     filename = 'purchases.txt'
     response['Content-Disposition'] = f'attachment; filename={filename}'

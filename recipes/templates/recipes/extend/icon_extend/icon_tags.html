@@ -1,0 +1,5 @@
+<ul class={{ class_1 }}>
+    {% for tag in tags %}
+        <li class={{ class_2 }}><span class="badge badge_style_{{ tag.color }}">{{ tag.name }}</span></li>
+    {% endfor %}
+</ul>

@@ -1,9 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.forms import CheckboxSelectMultiple, ClearableFileInput, ModelForm
-from django.shortcuts import get_object_or_404
 
 from recipes.models import Ingredient, Recipe, VolumeIngredient
-# from recipes.utils import get_ingredients
 
 
 class ImageWidget(ClearableFileInput):
@@ -31,33 +29,38 @@ class RecipeForm(ModelForm):
             if key.startswith('nameIngredient'):
                 _, _, number = key.partition('_')
                 value = f'valueIngredient_{number}'
-                self.ingredients[name] = {'volume': int(data.get(value))}
+                self.ingredients[name] = {'quantity': int(data.get(value))}
 
     def save(self, commit=True):
-        # request = self.initial['request']
         recipe = super().save(commit=False)
-        # recipe.author = request.user
         recipe.save()
         objects = []
         for data in self.ingredients.values():
-            objects.append(VolumeIngredient(recipe=recipe,
-                                            ingredient=data.get('object'),
-                                            volume=data.get('volume'), )
-                           )
+            objects.append(
+                VolumeIngredient(
+                    recipe=recipe,
+                    ingredient=data.get('ingredient'),
+                    quantity=data.get('quantity')
+                )
+            )
         if objects:
             recipe.volume_ingredient.all().delete()
             VolumeIngredient.objects.bulk_create(objects)
         self.save_m2m()
+        return recipe
 
     def clean(self):
         if not self.ingredients:
-            raise ValidationError('Empty ingredients list not allowed')
-        for title, volume in self.ingredients.items():
-            if volume.get('volume') < 0:
-                raise ValidationError(f'Invalid value for {title}')
+            raise ValidationError('Добавьте ингредиенты для Вашего рецепта')
+        for title, quantity in self.ingredients.items():
+            if quantity['quantity'] < 1:
+                raise ValidationError(
+                    f'Количество ингредиента "{title}" '
+                    'должно быть больше нуля.'
+                )
             try:
                 ingredient = Ingredient.objects.filter(title=title).get()
-                self.ingredients[title].update({'object': ingredient})
+                self.ingredients[title].update({'ingredient': ingredient})
             except ObjectDoesNotExist:
-                raise ValidationError(f'{title} not valid ingredient')
+                raise ValidationError('Выберите ингредиент из списка')
         return super().clean()

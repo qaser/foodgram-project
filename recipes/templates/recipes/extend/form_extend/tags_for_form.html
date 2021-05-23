@@ -1,0 +1,23 @@
+{% comment %} {% if recipe %} {% endcomment %}
+    <div class="tags"> 
+        {% for tag_choice, tag_value in form.tag.field.choices %} 
+            <div class="tags__item">
+                <input  
+                    type="checkbox"  
+                    name="tag"  
+                    value="{{ tag_choice.instance.pk }}" 
+                    id="id_{{ tag_choice.instance.value }}"  
+                    class="tags__checkbox tags__checkbox_style_{{ tag_choice.instance.color }}"> 
+                    <label for="id_{{ tag_choice.instance.value }}" class="tags__label">{{ tag_choice.instance.name }}</label> 
+            </div> 
+        {% endfor %} 
+    </div> 
+{% comment %} {% else %}
+    {% for tag_choice, tag_value in form.tag.field.choices %} 
+    <div class="tags__item">
+        <input type="checkbox" name="tags" id="id_{{ tag.instance.slug }}" class="tags__checkbox tags__checkbox_style_{{ tag.instance.color }}" value="{{ tag.instance.id }}"
+        {% if tag.instance.id in form.tags.value %} checked {% endif %}>
+        <label for="id_{{ tag.instance.slug }}" class="tags__label">{{ tag.instance.title }}</label>
+    </div>
+    {% endfor %}
+{% endif %} {% endcomment %}

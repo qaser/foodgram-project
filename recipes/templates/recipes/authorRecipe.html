@@ -3,7 +3,7 @@
 {% load recipes_filters %}
 {% csrf_token %}
 
-{% block title %}Pецепты автора {{ author.get_full_name }}{% endblock %}
+{% block title %}Pецепты автора {% firstof author.get_full_name author.username %}{% endblock %}
 
 {% block style %}
     <link rel="stylesheet" href="{% static 'css/pages/index.css' %}">
@@ -11,13 +11,7 @@
 
 {% block content %}
     <div class="main__header">
-        <h1 class="main__title">
-            {% if author.get_full_name %}
-                {{ author.get_full_name }}
-            {% else %}
-                {{ author.username }}
-            {% endif %}
-        </h1>
+        <h1 class="main__title">{% firstof author.get_full_name author.username %}</h1>
         {% include 'recipes/extend/tags.html' %}
     </div>
     {% if user.is_authenticated %}
@@ -27,7 +21,7 @@
 <!-- Отображение карточки рецепта -->
     <div class="card-list">
         {% for recipe in page %}
-            {% include "recipes/extend/recipe_item.html" %}
+            {% include "recipes/extend/recipe_item.html" with author=recipe.author %}
         {% endfor %}
     </div>
 {% endblock %}

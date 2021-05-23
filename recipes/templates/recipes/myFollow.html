@@ -15,7 +15,7 @@
     </div>
     <div class="card-list">
         {% for item in page %}
-            {% include "recipes/extend/follow_item.html" with item=item %}
+            {% include "recipes/extend/follow_item.html" with author=item.author %}
         {% endfor %}
     </div>
 {% endblock %}

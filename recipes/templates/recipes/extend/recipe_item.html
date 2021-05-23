@@ -7,28 +7,15 @@
     {% endthumbnail %}
     <div class="card__body">
         <a class="card__title link" href="{% url 'recipe_view' recipe.id %}"> {{ recipe.title }}</a> 
-        <ul class="card__items">
-            {% for tag in recipe.tag.all %}
-                <li class="card__item"><span class="badge badge_style_{{ tag.color }}">{{ tag.name }}</span></li>
-            {% endfor %}
-        </ul>
+            {% include 'recipes/extend/icon_extend/icon_tags.html' with class_1="card__items" class_2="card__item" tags=recipe.tag.all %}
         <div class="card__items card__items_column">
-            <p class="card__text"><span class="icon-time"></span> {{ recipe.time }} мин.</p>
-            <p class="card__text">
-                <span class="icon-user"></span>
-                <a href="{% url 'profile' recipe.author.username %}" style="color: black">
-                    {% if recipe.author.get_full_name %}
-                        {{ recipe.author.get_full_name }}
-                    {% else %} 
-                        {{ recipe.author.username }}
-                    {% endif %}
-                </a>
-            </p>
+            {% include 'recipes/extend/icon_extend/icon_time.html' with class="card__text" time=recipe.time %}
+            {% include 'recipes/extend/icon_extend/icon_user.html' with class="card__text" %}
         </div>
     </div>
     <div class="card__footer">
     {% if user.is_authenticated %}
-        {% include 'recipes/extend/buttons/purchase_button.html' %}
+        {% include 'recipes/extend/buttons/purchase_button.html' with check=recipe.purchased%}
         {% include 'recipes/extend/buttons/favor_button.html' with check=recipe.favorite %}
     {% endif %}
     </div>

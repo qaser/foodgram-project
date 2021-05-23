@@ -1,9 +1,8 @@
 <div class="form__footer">
-    {% csrf_token %}
     {% if not recipe %}
         <button class="button button_style_blue">Создать рецепт</button>
     {% else %}
         <button class="button button_style_blue">Сохранить изменения</button>
-        <a style="margin-left: 2.5em" href="{% url 'recipe_delete' recipe.id %}" class="single-card__text">Удалить рецепт</a>
+        <a style="margin-left: 2.5em" href="{% url 'recipe_delete' recipe.id %}" class="form__ingredient-link">Удалить рецепт</a>
     {% endif %}
 </div>

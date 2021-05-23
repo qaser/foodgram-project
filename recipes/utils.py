@@ -24,18 +24,6 @@ def get_recipes_by_tags(request, recipes):
     return context
 
 
-# словарь ингредиентов для рецепта
-# def get_ingredients(request, data=None):
-#     ingredients = {}
-#     for key, ingredient_name in request.POST.items():
-#         if 'nameIngredient' in key:
-#             _ = key.split('_')
-#             ingredients[ingredient_name] = int(
-#                 request.POST[f'valueIngredient_{_[1]}']
-#             )
-#     return ingredients
-
-
 # разбиваю элементы на страницы
 def split_on_page(request, objects_on_page):
     paginator = Paginator(objects_on_page, PAGINATOR_PAGES)

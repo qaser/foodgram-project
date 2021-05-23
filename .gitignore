@@ -32,9 +32,9 @@ static/
 .static/
 posts/static/
 
-migrations/
-.migrations
-.migrations/
+# migrations/
+# .migrations
+# .migrations/
 
 # assets/
 # .assets

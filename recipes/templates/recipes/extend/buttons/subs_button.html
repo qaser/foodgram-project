@@ -2,11 +2,8 @@
     <div class="author-subscribe" data-author="{{ author.id }}">
         <{{ tagging }} style={{ style }}>
             <button class="button button_style_light-blue button_size_subscribe" name="subscribe"
-             {% if check %}
-                >Отписаться от автора
-            {% else %} 
-                data-out>Подписаться на автора
-            {% endif %}
+                {% if not check %}data-out{% endif %}>
+                {{ check|yesno:'Отписаться от автора,Подписаться на автора' }}
             </button>
         </{{ tagging }}
     </div>

@@ -1,6 +1,6 @@
+from django.core.cache import cache
 from django.test import Client, TestCase
 from django.urls import reverse
-from django.core.cache import cache
 from PIL import Image
 
 from .models import Group, Post, User
@@ -27,7 +27,7 @@ class TestClient(TestCase):
         urls = [
             reverse('index'),
             reverse('profile', kwargs={'username': username}),
-            reverse('subscriptions', kwargs={'username':username}),
+            reverse('subscriptions', kwargs={'username': username}),
             reverse(
                 'recipe_view',
                 kwargs={'recipe_id': recipe.id}
@@ -141,14 +141,12 @@ class TestClient(TestCase):
         )
         self.assertEqual(resp.status_code, 200)
 
-
     def test_404(self):
         resp = self.client.get('/lost-site/')
         self.assertEqual(resp.status_code, 404)
 
-
     def test_tag_img_include(self):
-        img = Image.new("RGB", (900, 400))
+        img = Image.new('RGB', (900, 400))
         self.auth_user.post(
             reverse('new_post'),
             data={

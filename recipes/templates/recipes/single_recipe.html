@@ -28,23 +28,12 @@
                     {% endif %}
                 </div>
             </div>
-            <ul class="single-card__items">
-                {% for tag in recipe.tag.all %}
-                    <li class="single-card__item"><span class="badge badge_style_{{ tag.color }}">{{ tag.name }}</span></li>
-                {% endfor %}
-            </ul>
+            {% include 'recipes/extend/icon_extend/icon_tags.html' with class_1="single-card__items" class_2="single-card__item" tags=recipe.tag.all %}
             <div class="single-card__items single-card__items_column">
-                <p class="single-card__text"><span class="icon-time"></span> {{recipe.time}} мин.</p>
+                {% include 'recipes/extend/icon_extend/icon_time.html' with class="single-card__text" time=recipe.time %}
                 <ul class="single-card__items">
                     <li class="single-card__item">
-                        <p class="single-card__text">
-                            <span class="icon-user"></span> 
-                            {% if recipe.author.get_full_name %}
-                                {{ recipe.author.get_full_name }}
-                            {% else %} 
-                                {{ recipe.author.username }}
-                            {% endif %}
-                        </p>
+                        {% include 'recipes/extend/icon_extend/icon_user.html' with class="single-card__text" author=recipe.author %}
                     </li>
                     {% if user == recipe.author %}
                         <li class="single-card__item">  <a style="margin-left: 2.5em" href="{% url 'recipe_edit' recipe.id %}" class="single-card__text">Редактировать рецепт</a></li>
@@ -54,7 +43,7 @@
             <ul class="single-card__items">
                 {% if user.is_authenticated %}
                     <li class="single-card__item">
-                        {% include 'recipes/extend/buttons/purchase_button.html' with recipe=recipe %}
+                        {% include 'recipes/extend/buttons/purchase_button.html' with check=recipe.purchased%}
                     </li> 
                     {% include 'recipes/extend/buttons/subs_button.html' with author=recipe.author tagging='li' style='height: 48px;' check=recipe.subs %}
                 {% endif %}

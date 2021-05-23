@@ -1,39 +1,37 @@
 {% load recipes_filters %}
 {% csrf_token %}
-<div class="card-user" data-author="{{ item.author.id }}">
+<div class="card-user" data-author="{{ author.id }}">
     <div class="card-user__header">
         <h2 class="card-user__title">
-            {% if item.author.get_full_name %}
-                {{ item.author.get_full_name }}
-            {% else %} 
-                {{ item.author.username }}
-            {% endif %}
+            <a href="{% url 'profile' author.username %}" style="text-decoration: none;">
+                {% firstof author.get_full_name author.username %}
+            </a>
         </h2>
     </div>
     <div class="card-user__body">
         <ul class="card-user__items">
-            {% for recipe in item.author.recipes.all|slice:":3" %}
-                    <li class="card-user__item">
-                        {% load thumbnail %}
+            {% for recipe in author.recipes.all|slice:":3" %}
+                <li class="card-user__item">
+                    {% load thumbnail %}
+                    <a href="{% url 'recipe_view' recipe.id %}" style="text-decoration: none;">
                         <div class="recipe">
                             {% thumbnail recipe.image "144x144" crop="center" upscale=True as im %}
                                 <img src="{{ im.url }}" alt={{ recipe.title }} class="recipe__image">
                             {% endthumbnail %}
                             <h3 class="recipe__title">{{ recipe.title }}</h3>
-                            <p class="recipe__text"><span class="icon-time"></span> {{ recipe.time }} мин.</p>
+                            {% include 'recipes/extend/icon_extend/icon_time.html' with class="recipe__text" time=recipe.time %}
                         </div>
-                    </li>
+                    </a>
+                </li>
             {% endfor %}
-            {% if item.author.recipes.count > 3 %}
+            {% if author.recipes.count > 3 %}
                 <li class="card-user__item">
-                    <a href="{% url 'profile' item.author.username %}"
-                        class="card-user__link link">Еще {{ item.author.recipes.count|add:"-3"|word_conjugate:"рецепт,рецепта,рецептов" }}
+                    <a href="{% url 'profile' author.username %}"
+                        class="card-user__link link">Еще {{ author.recipes.count|add:"-3"|word_conjugate:"рецепт,рецепта,рецептов" }}
                     </a>
                 </li>
             {% endif %}
         </ul>
     </div>
-    <div class="card-user__footer">
-        <button class="button button_style_light-blue button_size_auto" name="subscribe">Отписаться</button>
-    </div>
+    {% include 'recipes/extend/buttons/follow_unsub_button.html' %}
 </div>

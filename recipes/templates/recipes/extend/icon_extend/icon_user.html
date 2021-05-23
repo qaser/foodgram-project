@@ -1,0 +1,6 @@
+<p class={{ class }}>
+    <span class="icon-user"></span>
+    <a href="{% url 'profile' author.username %}" style="color: black">
+        {% firstof author.get_full_name author.username %}
+    </a>
+</p>

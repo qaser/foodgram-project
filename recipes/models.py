@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models.deletion import CASCADE
 
 MESSAGE_MIN_TIME = 'Время приготовления должно быть не меньше 1 минуты.'
-MESSAGE_MIN_VOLUME = 'Количество ингредиента должно быть не меньше 1'
+MESSAGE_MIN_QUANTITY = 'Количество ингредиента должно быть не меньше 1'
 
 User = get_user_model()
 
@@ -15,12 +15,12 @@ class Tag(models.Model):
     value = models.CharField('слаг тэга', max_length=50)
     color = models.CharField('цвет тэга в шаблоне', max_length=30, null=True)
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'тэг'
         verbose_name_plural = 'тэги'
+
+    def __str__(self):
+        return self.name
 
 
 class Ingredient(models.Model):
@@ -50,7 +50,7 @@ class RecipeManager(models.Manager):
     def is_annotated(self, user):
         return self.get_queryset().is_annotated(user=user)
 
-    # отдельная выборка для избранного 
+    # отдельная выборка для избранного
     def user_favor(self, user):
         favorite_recipes = list(Favorite.objects.filter(
             user=user).values_list('recipe_id', flat=True))
@@ -80,7 +80,7 @@ class RecipeQuerySet(models.QuerySet):
             )
             # возврат queryset'a
             return self.annotate(
-                favorite=models.Exists(in_favor),  # вхождение рецепта в избранное
+                favorite=models.Exists(in_favor),  # рецепт в избранном
                 purchased=models.Exists(in_purchases),  # вхождение в заказ
                 subs=models.Exists(in_subs)  # вхождение в подписку
             )
@@ -138,9 +138,9 @@ class VolumeIngredient(models.Model):
         on_delete=CASCADE,
         related_name='volume_ingredient'
     )
-    volume = models.PositiveIntegerField(
+    quantity = models.PositiveIntegerField(
         'количество',
-        validators=[MinValueValidator(1, message=MESSAGE_MIN_VOLUME)]
+        validators=[MinValueValidator(1, message=MESSAGE_MIN_QUANTITY)]
     )
 
     class Meta:
@@ -148,7 +148,7 @@ class VolumeIngredient(models.Model):
         verbose_name_plural = 'ингредиенты в рецепте'
 
     def __str__(self):
-        return (f'{self.ingredient.title} - {self.volume} '
+        return (f'{self.ingredient.title} - {self.quantity} '
                 f'{self.ingredient.dimension}')
 
 
