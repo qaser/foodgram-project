@@ -5,7 +5,7 @@ from recipes.models import Ingredient, Recipe, VolumeIngredient
 
 
 class ImageWidget(ClearableFileInput):
-    template_name = 'recipes/extend/image_widget.html'
+    template_name = 'recipes/extend/form_extend/image_widget.html'
 
 
 class RecipeForm(ModelForm):
@@ -54,10 +54,8 @@ class RecipeForm(ModelForm):
             raise ValidationError('Добавьте ингредиенты для Вашего рецепта')
         for title, quantity in self.ingredients.items():
             if quantity['quantity'] < 1:
-                raise ValidationError(
-                    f'Количество ингредиента "{title}" '
-                    'должно быть больше нуля.'
-                )
+                raise ValidationError(f'Количество ингредиента "{title}" '
+                                      'должно быть больше нуля.')
             try:
                 ingredient = Ingredient.objects.filter(title=title).get()
                 self.ingredients[title].update({'ingredient': ingredient})

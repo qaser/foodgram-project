@@ -6,7 +6,6 @@ def all_tags(request):
     return all_tags
 
 
-# можно этого не делать. для единообразия работы с тегами
 def active_tags(request):
     return request.GET.getlist('filters')
 

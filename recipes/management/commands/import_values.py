@@ -12,8 +12,9 @@ class Command(BaseCommand):
         with open('ingredients.csv', encoding='utf-8') as file:
             reader = csv.reader(file)
             for i, row in enumerate(reader):
+                title, dimension = row
                 if i:
-                    _, created = Ingredient.objects.get_or_create(
-                        title=row[0],
-                        dimension=row[1],
+                    _, _ = Ingredient.objects.get_or_create(
+                        title=title,
+                        dimension=dimension,
                     )

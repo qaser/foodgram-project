@@ -24,16 +24,16 @@ class CreateDestroyViewSet(mixins.CreateModelMixin,
 
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object(user=self.request.user)
-        if obj.delete():
-            return JsonResponse({'Success': True}, status=status.HTTP_200_OK)
-        return JsonResponse({'Success': False})
+        return (JsonResponse({'Success': True}, status=status.HTTP_200_OK)
+                if obj.delete()
+                else JsonResponse({'Success': False}))
 
 
 class IngredientViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     filter_backends = (filters.SearchFilter, )
-    search_fields = ('^title',)
+    search_fields = ('$title',)  # для постгрес поменять на @
 
 
 class SubscriptionViewSet(CreateDestroyViewSet):

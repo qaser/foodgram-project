@@ -1,6 +1,11 @@
+{% load static %}
 {% load thumbnail %}
-{% thumbnail recipe.image {{ size }} upscale=True as im %}  
-    <a class="link">
-        <img class="card__image" src="{{ im.url }}" alt="{% static 'img/testCardImg.png' %}" title="{{ recipe.title }}">
-    </a>
+{% thumbnail recipe.image size crop="center" upscale=True as im %}
+    {% if small_pix %}
+        <img class={{ class }} src="{{ im.url }}" alt="{% static 'img/testCardImg.png' %}" title="{{ recipe.title }}">
+    {% else %}
+        <a class="link" href="{% url 'recipe_view' recipe.id %}">
+            <img class={{ class }} src="{{ im.url }}" alt="{% static 'img/testCardImg.png' %}" title="{{ recipe.title }}">
+        </a>
+    {% endif %}
 {% endthumbnail %}

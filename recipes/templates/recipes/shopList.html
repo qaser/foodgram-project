@@ -20,7 +20,9 @@
                 <li class="shopping-list__item" data-id="{{ recipe.id }}">
                     <a href="{% url 'recipe_view' recipe.id %}" style="text-decoration: none;">
                         <div class="recipe recipe_reverse">
-                            <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="recipe__image recipe__image_big">
+
+                            {% include 'recipes/extend/image.html' with size="144x144" class="recipe__image recipe__image_big" small_pix=True %}
+
                             <h3 class="recipe__title">{{ recipe.title }}</h3>
                             {% include 'recipes/extend/icon_extend/icon_time.html' with class="recipe__text" time=recipe.time %}
                         </div>

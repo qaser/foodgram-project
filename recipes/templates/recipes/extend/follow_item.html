@@ -12,12 +12,11 @@
         <ul class="card-user__items">
             {% for recipe in author.recipes.all|slice:":3" %}
                 <li class="card-user__item">
-                    {% load thumbnail %}
                     <a href="{% url 'recipe_view' recipe.id %}" style="text-decoration: none;">
                         <div class="recipe">
-                            {% thumbnail recipe.image "144x144" crop="center" upscale=True as im %}
-                                <img src="{{ im.url }}" alt={{ recipe.title }} class="recipe__image">
-                            {% endthumbnail %}
+
+                            {% include 'recipes/extend/image.html' with size="144x144" class="recipe__image" small_pix=True %}
+
                             <h3 class="recipe__title">{{ recipe.title }}</h3>
                             {% include 'recipes/extend/icon_extend/icon_time.html' with class="recipe__text" time=recipe.time %}
                         </div>
