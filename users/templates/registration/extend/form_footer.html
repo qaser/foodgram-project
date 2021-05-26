@@ -1,0 +1,6 @@
+<div class="form__footer">
+    <button class="button button_style_blue">{{ footer_text }}</button>
+    {% if forget_pass %}
+        <a href="{% url "password_reset" %}"  class="form__forgot-link">Забыли пароль?</a>
+    {% endif %}
+</div>

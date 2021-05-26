@@ -14,30 +14,12 @@
         <h1 class="main__title">Регистрация</h1>
     </div>
     <div class="form-container">
-
-        {% for error in form.errors %}
-            <div class="form__error" role="alert">
-                {{ error }}
-            </div>
-        {% endfor %}
-
-        <form class="form" method="post" action="{% url 'signup' %}">
-
+        <form class="form" method="post">
             {% csrf_token %}
             {% for field in form %}
-                <div class="form__group"aria-required={% if field.field.required %}"true"{% else %}"false"{% endif %}>
-                    <label for="{{ field.id_for_label }}" class="form__label">
-                        {{ field.label }}
-                    </label>
-                    <div class="form__field-group">
-                        {{ field|addclass:"form__input"}}
-                    </div>
-                </div>
+                {% include "registration/extend/form_field.html" with id=field.id_for_label label=field.label errors=field.errors %}
             {% endfor %}
-          
-            <div class="form__footer">
-                <button class="button button_style_blue">Создать аккаунт</button>
-            </div>
+            {% include "registration/extend/form_footer.html" with footer_text="Создать аккаунт" %}
         </form>
     </div>
 {% endblock %}

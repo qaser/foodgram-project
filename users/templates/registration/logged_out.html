@@ -8,7 +8,11 @@
 {% endblock %}
 
 {% block content %}
-    <p class="main__title">Вы вышли из своей учётной записи</p>
-    <br>
-    <p class="card__text"><a href="{% url 'index' %}">Вернуться на главную</a></p>
+     <div class="custom-center-block">
+        <p class="custom-text-block">
+            Вы вышли из своей учётной записи. Ждём вас снова!
+        </p>
+            {% include "registration/extend/custom_button_block.html" with url="/"  button_text="Перейти на главную страницу" %}
+        </p>
+    </div>
 {% endblock %}

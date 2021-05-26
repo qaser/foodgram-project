@@ -46,7 +46,6 @@ class RecipeManager(models.Manager):
     def get_queryset(self):
         return RecipeQuerySet(self.model, using=self._db)
 
-    # проверка наличия аттрибутов у пользователя
     def is_annotated(self, user):
         return self.get_queryset().is_annotated(user=user)
 
@@ -175,7 +174,7 @@ class Subscription(models.Model):
             # запрет подписки на уровне БД
             models.CheckConstraint(
                 name='self_subscription_denied',
-                check=~models.Q(user__exact=models.F('author')),
+                check=~models.Q(user=models.F('author')),
             ),
         ]
         verbose_name = 'подписка'

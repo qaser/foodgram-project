@@ -26,9 +26,10 @@ def get_tag_link(request, tag):
 def word_conjugate(number, args):
     args = [arg.strip() for arg in args.split(',')]
     last_digit = int(number) % 10
+    if int(number) > 10 and str(number)[-2:] in ['11', '12', '13', '14']:
+        return f'{number} {args[2]}'  # рецептов
     if last_digit == 1:
-        return f'{number} {args[0]}'
-    elif 1 < last_digit < 5:
-        return f'{number} {args[1]}'
-    elif last_digit > 4 or last_digit == 0:
-        return f'{number} {args[2]}'
+        return f'{number} {args[0]}'  # рецепт
+    if 1 < last_digit < 5:
+        return f'{number} {args[1]}'  # рецепта
+    return f'{number} {args[2]}'  # рецептов

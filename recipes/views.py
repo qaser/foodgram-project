@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_page
 
 from .forms import RecipeForm
 from .models import Recipe, Subscription, User
-from .utils import (generate_path, get_recipes_by_tags, page_out_of_paginator,
+from .utils import (get_recipes_by_tags, page_out_of_paginator,
                     split_on_page)
 
 
@@ -15,19 +15,10 @@ from .utils import (generate_path, get_recipes_by_tags, page_out_of_paginator,
 def index(request):
     recipe_list = Recipe.objects.all()
     recipes_by_tags = get_recipes_by_tags(request, recipe_list)
-    # выборка, разделённая на страницы
     selection = split_on_page(request, recipes_by_tags.get('recipes'))
-    # извлекаю из пагинатора число получившихся страниц
-    # затем проверяю номер страницы в запросе и сравниваю с лимитом
-    # если запрос превышает лимит, то перенаправляю на
-    # сгенерированный путь с последней доступной страницей и
-    # выставленными фильтрами (тегами)
-    # функции для этих манипуляций вынесены в утилиты
-    limit_page = selection['paginator'].num_pages
-    check_paginator = page_out_of_paginator(request, limit_page)
-    if check_paginator:
-        redirect_path = generate_path(request, limit_page)
-        return redirect(redirect_path)
+    check, url = page_out_of_paginator(request, selection)
+    if check:
+        return redirect(url)
     context = {'filters': recipes_by_tags['filters'], **selection}
     return render(request, 'recipes/index.html', context)
 
@@ -39,11 +30,9 @@ def profile(request, username):
         request.user).distinct().select_related('author')
     recipes_by_tags = get_recipes_by_tags(request, recipe_list)
     selection = split_on_page(request, recipes_by_tags.get('recipes'))
-    limit_page = selection['paginator'].num_pages
-    check_paginator = page_out_of_paginator(request, limit_page)
-    if check_paginator:
-        redirect_path = generate_path(request, limit_page)
-        return redirect(redirect_path)
+    check, url = page_out_of_paginator(request, selection)
+    if check:
+        return redirect(url)
     context = {'author': user, **selection}
     return render(request, 'recipes/authorRecipe.html', context)
 
@@ -53,11 +42,9 @@ def profile(request, username):
 def subscription_index(request, username):
     subscriptions = Subscription.objects.filter(user=request.user)
     selection = split_on_page(request, subscriptions)
-    limit_page = selection['paginator'].num_pages
-    check_paginator = page_out_of_paginator(request, limit_page)
-    if check_paginator:
-        redirect_path = generate_path(request, limit_page)
-        return redirect(redirect_path)
+    check, url = page_out_of_paginator(request, selection)
+    if check:
+        return redirect(url)
     context = {'subscriptions': subscriptions, ** selection}
     return render(request, 'recipes/myFollow.html', context)
 
@@ -119,11 +106,9 @@ def recipe_favor(request, username):
     favorites_list = Recipe.objects.user_favor(user=request.user)
     favorites_by_tags = get_recipes_by_tags(request, favorites_list)
     selection = split_on_page(request, favorites_by_tags.get('recipes'))
-    limit_page = selection['paginator'].num_pages
-    check_paginator = page_out_of_paginator(request, limit_page)
-    if check_paginator:
-        redirect_path = generate_path(request, limit_page)
-        return redirect(redirect_path)
+    check, url = page_out_of_paginator(request, selection)
+    if check:
+        return redirect(url)
     return render(request, 'recipes/favorite.html', selection)
 
 

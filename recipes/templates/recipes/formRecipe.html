@@ -28,7 +28,7 @@
                     </div>
                 {% endwith %}
 
-                {% with form.tags as field %}
+                {% with form.tag as field %}
                     <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
                         <div class="form__field-group">
                             {% include "recipes/extend/form_extend/tags_for_form.html" %}

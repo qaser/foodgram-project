@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
-from django.urls import reverse
 
 from foodgram.settings import PAGINATOR_PAGES
 
@@ -9,18 +8,13 @@ User = get_user_model()
 
 # рецепты с фильтрацией по тегам и аннотированием
 def get_recipes_by_tags(request, recipes):
-    filters = ''
     active_tags = request.META['active_tags']
-    for tag in active_tags:
-        filters += f'&filters={tag}'
     if active_tags:
         recipes = recipes.filter(tag__value__in=active_tags).distinct()
-    # if request.user.is_authenticated:
-    #     recipes = recipes.is_annotated(user=request.user)
     recipes = (recipes.is_annotated(user=request.user)
                if request.user.is_authenticated
                else recipes)
-    context = {'recipes': recipes, 'filters': filters}
+    context = {'recipes': recipes, 'filters': request.META['url_tail_tags']}
     return context
 
 
@@ -32,18 +26,14 @@ def split_on_page(request, objects_on_page):
     return {'page': page, 'paginator': paginator}
 
 
-# проверка превышения страниц в запросе
-def page_out_of_paginator(request, limit_page):
+# проверка превышения страниц в запросе и генерация url
+def page_out_of_paginator(request, selection):
+    limit_page = selection['paginator'].num_pages
     page_number = request.GET.get('page')
-    if page_number is not None and int(page_number) > limit_page:
-        return True
-    return False
-
-
-# генерация строки запроса с тегами и последней страницей
-def generate_path(request, limit_page):
+    check = (page_number is not None and int(page_number) > limit_page)
     url_tail = ''
     for tag in request.META['active_tags']:
         url_tail = f'{url_tail}&filters={tag}'
-    url = reverse(request.resolver_match.url_name)
-    return f'{url}?page={limit_page}{url_tail}'
+    url_head = request.path
+    url = f'{url_head}?page={limit_page}{url_tail}'
+    return [check, url]

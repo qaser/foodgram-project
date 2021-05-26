@@ -1,0 +1,8 @@
+{% load user_filters %}
+<div class="form__group">
+    <label for="{{ id }}" class="form__label">{{ label }}</label>
+    <div class="form__field-group">
+        {{ field|addclass:"form__input" }}
+        <span class="form__error">{{ errors }}</span>
+    </div>
+</div>
