@@ -1,6 +1,16 @@
-<button 
-    class="button {{ check|yesno:'button_style_light-blue-outline,button_style_light-blue' }}" 
-    name="purchases" {{ check|yesno:",data-out" }}>
-    <span class="icon-{{ check|yesno:'check,plus'}} button__icon"></span>
-    {{ check|yesno:" Рецепт добавлен, Добавить в покупки" }}
-</button>
+<!-- не лучший вариант, но не нашел способа встроить yesno внутри yesno-->
+{% if single_recipe %}
+    <button 
+        class="button {{ check|yesno:'button_style_light-blue-outline,button_style_blue' }}" 
+        name="purchases" {{ check|yesno:",data-out=" }}>
+        <span class="icon-{{ check|yesno:'check,plus'}} button__icon"></span>
+        {{ check|yesno:" Рецепт добавлен, Добавить в покупки" }}
+    </button>
+{% else %}
+    <button 
+        class="button {{ check|yesno:'button_style_light-blue-outline,button_style_light-blue' }}" 
+        name="purchases" {{ check|yesno:",data-out=" }}>
+        <span class="icon-{{ check|yesno:'check,plus'}} button__icon"></span>
+        {{ check|yesno:" Рецепт добавлен, Добавить в покупки" }}
+    </button>
+{% endif %}

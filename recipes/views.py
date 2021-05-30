@@ -17,6 +17,7 @@ def index(request):
     recipes_by_tags = get_recipes_by_tags(request, recipe_list)
     selection = split_on_page(request, recipes_by_tags.get('recipes'))
     check, url = page_out_of_paginator(request, selection)
+    print(selection)
     if check:
         return redirect(url)
     context = {'filters': recipes_by_tags['filters'], **selection}
@@ -33,7 +34,11 @@ def profile(request, username):
     check, url = page_out_of_paginator(request, selection)
     if check:
         return redirect(url)
-    context = {'author': user, **selection}
+    context = {
+        'filters': recipes_by_tags['filters'],
+        'author': user,
+        **selection
+    }
     return render(request, 'recipes/authorRecipe.html', context)
 
 
@@ -109,10 +114,12 @@ def recipe_favor(request, username):
     check, url = page_out_of_paginator(request, selection)
     if check:
         return redirect(url)
-    return render(request, 'recipes/favorite.html', selection)
+    context = {'filters': favorites_by_tags['filters'], **selection}
+    return render(request, 'recipes/favorite.html', context)
 
 
 # список покупок
+@login_required
 def purchase_cart(request):
     purchase = Recipe.objects.user_purchase(user=request.user)
     return render(

@@ -16,7 +16,7 @@
         <main class="main container">
             {% block content %}{% endblock %}
             {% if page.has_other_pages %}
-                {% include "foodgram/base_ext/paginator.html" with items=page paginator=paginator %}
+                {% include "foodgram/base_ext/paginator.html" %}
             {% endif %} 
         </main>       
 

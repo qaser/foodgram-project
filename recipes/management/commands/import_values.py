@@ -14,7 +14,7 @@ class Command(BaseCommand):
             for i, row in enumerate(reader):
                 title, dimension = row
                 if i:
-                    _, created = Ingredient.objects.get_or_create(
+                    _, _ = Ingredient.objects.get_or_create(
                         title=title,
                         dimension=dimension,
                     )

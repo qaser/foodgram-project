@@ -38,7 +38,7 @@
             <ul class="single-card__items">
                 {% if user.is_authenticated %}
                     <li class="single-card__item">
-                        {% include 'recipes/extend/buttons/purchase_button.html' with check=recipe.purchased%}
+                        {% include 'recipes/extend/buttons/purchase_button.html' with check=recipe.purchased single_recipe=True%}
                     </li> 
                     {% include 'recipes/extend/buttons/subs_button.html' with author=recipe.author tagging='li' style='height: 48px;' check=recipe.subs %}
                 {% endif %}
