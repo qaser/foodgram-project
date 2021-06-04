@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path(
-        'subscriptions/<str:username>/',
+        'subscriptions/',
         views.subscription_index,
         name='subscriptions'
     ),
@@ -23,7 +23,7 @@ urlpatterns = [
         name='recipe_delete'
     ),
     path(
-        'recipes/favorite/<str:username>/',
+        'recipes/favorite/',
         views.recipe_favor,
         name='recipe_favor'
     ),

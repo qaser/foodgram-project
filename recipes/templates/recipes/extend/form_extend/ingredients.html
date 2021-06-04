@@ -1,0 +1,31 @@
+<div class="form__group">
+    <label for="nameIngredient" class="form__label">Ингредиенты</label>
+    <div class="form__field-group">
+        <div class="form__field-group-ingredientes">
+            <div class="form__dropdown">
+                <input type="text" id="nameIngredient" class="form__input" autocomplete="off">
+                <div class="form__dropdown-items"></div>
+            </div>
+            <input type="number" id="cantidad" class="form__input" min="0">
+            <label for="cantidad" class="form__label" id="cantidadVal">шт.</label>
+        </div>
+        <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
+        <div class="form__field-group-ingredientes-container">
+            {% for i in form.ingredients.items %}
+                {% with forloop.counter as counter %}
+                    <!-- структура данных (название ингредиента, {quantity: , dimension: , check: }) -->
+                    {% if i.1.check == 1 %}
+                        <div class="form__field-item-ingredient" id="ing_{{ counter }}">
+                            <span> {{ i.0 }} - {{ i.1.quantity }} {{ i.1.dimension }}</span>
+                            <span class="form__field-item-delete"></span>
+                            <input id="nameIngredient_{{ counter }}" name="nameIngredient_{{ counter }}" type="hidden" value="{{ i.0 }}">
+                            <input id="valueIngredient_{{ counter }}" name="valueIngredient_{{ counter }}" type="hidden" value="{{ i.1.quantity }}">
+                            <input id="unitsIngredient_{{ counter }}" name="unitsIngredient_{{ counter }}" type="hidden" value="{{ i.1.dimension }}">
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            {% endfor %}
+        </div>
+        <span class="form__error">{{ form.non_field_errors }}</span>
+    </div>
+</div>

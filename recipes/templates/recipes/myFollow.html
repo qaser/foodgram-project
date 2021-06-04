@@ -18,6 +18,13 @@
             {% include "recipes/extend/follow_item.html" with author=item.author %}
         {% endfor %}
     </div>
+    {% if not page %}
+        <a class="recipe__text" style="font-size: 20px; color: black;">У Вас пока нет любимых авторов</a>
+        <br>
+        <br>
+        <a class="recipe__text" style="font-size: 20px;" href="{% url 'index' %}">На главной странице</a>
+        <a class="recipe__text" style="font-size: 20px;"> Вы обязательно найдёте интересного автора</a>
+    {% endif %}
 {% endblock %}
 
 {% block script %}

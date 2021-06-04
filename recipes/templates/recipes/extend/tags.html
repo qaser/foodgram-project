@@ -1,13 +1,20 @@
-{% load recipes_filters %}
 <ul class="tags">
     {% for tag in request.META.all_tags %}
-        <li class="tags__item">
-            {% csrf_token %}
-            <a id="{{ tag.pk }}"
-                class="tags__checkbox tags__checkbox_style_{{ tag.color }}
-                {% if tag.value in request.META.active_tags %} tags__checkbox_active {% endif %}"
-                href="?{{ request|get_tag_link:tag }}"></a>
-            <span class="tags__label">{{ tag.name }}</span>
-        </li>
+        {% if request.META.count_active_tags == 0 %}
+            <li class="tags__item">
+                <a id="{{ tag.attrs.pk }}"
+                class="tags__checkbox tags__checkbox_style_{{ tag.attrs.color }} tags__checkbox_active"
+                href="{{ tag.primal_url }}"></a>
+                <span class="tags__label">{{ tag.attrs.name }}</span>
+            </li>
+        {% else %}
+            <li class="tags__item">
+                <a id="{{ tag.attrs.pk }}"
+                class="tags__checkbox tags__checkbox_style_{{ tag.attrs.color }}
+                {% if tag.active %} tags__checkbox_active {% endif %}"
+                href="{{ tag.url }}"></a>
+                <span class="tags__label">{{ tag.attrs.name }}</span>
+            </li>
+        {% endif %}
     {% endfor %}
 </ul>

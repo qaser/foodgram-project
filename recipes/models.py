@@ -42,27 +42,24 @@ class Ingredient(models.Model):
         return f'{self.title}, {self.dimension}'
 
 
-class RecipeManager(models.Manager):
-    def get_queryset(self):
-        return RecipeQuerySet(self.model, using=self._db)
-
-    def is_annotated(self, user):
-        return self.get_queryset().is_annotated(user=user)
+class RecipeQuerySet(models.QuerySet):
+    def get_by_tags(self, tags):
+        return self.filter(tag__value__in=tags).distinct()
 
     # отдельная выборка для избранного
     def user_favor(self, user):
-        favorite_recipes = list(Favorite.objects.filter(
-            user=user).values_list('recipe_id', flat=True))
-        return self.get_queryset().filter(id__in=favorite_recipes)
+        favorite_recipes = list(
+            user.favorites.all().values_list('recipe_id', flat=True)
+        )
+        return self.filter(id__in=favorite_recipes)
 
     # отдельная выборка для заказов
     def user_purchase(self, user):
-        purchase_recipes = list(Purchase.objects.filter(
-            user=user).values_list('recipe_id', flat=True))
-        return self.get_queryset().filter(id__in=purchase_recipes)
+        purchase_recipes = list(
+            user.purchases.all().values_list('recipe_id', flat=True)
+        )
+        return self.filter(id__in=purchase_recipes)
 
-
-class RecipeQuerySet(models.QuerySet):
     def is_annotated(self, user):
         if user.is_authenticated:
             in_purchases = Purchase.objects.filter(
@@ -115,7 +112,7 @@ class Recipe(models.Model):
         auto_now_add=True,
         db_index=True
     )
-    objects = RecipeManager()
+    objects = RecipeQuerySet.as_manager()
 
     class Meta:
         ordering = ['-pub_date']

@@ -28,44 +28,14 @@
                     </div>
                 {% endwith %}
 
-                {% with form.tag as field %}
-                    <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
-                        <div class="form__field-group">
-                            {% include "recipes/extend/form_extend/tags_for_form.html" %}
-                            {% include 'recipes/extend/form_extend/error.html' with field=field %}
-                        </div> 
-                    </div>
-                {% endwith %}
-
-                <div class="form__group">
-                    <label for="nameIngredient" class="form__label">Ингредиенты</label>
+                <div class="form__group" aria-required="{% if form.tag.field.required %}true{% else %}false{% endif %}">
                     <div class="form__field-group">
-                        <div class="form__field-group-ingredientes">
-                            <div class="form__dropdown">
-                                <input type="text" id="nameIngredient" class="form__input">
-                                <div class="form__dropdown-items"></div>
-                            </div>
-                            <input type="number" id="cantidad" class="form__input" min="0">
-                            <label for="cantidad" class="form__label" id="cantidadVal">шт.</label>
-                        </div>
-                        <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
-                        <div class="form__field-group-ingredientes-container">
-                            {% for i in recipe.volume_ingredient.all %}
-                                {% with forloop.counter as counter %}
-                                    <div class="form__field-item-ingredient" id="ing_{{ counter }}">
-                                        <span> {{ i.ingredient.title }} - {{ i.quantity }} {{ i.ingredient.dimension }}</span>
-                                        <span class="form__field-item-delete"></span>
-                                        <input id="nameIngredient_{{ counter }}" name="nameIngredient_{{ counter }}" type="hidden" value="{{ i.ingredient.title }}" autocomplete="off">
-                                        <input id="valueIngredient_{{ counter }}" name="valueIngredient_{{ counter }}" type="hidden" value="{{ i.quantity }}">
-                                        <input id="unitsIngredient_{{ counter }}" name="unitsIngredient_{{ counter }}" type="hidden" value="{{ i.ingredient.dimension }}">
-                                    </div>
-                                {% endwith %}
-                            {% endfor %}
-                        </div>
-                        
-                        <span class="form__error">{{ form.non_field_errors }}</span>
-                    </div>
+                        {% include "recipes/extend/form_extend/tags_for_form.html" %}
+                        {% include 'recipes/extend/form_extend/error.html' %}
+                    </div> 
                 </div>
+
+                {% include "recipes/extend/form_extend/ingredients.html" with field=form.ingredients_in_recipe%}
 
                 <div class="form__group">
                     {% with form.time as field %}
@@ -96,7 +66,7 @@
                     </div>
                 </div> 
  
-                {% include "recipes/extend/buttons/save_button.html" with recipe=recipe %}
+                {% include "recipes/extend/buttons/save_button.html" %}
 
             </form> 
         </div> 

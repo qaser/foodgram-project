@@ -18,6 +18,13 @@
             {% include 'recipes/extend/recipe_item.html' with author=recipe.author%}
         {% endfor %}
     </div>
+    {% if not page %}
+        <a class="card__text" style="font-size: 20px; color: black;">У Вас пока нет любимых рецептов</a>
+        <br>
+        <br>
+        <a class="card__text" style="font-size: 20px;" href="{% url 'index' %}">На главной странице</a>
+        <a class="card__text" style="font-size: 20px;"> Вы обязательно найдёте что-нибудь интересное</a>
+    {% endif %}
 {% endblock %}
 
 {% block script %}

@@ -7,13 +7,13 @@
                 </li>
                 {% if user.is_authenticated %}
                     <li class="nav__item{% if mark == 'subscriptions' %} nav__item_active{% endif %}">
-                        <a href="{% url 'subscriptions' user.username %}" class="nav__link link">Мои подписки</a>
+                        <a href="{% url 'subscriptions' %}" class="nav__link link">Мои подписки</a>
                     </li>
                     <li class="nav__item{% if mark == 'recipe_new' %} nav__item_active{% endif %}">
                         <a href="{% url 'recipe_new' %}" class="nav__link link">Создать рецепт</a>
                     </li>
                     <li class="nav__item{% if mark == 'recipe_favor' %} nav__item_active{% endif %}">
-                        <a href="{% url 'recipe_favor' user.username %}" class="nav__link link">Избранное</a>
+                        <a href="{% url 'recipe_favor' %}" class="nav__link link">Избранное</a>
                     </li>
                     <li class="nav__item{% if mark == 'purchase' %} nav__item_active{% endif %}">
                         <a href="{% url 'purchase' %}" class="nav__link link">Список покупок</a>

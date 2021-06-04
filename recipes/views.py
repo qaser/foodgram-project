@@ -6,8 +6,7 @@ from django.views.decorators.cache import cache_page
 
 from .forms import RecipeForm
 from .models import Recipe, Subscription, User
-from .utils import (get_recipes_by_tags, page_out_of_paginator,
-                    split_on_page)
+from .utils import get_recipes_by_tags, check_paginator, split_on_page
 
 
 # список рецептов для главной страницы
@@ -15,13 +14,10 @@ from .utils import (get_recipes_by_tags, page_out_of_paginator,
 def index(request):
     recipe_list = Recipe.objects.all()
     recipes_by_tags = get_recipes_by_tags(request, recipe_list)
-    selection = split_on_page(request, recipes_by_tags.get('recipes'))
-    check, url = page_out_of_paginator(request, selection)
-    print(selection)
-    if check:
-        return redirect(url)
-    context = {'filters': recipes_by_tags['filters'], **selection}
-    return render(request, 'recipes/index.html', context)
+    selection = split_on_page(request, recipes_by_tags)
+    context = {'filters': request.META['url_tail_tags'], **selection}
+    template = 'recipes/index.html'
+    return check_paginator(request, selection, template, context)
 
 
 # страница автора рецептов
@@ -30,28 +26,35 @@ def profile(request, username):
     recipe_list = Recipe.objects.filter(author=user).is_annotated(
         request.user).distinct().select_related('author')
     recipes_by_tags = get_recipes_by_tags(request, recipe_list)
-    selection = split_on_page(request, recipes_by_tags.get('recipes'))
-    check, url = page_out_of_paginator(request, selection)
-    if check:
-        return redirect(url)
+    selection = split_on_page(request, recipes_by_tags)
     context = {
-        'filters': recipes_by_tags['filters'],
+        'filters': request.META['url_tail_tags'],
         'author': user,
         **selection
     }
-    return render(request, 'recipes/authorRecipe.html', context)
+    template = 'recipes/authorRecipe.html'
+    return check_paginator(request, selection, template, context)
 
 
 # список подписок пользователя
 @login_required
-def subscription_index(request, username):
+def subscription_index(request):
     subscriptions = Subscription.objects.filter(user=request.user)
     selection = split_on_page(request, subscriptions)
-    check, url = page_out_of_paginator(request, selection)
-    if check:
-        return redirect(url)
     context = {'subscriptions': subscriptions, ** selection}
-    return render(request, 'recipes/myFollow.html', context)
+    template = 'recipes/myFollow.html'
+    return check_paginator(request, selection, template, context)
+
+
+# любимые рецепты пользователя
+@login_required
+def recipe_favor(request):
+    favorites_list = Recipe.objects.user_favor(user=request.user)
+    favorites_by_tags = get_recipes_by_tags(request, favorites_list)
+    selection = split_on_page(request, favorites_by_tags)
+    context = {'filters': request.META['url_tail_tags'], **selection}
+    template = 'recipes/favorite.html'
+    return check_paginator(request, selection, template, context)
 
 
 # страница рецепта
@@ -74,7 +77,7 @@ def recipe_new(request):
     if form.is_valid():
         form.instance.author = request.user
         form.save()
-        return redirect('index')
+        return redirect('recipe_view', form.instance.id)
     return render(request, 'recipes/formRecipe.html', {'form': form})
 
 
@@ -87,7 +90,7 @@ def recipe_edit(request, recipe_id):
     form = RecipeForm(
         request.POST or None,
         files=request.FILES or None,
-        instance=recipe
+        instance=recipe  # использую в форме через kwargs
     )
     context = {'form': form, 'recipe': recipe}
     if form.is_valid():
@@ -103,19 +106,6 @@ def recipe_delete(request, recipe_id):
     if request.user == recipe.author:
         recipe.delete()
     return redirect('index')
-
-
-# любимые рецепты пользователя
-@login_required
-def recipe_favor(request, username):
-    favorites_list = Recipe.objects.user_favor(user=request.user)
-    favorites_by_tags = get_recipes_by_tags(request, favorites_list)
-    selection = split_on_page(request, favorites_by_tags.get('recipes'))
-    check, url = page_out_of_paginator(request, selection)
-    if check:
-        return redirect(url)
-    context = {'filters': favorites_by_tags['filters'], **selection}
-    return render(request, 'recipes/favorite.html', context)
 
 
 # список покупок
@@ -140,7 +130,7 @@ def purchase_save(request):
     if not ingredients:
         return render(request, '/misc/400.html', status=400)
     text = 'Веб-приложение foody-doody.ru\n\nСписок покупок:\n\n'
-    # определяю самую длинное название ингредиента
+    # определяю самое длинное название ингредиента
     for i in ingredients:
         if len(i[title]) > lenght:
             lenght = len(i[title])
@@ -155,7 +145,7 @@ def purchase_save(request):
             f'{number}){number_space}{ingredient[title].capitalize()}'
             f'{amount_space}{amount}, {ingredient[dimension]}\n'
         )
-    footer = "\n\nIt's Foody-Doody time!"  # двойные кавычки детектед
+    footer = "\n\nIt's Foody-Doody time!"
     text = '{}{}'.format(text, footer)
     response = HttpResponse(text, content_type='text/plain')
     filename = 'purchases.txt'
