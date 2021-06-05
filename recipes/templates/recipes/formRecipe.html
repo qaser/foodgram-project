@@ -31,7 +31,9 @@
                 <div class="form__group" aria-required="{% if form.tag.field.required %}true{% else %}false{% endif %}">
                     <div class="form__field-group">
                         {% include "recipes/extend/form_extend/tags_for_form.html" %}
-                        {% include 'recipes/extend/form_extend/error.html' %}
+                        {% if form.tag.errors %}
+                            <span class="form__error">Добавьте по крайней мере один тег</span>
+                        {% endif %}
                     </div> 
                 </div>
 

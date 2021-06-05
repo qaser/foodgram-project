@@ -7,9 +7,16 @@ from recipes.models import Ingredient, Recipe, VolumeIngredient
 class ImageWidget(ClearableFileInput):
     template_name = 'recipes/extend/form_extend/image_widget.html'
 
-# долго вымучивал возможность сохранять годные ингредиенты и 
-# избавляться от плохих. Возможно код немного попахивает.
-# sad but true...
+
+# долго вымучивал возможность сохранять годные ингредиенты и
+# избавляться от плохих. Возможно код попахивает. sad but true...
+# будет много комментов чтобы самому не забыть логику.
+#
+# из выявленных и оставшихся проблем:
+# - нет проверки дублирования ингредиентов, сохраняется последний
+# - при создании рецепта и не валидности формы слетает картинка
+# - проблема с размерностью "по вкусу",
+#   ведь для таких ингредиентов нет необходимости вводить количество
 class RecipeForm(ModelForm):
     class Meta:
         model = Recipe
@@ -24,7 +31,7 @@ class RecipeForm(ModelForm):
         if data is not None:
             data = data.copy()
             self.get_ingredients(data)
-        # здесь проверяю есть ли в БД рецепт и тяну его ингредиенты
+        # здесь проверяю существует ли рецепт и тяну его ингредиенты из БД
         # а так же формирую из них словарь
         # структура данных:
         # 'название ингредиента': {'quantity': , 'dimension': , 'check': }
@@ -48,7 +55,7 @@ class RecipeForm(ModelForm):
                 _, _, number = key.partition('_')
                 value = f'valueIngredient_{number}'
                 dimention = f'unitsIngredient_{number}'
-                self.ingredients[name] = {'quantity': int(data.get(value))}
+                self.ingredients[name] = {'quantity': data.get(value)}
                 self.ingredients[name].update(
                     {'dimension': data.get(dimention)}
                 )
@@ -56,16 +63,31 @@ class RecipeForm(ModelForm):
                 self.ingredients[name].update({'check': 1})
 
     def clean(self):
-        bad_ingredients = []
-        null_ingredients = []
+        bad_ings = []
+        null_ings = []
         if not self.ingredients:
             raise ValidationError('Добавьте ингредиенты для Вашего рецепта')
         for title, dict_data in self.ingredients.items():
-            if dict_data['quantity'] < 1:
+            # здесь проблема! ...была, возможно есть решение лучше.
+            # при попытке ввода количества отличного от целого числа
+            # например буквы, цифры с запятой - форма не даёт добавить
+            # ингредиент, вроде все норм
+            # однако если ввести число через точку 0.1 9.3 .9 и т.д.
+            # форма принимает это и валится с ошибкой 500
+            # при приведении к целому числу.
+            try:
+                quantity = int(dict_data['quantity'])
+            except ValueError:
+                first_num, _, _ = dict_data['quantity'].partition('.')
+                # подменяю число с точкой на норм число
+                first_num = (0 if first_num == '' else first_num)
+                self.ingredients[title].update({'quantity': first_num})
+                quantity = int(first_num)
+            if quantity < 1:
                 # а вот здесь плохиши получают отметку "0"
                 # и выбывают из игры
                 self.ingredients[title].update({'check': 0})
-                null_ingredients.append(title)
+                null_ings.append(title)
             try:
                 ingredient = Ingredient.objects.filter(title=title).get()
                 # здесь в словарь закидываю ингредиенты, скоро в БД буду лить
@@ -73,26 +95,25 @@ class RecipeForm(ModelForm):
             except ObjectDoesNotExist:
                 # и здесь плохие ингредиенты получают метку "0"
                 self.ingredients[title].update({'check': 0})
-                bad_ingredients.append(title)
-        if bad_ingredients:
-            error_text_tail = ', '.join(bad_ingredients)
+                bad_ings.append(title)
+        if bad_ings:
+            error_text_tail = ', '.join(bad_ings)
             self.add_error(
-                None, f'Этих ингредиентов нет в базе: {error_text_tail}'
+                None, ('Выбирайте из выпадающего списка. '
+                       f'Этих ингредиентов нет в базе: {error_text_tail}')
             )
-        if null_ingredients:
+        if null_ings:
             # понесло меня: если вдруг пользователь внёс неправильные
             # ингредиенты да еще и с нулём, то у него нет шансов
-            very_bad_ingredients = list(
-                set(bad_ingredients) & set(null_ingredients)
-            )
+            very_bad_ings = list(set(bad_ings) & set(null_ings))
             # больше списков богу списков!
-            x = [i for i in null_ingredients if i not in very_bad_ingredients]
-            error_text_tail = ', '.join(x)
-            if x:
+            uniq_ing = [i for i in null_ings if i not in very_bad_ings]
+            error_tail = ', '.join(uniq_ing)
+            if uniq_ing:
                 self.add_error(
                     None,
-                    ('Добавьте побольше следующих '
-                    f'ингредиентов: {error_text_tail}'))
+                    f'Добавьте побольше следующих ингредиентов: {error_tail}'
+                )
         return super().clean()
 
     def save(self, commit=True):
@@ -106,8 +127,7 @@ class RecipeForm(ModelForm):
                 quantity=data.get('quantity')
             ) for data in self.ingredients.values()
         ]
-        if obj:
-            recipe.volume_ingredient.all().delete()
-            VolumeIngredient.objects.bulk_create(obj)
+        recipe.volume_ingredient.all().delete()
+        VolumeIngredient.objects.bulk_create(obj)
         self.save_m2m()
         return recipe

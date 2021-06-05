@@ -1,22 +1,10 @@
-from recipes.models import Ingredient, VolumeIngredient
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 
 from foodgram.settings import PAGINATOR_PAGES
 
 User = get_user_model()
-
-
-# рецепты с фильтрацией по тегам и аннотированием
-def get_recipes_by_tags(request, recipes):
-    active_tags = request.META['active_tags']
-    if active_tags:
-        recipes = recipes.get_by_tags(tags=active_tags)
-    recipes = (recipes.is_annotated(user=request.user)
-               if request.user.is_authenticated
-               else recipes)
-    return recipes
 
 
 # разбиваю элементы на страницы

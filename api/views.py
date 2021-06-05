@@ -24,9 +24,11 @@ class CreateDestroyViewSet(mixins.CreateModelMixin,
 
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object(user=self.request.user)
-        return (JsonResponse({'Success': True}, status=status.HTTP_200_OK)
-                if obj.delete()
-                else JsonResponse({'Success': False}))
+        # эххх, а было время когда ты из меня тернарники "вытряхивал"
+        return JsonResponse(
+            {'Success': (True and obj.delete() or False)},
+            status=status.HTTP_200_OK
+        )
 
 
 class IngredientViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

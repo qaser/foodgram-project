@@ -6,15 +6,15 @@ from django.views.decorators.cache import cache_page
 
 from .forms import RecipeForm
 from .models import Recipe, Subscription, User
-from .utils import get_recipes_by_tags, check_paginator, split_on_page
+from .utils import check_paginator, split_on_page
 
 
 # список рецептов для главной страницы
 @cache_page(20, key_prefix='index_page')
 def index(request):
-    recipe_list = Recipe.objects.all()
-    recipes_by_tags = get_recipes_by_tags(request, recipe_list)
-    selection = split_on_page(request, recipes_by_tags)
+    active_tags = request.META['active_tags']
+    recipes = Recipe.objects.get_by_tags(tag=active_tags, user=request.user)
+    selection = split_on_page(request, recipes)
     context = {'filters': request.META['url_tail_tags'], **selection}
     template = 'recipes/index.html'
     return check_paginator(request, selection, template, context)
@@ -22,11 +22,13 @@ def index(request):
 
 # страница автора рецептов
 def profile(request, username):
+    active_tags = request.META['active_tags']
     user = get_object_or_404(User, username=username)
-    recipe_list = Recipe.objects.filter(author=user).is_annotated(
-        request.user).distinct().select_related('author')
-    recipes_by_tags = get_recipes_by_tags(request, recipe_list)
-    selection = split_on_page(request, recipes_by_tags)
+    recipes = Recipe.objects.filter(
+        author=user).select_related(
+            'author').get_by_tags(
+                tag=active_tags, user=request.user)
+    selection = split_on_page(request, recipes)
     context = {
         'filters': request.META['url_tail_tags'],
         'author': user,
@@ -49,9 +51,11 @@ def subscription_index(request):
 # любимые рецепты пользователя
 @login_required
 def recipe_favor(request):
-    favorites_list = Recipe.objects.user_favor(user=request.user)
-    favorites_by_tags = get_recipes_by_tags(request, favorites_list)
-    selection = split_on_page(request, favorites_by_tags)
+    active_tags = request.META['active_tags']
+    favorites = Recipe.objects.user_favor(
+        user=request.user).get_by_tags(
+            tag=active_tags, user=request.user)
+    selection = split_on_page(request, favorites)
     context = {'filters': request.META['url_tail_tags'], **selection}
     template = 'recipes/favorite.html'
     return check_paginator(request, selection, template, context)
