@@ -35,7 +35,7 @@ class IngredientViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     filter_backends = (filters.SearchFilter, )
-    search_fields = ('$title',)  # для постгрес поменять на @
+    search_fields = ('@title',)
 
 
 class SubscriptionViewSet(CreateDestroyViewSet):
