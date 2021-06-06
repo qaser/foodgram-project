@@ -12,12 +12,12 @@ def split_on_page(request, objects_on_page):
     paginator = Paginator(objects_on_page, PAGINATOR_PAGES)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    return {'page': page, 'paginator': paginator}
+    return {'page': page}
 
 
 # проверка превышения страниц в запросе, генерация url и рендер/редирект
 def check_paginator(request, selection, template, context):
-    limit_page = selection['paginator'].num_pages
+    limit_page = selection['page'].paginator.num_pages
     page_number = request.GET.get('page')
     check = (page_number is not None and int(page_number) > limit_page)
     url_tail = ''

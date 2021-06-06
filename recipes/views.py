@@ -1,3 +1,4 @@
+from foodgram.settings import LOGIN_REDIRECT_URL
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.http import HttpResponse
@@ -25,9 +26,8 @@ def profile(request, username):
     active_tags = request.META['active_tags']
     user = get_object_or_404(User, username=username)
     recipes = Recipe.objects.filter(
-        author=user).select_related(
-            'author').get_by_tags(
-                tag=active_tags, user=request.user)
+        author=user
+    ).select_related('author').get_by_tags(tag=active_tags,user=request.user)
     selection = split_on_page(request, recipes)
     context = {
         'filters': request.META['url_tail_tags'],
@@ -39,7 +39,7 @@ def profile(request, username):
 
 
 # список подписок пользователя
-@login_required
+@login_required(login_url=LOGIN_REDIRECT_URL)
 def subscription_index(request):
     subscriptions = Subscription.objects.filter(user=request.user)
     selection = split_on_page(request, subscriptions)
@@ -49,7 +49,7 @@ def subscription_index(request):
 
 
 # любимые рецепты пользователя
-@login_required
+@login_required(login_url=LOGIN_REDIRECT_URL)
 def recipe_favor(request):
     active_tags = request.META['active_tags']
     favorites = Recipe.objects.user_favor(
@@ -75,7 +75,7 @@ def recipe_view(request, recipe_id):
 
 
 # новый рецепт
-@login_required
+@login_required(login_url=LOGIN_REDIRECT_URL)
 def recipe_new(request):
     form = RecipeForm(request.POST or None, files=request.FILES or None)
     if form.is_valid():
@@ -86,7 +86,7 @@ def recipe_new(request):
 
 
 # редактирование рецепта
-@login_required
+@login_required(login_url=LOGIN_REDIRECT_URL)
 def recipe_edit(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if recipe.author != request.user:
@@ -104,7 +104,7 @@ def recipe_edit(request, recipe_id):
 
 
 # удаление рецепта
-@login_required
+@login_required(login_url=LOGIN_REDIRECT_URL)
 def recipe_delete(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if request.user == recipe.author:
@@ -113,7 +113,7 @@ def recipe_delete(request, recipe_id):
 
 
 # список покупок
-@login_required
+@login_required(login_url=LOGIN_REDIRECT_URL)
 def purchase_cart(request):
     purchase = Recipe.objects.user_purchase(user=request.user)
     return render(
@@ -123,7 +123,7 @@ def purchase_cart(request):
     )
 
 
-@login_required
+@login_required(login_url=LOGIN_REDIRECT_URL)
 def purchase_save(request):
     lenght = 0
     title = 'recipe__ingredients__title'

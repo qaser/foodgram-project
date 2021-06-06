@@ -8,13 +8,8 @@ class ImageWidget(ClearableFileInput):
     template_name = 'recipes/extend/form_extend/image_widget.html'
 
 
-# долго вымучивал возможность сохранять годные ингредиенты и
-# избавляться от плохих. Возможно код попахивает. sad but true...
-# будет много комментов чтобы самому не забыть логику.
-#
 # из выявленных и оставшихся проблем:
 # - нет проверки дублирования ингредиентов, сохраняется последний
-# - при создании рецепта и не валидности формы слетает картинка
 # - проблема с размерностью "по вкусу",
 #   ведь для таких ингредиентов нет необходимости вводить количество
 class RecipeForm(ModelForm):
@@ -35,7 +30,6 @@ class RecipeForm(ModelForm):
         # а так же формирую из них словарь
         # структура данных:
         # 'название ингредиента': {'quantity': , 'dimension': , 'check': }
-        # в шаблоне ingredients.html не очень красиво: использую индексы
         elif 'instance' in kwargs:
             for i in kwargs['instance'].volume_ingredient.all():
                 # для индентификации годных ингредиентов делаю пометку "check"
@@ -103,10 +97,9 @@ class RecipeForm(ModelForm):
                        f'Этих ингредиентов нет в базе: {error_text_tail}')
             )
         if null_ings:
-            # понесло меня: если вдруг пользователь внёс неправильные
+            # если вдруг пользователь внёс неправильные
             # ингредиенты да еще и с нулём, то у него нет шансов
             very_bad_ings = list(set(bad_ings) & set(null_ings))
-            # больше списков богу списков!
             uniq_ing = [i for i in null_ings if i not in very_bad_ings]
             error_tail = ', '.join(uniq_ing)
             if uniq_ing:
@@ -119,7 +112,6 @@ class RecipeForm(ModelForm):
     def save(self, commit=True):
         recipe = super().save(commit=False)
         recipe.save()
-        # вот здесь формируются данные для БД
         obj = [
             VolumeIngredient(
                 recipe=recipe,

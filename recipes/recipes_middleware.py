@@ -14,11 +14,9 @@ class TagsMiddleware:
         self.all_tags = [{'attrs': attr} for attr in Tag.objects.all()]
 
     def __call__(self, request):
-        # для реализации "новой" системы тегов использую
         # два вида ссылок: первичная и обычная
         # первичная генерируется при первой загрузке страницы,
         # когда все теги активны, затем генерируется обычная ссылка
-        # соответственно в шаблоне tags.html есть условие if
         active_tags = request.GET.getlist('filter')
         count_active_tags = len(active_tags)
         all_filters = [_tag['attrs'].value for _tag in self.all_tags]

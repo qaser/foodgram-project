@@ -12,7 +12,9 @@
         <p class="custom-text-block">
             Вы вышли из своей учётной записи. Ждём вас снова!
         </p>
-            {% include "registration/extend/custom_button_block.html" with url="/"  button_text="Перейти на главную страницу" %}
+            <div class="custom-button-block">
+                <a href="{% url 'index' %}"><button class="button button_style_blue">Перейти на главную страницу</button></a>
+            </div>
         </p>
     </div>
 {% endblock %}
