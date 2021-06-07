@@ -28,5 +28,5 @@ urlpatterns = [
         name='recipe_favor'
     ),
     path('purchase/', views.purchase_cart, name='purchase'),
-    path('save-purchase', views.purchase_save, name='purchase_save'),
+    path('save-purchase/', views.purchase_save, name='purchase_save'),
 ]

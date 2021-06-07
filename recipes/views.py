@@ -1,4 +1,3 @@
-from foodgram.settings import LOGIN_REDIRECT_URL
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.http import HttpResponse
@@ -6,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 
 from .forms import RecipeForm
-from .models import Recipe, Subscription, User
+from .models import Ingredient, Recipe, Subscription, User
 from .utils import check_paginator, split_on_page
 
 
@@ -39,7 +38,7 @@ def profile(request, username):
 
 
 # список подписок пользователя
-@login_required(login_url=LOGIN_REDIRECT_URL)
+@login_required
 def subscription_index(request):
     subscriptions = Subscription.objects.filter(user=request.user)
     selection = split_on_page(request, subscriptions)
@@ -49,12 +48,12 @@ def subscription_index(request):
 
 
 # любимые рецепты пользователя
-@login_required(login_url=LOGIN_REDIRECT_URL)
+@login_required
 def recipe_favor(request):
     active_tags = request.META['active_tags']
     favorites = Recipe.objects.user_favor(
-        user=request.user).get_by_tags(
-            tag=active_tags, user=request.user)
+        user=request.user
+    ).get_by_tags(tag=active_tags, user=request.user)
     selection = split_on_page(request, favorites)
     context = {'filters': request.META['url_tail_tags'], **selection}
     template = 'recipes/favorite.html'
@@ -75,7 +74,7 @@ def recipe_view(request, recipe_id):
 
 
 # новый рецепт
-@login_required(login_url=LOGIN_REDIRECT_URL)
+@login_required
 def recipe_new(request):
     form = RecipeForm(request.POST or None, files=request.FILES or None)
     if form.is_valid():
@@ -86,7 +85,7 @@ def recipe_new(request):
 
 
 # редактирование рецепта
-@login_required(login_url=LOGIN_REDIRECT_URL)
+@login_required
 def recipe_edit(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if recipe.author != request.user:
@@ -104,7 +103,7 @@ def recipe_edit(request, recipe_id):
 
 
 # удаление рецепта
-@login_required(login_url=LOGIN_REDIRECT_URL)
+@login_required
 def recipe_delete(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     if request.user == recipe.author:
@@ -113,7 +112,7 @@ def recipe_delete(request, recipe_id):
 
 
 # список покупок
-@login_required(login_url=LOGIN_REDIRECT_URL)
+@login_required
 def purchase_cart(request):
     purchase = Recipe.objects.user_purchase(user=request.user)
     return render(
@@ -123,7 +122,7 @@ def purchase_cart(request):
     )
 
 
-@login_required(login_url=LOGIN_REDIRECT_URL)
+@login_required
 def purchase_save(request):
     lenght = 0
     title = 'recipe__ingredients__title'
@@ -142,14 +141,13 @@ def purchase_save(request):
     for number, ingredient in enumerate(ingredients, start=1):
         amount = ingredient['amount']
         # для удобства чтения списка покупок делаю динамические отступы
-        number_space = ('  ' if number < 10 else ' ')
-        amount_space = '.' * (lenght - len(ingredient[title]) + 3)
+        num = f'{number})'.rjust(3, ' ')
+        ing_title = ingredient[title].capitalize().ljust(lenght + 3, '.')
         text = '{}{}'.format(
             text,
-            f'{number}){number_space}{ingredient[title].capitalize()}'
-            f'{amount_space}{amount}, {ingredient[dimension]}\n'
+            f'{num}{ing_title}{amount}, {ingredient[dimension]}\n'
         )
-    footer = "\n\nIt's Foody-Doody time!"
+    footer = "\nIt's Foody-Doody time!"
     text = '{}{}'.format(text, footer)
     response = HttpResponse(text, content_type='text/plain')
     filename = 'purchases.txt'

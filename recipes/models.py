@@ -43,6 +43,7 @@ class Ingredient(models.Model):
 
 
 class RecipeQuerySet(models.QuerySet):
+    # отдельная выборка через теги
     def get_by_tags(self, tag, user):
         return (
             self.filter(tag__value__in=tag).distinct().is_annotated(user=user)

@@ -10,8 +10,6 @@ class ImageWidget(ClearableFileInput):
 
 # из выявленных и оставшихся проблем:
 # - нет проверки дублирования ингредиентов, сохраняется последний
-# - проблема с размерностью "по вкусу",
-#   ведь для таких ингредиентов нет необходимости вводить количество
 class RecipeForm(ModelForm):
     class Meta:
         model = Recipe
@@ -27,8 +25,7 @@ class RecipeForm(ModelForm):
             data = data.copy()
             self.get_ingredients(data)
         # здесь проверяю существует ли рецепт и тяну его ингредиенты из БД
-        # а так же формирую из них словарь
-        # структура данных:
+        # а так же формирую из них словарь. структура данных:
         # 'название ингредиента': {'quantity': , 'dimension': , 'check': }
         elif 'instance' in kwargs:
             for i in kwargs['instance'].volume_ingredient.all():
@@ -62,13 +59,7 @@ class RecipeForm(ModelForm):
         if not self.ingredients:
             raise ValidationError('Добавьте ингредиенты для Вашего рецепта')
         for title, dict_data in self.ingredients.items():
-            # здесь проблема! ...была, возможно есть решение лучше.
-            # при попытке ввода количества отличного от целого числа
-            # например буквы, цифры с запятой - форма не даёт добавить
-            # ингредиент, вроде все норм
-            # однако если ввести число через точку 0.1 9.3 .9 и т.д.
-            # форма принимает это и валится с ошибкой 500
-            # при приведении к целому числу.
+            # обработка ввода числа с точкой
             try:
                 quantity = int(dict_data['quantity'])
             except ValueError:
@@ -77,17 +68,15 @@ class RecipeForm(ModelForm):
                 first_num = (0 if first_num == '' else first_num)
                 self.ingredients[title].update({'quantity': first_num})
                 quantity = int(first_num)
-            if quantity < 1:
+            if quantity < 1 and dict_data['dimension'] != 'по вкусу':
                 # а вот здесь плохиши получают отметку "0"
-                # и выбывают из игры
                 self.ingredients[title].update({'check': 0})
                 null_ings.append(title)
             try:
                 ingredient = Ingredient.objects.filter(title=title).get()
-                # здесь в словарь закидываю ингредиенты, скоро в БД буду лить
+                # здесь в словарь закидываю ингредиенты
                 self.ingredients[title].update({'ingredient': ingredient})
             except ObjectDoesNotExist:
-                # и здесь плохие ингредиенты получают метку "0"
                 self.ingredients[title].update({'check': 0})
                 bad_ings.append(title)
         if bad_ings:
@@ -97,8 +86,7 @@ class RecipeForm(ModelForm):
                        f'Этих ингредиентов нет в базе: {error_text_tail}')
             )
         if null_ings:
-            # если вдруг пользователь внёс неправильные
-            # ингредиенты да еще и с нулём, то у него нет шансов
+            # обработка неправильных ингредиентов да еще и с нулём
             very_bad_ings = list(set(bad_ings) & set(null_ings))
             uniq_ing = [i for i in null_ings if i not in very_bad_ings]
             error_tail = ', '.join(uniq_ing)
