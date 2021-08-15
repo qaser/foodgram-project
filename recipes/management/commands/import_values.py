@@ -17,4 +17,4 @@ class Command(BaseCommand):
                     Ingredient.objects.get_or_create(
                         title=title,
                         dimension=dimension,
-                    )
+                    ) 

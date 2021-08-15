@@ -1,7 +1,9 @@
-.card-list {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto;
-    grid-gap: 40px;
-    margin-bottom: 52px;
-}
+    .card-list {
+        display: grid;
+        list-style: none;
+        /* grid-template-columns: repeat(3, 1fr); */
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        /* grid-template-rows: auto; */
+        grid-gap: 40px;
+        margin-bottom: 52px;
+    }
