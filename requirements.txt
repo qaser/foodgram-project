@@ -5,7 +5,7 @@ attrs==20.1.0
 beautifulsoup4==4.9.1
 colorama==0.4.3
 dj-static==0.0.6
-Django==3.2
+Django==3.2.12
 django-bootstrap4==2.2.0
 djangorestframework==3.12.2
 djangorestframework-simplejwt==4.6.0
