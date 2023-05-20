@@ -9,6 +9,7 @@ class Api {
         'Content-Type': 'application/json',
       }
     });
+    console.log(e)
     if (e.ok) {
       return e.json();
     }
@@ -107,7 +108,7 @@ class Api {
     }
     return await Promise.reject(e.statusText);
   }
-  
+
   async getIngredients(text) {
     const e = await fetch(`${this.apiUrl}/ingredients/?search=${text}`, {
       headers: {
